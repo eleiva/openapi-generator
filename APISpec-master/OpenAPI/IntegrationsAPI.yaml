@@ -1,0 +1,25 @@
+openapi: 3.0.0
+info:
+  title: Integrations Service API
+  description: >-
+    Integrations Service API
+  contact: {}
+  version: '1.0'
+servers:
+- url: https://integrations.morsum.co/api/v1
+  variables: {}
+- url: http://localhost:5000/api/v1
+  variables: {}
+paths:
+  /onboarding/orders-guides/manual:
+    $ref: './Paths/Onboarding/OrdersGuidesManual.yaml'
+  /onboarding/invoices/manual:
+    $ref: './Paths/Onboarding/InvoicesManual.yaml'
+  /onboarding/operators/manual:
+    $ref: './Paths/Onboarding/OperatorsManual.yaml'
+  /onboarding/catalog/manual:
+    $ref: './Paths/Onboarding/CatalogManual.yaml'
+  /onboarding/{onboardingID}:
+    $ref: './Paths/Onboarding/OnboardingById.yaml'
+  /orders/{orderID}/send/email:
+    $ref: './Paths/Onboarding/OrdersSendActions.yaml'

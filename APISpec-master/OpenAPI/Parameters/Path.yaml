@@ -1,0 +1,164 @@
+components:
+  parameters:
+    operatorID:
+      name: operatorID
+      in: path
+      description: 'Unique id representing a operator'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 1
+    storeLocationID:
+      name: storeLocationID
+      in: path
+      description: 'Unique id representing a store location'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 1
+    vendorID:
+      name: vendorID
+      in: path
+      description: 'Unique id representing a vendor'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 1
+    cartID:
+      name: cartID
+      in: path
+      description: 'Unique id representing a cart'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 1
+    cartItemID:
+      name: cartItemID
+      in: path
+      description: 'Unique id representing a cart item'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 1
+    shoppingListID:
+      name: shoppingListID
+      in: path
+      description: 'Unique id representing a shopping list'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 1
+    distributionCenterID:
+      name: distributionCenterID
+      in: path
+      description: 'Unique id representing a distribution center'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 1
+    productID:
+      name: productID
+      in: path
+      description: 'Unique id representing a product'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 1
+    orderGuideID:
+      name: orderGuideID
+      in: path
+      description: 'Unique id representing a order guide'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 1
+    orderID:
+      name: orderID
+      in: path
+      description: 'Unique id representing a order'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 1
+    orderItemID:
+      name: orderItemID
+      in: path
+      description: 'Unique id representing a order item'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 1
+    action:
+      name: action
+      in: path
+      description: 'A set of actions that can be performed on a given resource'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: submit
+    invoiceID:
+      name: invoiceID
+      in: path
+      description: 'Unique id representing a invoice'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 1
+    transactionID:
+      name: transactionID
+      in: path
+      description: 'Unique id representing a transaction'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 1
+    transactionItemID:
+      name: transactionItemID
+      in: path
+      description: 'Unique id representing a transaction item'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 1
+    paymentID:
+      name: paymentID
+      in: path
+      description: 'Unique id representing a payment'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 1
+    deeplinkCode:
+      name: deeplinkCode
+      in: path
+      description: 'Code representing a deeplink'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 5e95fb7c88208
+    onboardingID:
+      name: onboardingID
+      in: path
+      description: 'Unique id representing a onboarding process'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 1

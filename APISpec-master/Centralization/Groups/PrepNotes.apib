@@ -1,0 +1,44 @@
+# Group Prep Notes
+
+## PrepNote Resource [/categories/prep-notes]
+
+### Retrieve PrepNote [GET]
+Returns a list of PrepNote
++ Response 200 (application/json)
+    + Attributes (array[PrepNote])
+
+### Retrieve a PrepNote [GET /categories/prep-notes/{id}]
+Returns a PrepNote
++ Parameters
+    + id (string)
++ Response 200 (application/json)
+    + Attributes (PrepNote)
+
+### Create a PrepNote [POST]
+Creates a PrepNote
++ Attributes (PrepNoteRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (PrepNote)
+
+### Update a PrepNote [PUT /categories/prep-notes/{id}]
+Updates a PrepNote using the id.
++ Parameters
+    + id (string)
++ Attributes (PrepNoteRequest)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Restores a PrepNote [PATCH /categories/prep-notes/{id}/restore]
+Updates a PrepNote using the id.
++ Parameters
+    + id (string)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Deletes a PrepNote [DELETE /categories/prep-notes/{id}]
+Deletes a PrepNote using the id.
++ Parameters
+    + id (string)
++ Request (application/json)
++ Response 200 (application/json)

@@ -1,0 +1,76 @@
+# Group Feedbacks
+
+## Feedback Resource [/feedbacks]
+
+### Retrieve a list of Feedback [GET]
+Returns a list of Feedback
++ Response 200 (application/json)
+    + Attributes (array[Feedback])
+
+### Create a Feedback [POST]
+Creates a Feedback.
+
++ Attributes (Feedback)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Retrieve a Feedback [GET /feedbacks/{id}]
+Retrieves the Recipe with the given ID.
++ Parameters
+    + id (string)
++ Response 200 (application/json)
+    + Attributes (Recipe)
+
+### Update a Feedback [PUT /feedbacks/{id}]
+Updates a Feedback using the id.
++ Parameters
+    + id (string)
++ Attributes (Feedback)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Deletes a Feedback [DELETE /feedbacks/{id}]
+Deletes a Feedback.
++ Parameters
+    + id (string)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Restores a Feedback [POST /feedbacks/{id}/restore]
+Restores a Feedback.
++ Parameters
+    + id (string)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Approve a Feedback [POST /feedbacks/{id}/approve]
+Approve a Feedback.
++ Parameters
+    + id (string)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Rejects a Feedback [POST /feedbacks/{id}/reject]
+Rejects a Feedback.
++ Parameters
+    + id (string)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Approve a field of Feedback [POST /feedbacks/{id}/approve/{field}]
+Approve a field of Feedback.
++ Parameters
+    + id (string)
+    + field (string)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (Feedback)
+
+### Rejects a Field of Feedback [POST /feedbacks/{id}/reject/{field}]
+Rejects a Field of Feedback.
++ Parameters
+    + id (string)
+    + field (string)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (Feedback)

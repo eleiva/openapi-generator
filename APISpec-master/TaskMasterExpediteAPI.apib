@@ -1,0 +1,1058 @@
+#TaskMaster Expedite API
+Developer Platform
+TaskMaster Expedite API Specification
+
+Base endpoint: https://api.morsum.co/labor/tm/expedite/v1
+
+## Overview
+
+Some general specifications about our Developer Platform API
+- Available HTTP Verbs are GET, POST, PUT, PATCH and DELETE
+- JSON will be the standard output format
+- API’s response’s content-type is application/hal+json
+- Usage of Http Status Codes is a must (200 for ok, 201 for created, 404 not found and so on)
+- URI’s follow the RESTful constraints: https://base_url/resources/id/resources
+- Date and time are represented by Date and DateTime. Both types are formatted according to ISO 8607. Date is formatted as a complete date - YYYY-MM-DD (e.g. 1997-07-16)- and DateTime as complete date plus hours, minutes and seconds, always with the Z indicator for UTC timezone - YYYY-MM-DDThh:mm:ssZ (e.g. 1997-07-16T19:20:00Z)
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+
+```json
+{
+  "session": {
+    "sessionID" : String
+  }
+
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+
+### Error 4xx or 5xx
+
+HTTP status 4xx for client errors and 5xx for server errors.
+```json
+{
+  "error": {
+    "code": String,
+    "message": String
+  }
+}
+```
+
+## Paging
+
+If the resource used allows to be paginated, parameters page & perPage will be allowed thus enabling the API consumer to paginate the entire collection of the resource
+```json
+{
+  "session": {
+    "sessionID" : String
+  },
+  "response": {
+  ... //actual response from API
+  },
+  "paging":  {
+      "totalPages": Int,
+      "perPage": Int,
+      "currentPage": Int
+  }
+}
+```
+
+## Headers
+
+By default, every call to any endpoint behind authentication must include the Authorization header as stated by W3C in HTTP 1.0. The type will be Bearer since we’re implementing OAuth2 (explained below) and after the type, access token should go as it is like this:
+Authorization : Bearer <access-token>
+
+## Images
+
+All image urls have the following format “img_xxxxx_s.jpg” where “s” can be replaced with any of the following requested formats:
+s: 400
+m: 800
+l: 1200
+
+## HATEOAS - Hypermedia API
+
+A Hypermedia API offers self descriptive links that point one endpoint to another. These links are context aware and they change according to where your request is within the API and what features and data is available to consume at that single state. Morsum’s Developer Platform implements <a href="http://stateless.co/hal_specification.html" target="\_blank">HAL</a>, one of the most easy, readable and lightweight specifications for writing Hypermedia links.
+```json
+{
+    "response" : {
+    	//actual API response
+    },
+    "_links" : {
+     "sites" : {
+       "href" : "users/123/sites",
+       "method" : "GET"
+     }
+   }
+}
+```
+
+## Aliases
+
+If you need to get data about the current logged in User, you have available aliases of every endpoint documented here that automates this by replacing the {userID} for a string "me" eg: users/{userID}/sites for users/{userID}/sites.
+Also remember to take advantage from HATEOAS since you will likely have the url's preformatted with any ID's needed.
+
+# Group Authentication
+
+## POST /login
+Creates the customer session
++ Request
+    + Headers
+
+            Accept: application/json
+    + Attributes
+        + email: `aaa@example.com` (string, required)
+        + password (string, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + user (User)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (UserLoginHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /login/pin
++ Request
+    + Headers
+
+            Accept: application/json
+    + Attributes
+        + siteID (string, required)
+        + pin (string, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + user (User)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (UserLoginPinHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /logout
++ Response 204 (application/json)
+
+## POST /users/password/reset
++ Request
+    + Headers
+
+            Accept: application/json
+    + Attributes
+        + email: `aaa@example.com` (string, required)
+
++ Response 202 (application/json)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (SignUpInvalidEmail)
+
+## GET /users/{userID}/sites
+Returns the list of sites the user belongs to
++ Parameters
+    + userID: `1` (string, required) - ID of the user
++ Response 200 (application/json)
+    + Attributes
+        + response (array[Site], required)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (GetPlatingHalLink)
+                + href: `/users/1/sites`
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Group Plating
+
+## GET /plating?date={date}
+Fetches list of orders ready for plating
++ Parameters
+    + date: `YYYY-MM-DD` (string, optional) - Date for the expedite
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + notificationChannels (array[string], required)
+            + times (PlatingTimes, required)
+            + permissions (Permissions, required)
+            + tasks (array[Transaction])
+            + dateActive (string, required)
+            + stations (array[Station], required)
+        + _links
+            + self (GetPlatingHalLink)
+            + start (PlatingTransactionItemStartHalLink)
+            + finish (PlatingTransactionItemFinishHalLink)
+            + undo (PlatingTransactionItemUndoHalLink)
+            + packing (GetPackingHalLink)
+            + delivery (GetDeliveryHalLink)
+            + logout (UserLogoutHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /plating/transactions/{transactionID}/items/{transactionItemID}/start
+Starts plating on a single transaction item
++ Parameters
+    + transactionID: `1` (string, required) - ID of the transaction
+    + transactionItemID: `10` (string, required) - ID of the item transaction
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (PlatingTransactionItemStartHalLink)
+                + href: `/plating/transactions/1/items/10/start`
+            + finish (PlatingTransactionItemFinishHalLink)
+                + href: `/plating/transactions/1/items/10/finish`
+            + undo (PlatingTransactionItemUndoHalLink)
+                + href: `/plating/transactions/1/items/10/undo`
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /plating/transactions/{transactionID}/items/{transactionItemID}/finish
+Finishes plating on a single transaction item
++ Parameters
+    + transactionID: `1` (string, required) - ID of the transaction
+    + transactionItemID: `10` (string, required) - ID of the item transaction
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (PlatingTransactionItemFinishHalLink)
+                + href: `/plating/transactions/1/items/10/finish`
+            + start (PlatingTransactionItemStartHalLink)
+                + href: `/plating/transactions/1/items/10/start`
+            + undo (PlatingTransactionItemUndoHalLink)
+                + href: `/plating/transactions/1/items/10/undo`
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /plating/transactions/{transactionID}/items/{transactionItemID}/undo
+Undo last action made on a single transaction item
++ Parameters
+    + transactionID: `1` (string, required) - ID of the transaction
+    + transactionItemID: `10` (string, required) - ID of the item transaction
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (PlatingTransactionItemUndoHalLink)
+                + href: `/plating/transactions/1/items/10/undo`
+            + start (PlatingTransactionItemStartHalLink)
+                + href: `/plating/transactions/1/items/10/start`
+            + finish (PlatingTransactionItemFinishHalLink)
+                + href: `/plating/transactions/1/items/10/finish`
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Group Packing
+
+## GET /packing?date={date}
+Fetches list of orders ready for packing
++ Parameters
+    + date: `YYYY-MM-DD` (string, optional) - Date for the expedite
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + notificationChannels (array[string], required)
+            + times (PlatingTimes, required)
+            + permissions (Permissions, required)
+            + tasks (array[Transaction])
+            + dateActive (string, required)
+            + stations (array[Station], required)
+        + _links
+            + self (GetPackingHalLink)
+            + start (PackingTransactionItemStartHalLink)
+            + finish (PackingTransactionItemFinishHalLink)
+            + undo (PackingTransactionItemUndoHalLink)
+            + plating (GetPlatingHalLink)
+            + delivery (GetDeliveryHalLink)
+            + logout (UserLogoutHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /packing/transactions/{transactionID}/items/{transactionItemID}/start
+Starts plating on a single transaction item
++ Parameters
+    + transactionID: `1` (string, required) - ID of the transaction
+    + transactionItemID: `10` (string, required) - ID of the item transaction
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (PackingTransactionItemStartHalLink)
+                + href: `/packing/transactions/1/items/10/start`
+            + finish (PackingTransactionItemFinishHalLink)
+                + href: `/packing/transactions/1/items/10/finish`
+            + undo (PackingTransactionItemUndoHalLink)
+                + href: `/packing/transactions/1/items/10/undo`
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /packing/transactions/{transactionID}/items/{transactionItemID}/finish
+Finishes plating on a single transaction item
++ Parameters
+    + transactionID: `1` (string, required) - ID of the transaction
+    + transactionItemID: `10` (string, required) - ID of the item transaction
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (PackingTransactionItemFinishHalLink)
+                + href: `/packing/transactions/1/items/10/finish`
+            + start (PackingTransactionItemStartHalLink)
+                + href: `/packing/transactions/1/items/10/start`
+            + undo (PackingTransactionItemUndoHalLink)
+                + href: `/packing/transactions/1/items/10/undo`
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /packing/transactions/{transactionID}/items/{transactionItemID}/undo
+Undo last action made on a single transaction item
++ Parameters
+    + transactionID: `1` (string, required) - ID of the transaction
+    + transactionItemID: `10` (string, required) - ID of the item transaction
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (PackingTransactionItemUndoHalLink)
+                + href: `/packing/transactions/1/items/10/undo`
+            + start (PackingTransactionItemStartHalLink)
+                + href: `/packing/transactions/1/items/10/start`
+            + finish (PackingTransactionItemFinishHalLink)
+                + href: `/packing/transactions/1/items/10/finish`
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /packing/transactions/{transactionID}/done
+Mark the transaction as done it's packaging
++ Parameters
+    + transactionID: `1` (string, required) - ID of the transaction
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (PackingTransactionDoneHalLink)
+                + href: `/packing/transactions/1/done`
+            + deliverySend (DeliveryTransactionSendHalLink)
+                + href: `/delivery/transactions/1/send`
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Group Delivery
+
+## GET /delivery?date={date}
+Fetches list of orders ready for delivery
++ Parameters
+    + date: `YYYY-MM-DD` (string, optional) - Date for the expedite
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + notificationChannels (array[string], required)
+            + permissions (Permissions, required)
+            + tasks (array[Transaction])
+            + dateActive (string, required)
+            + stations (array[Station], required)
+        + _links
+            + self (GetDeliveryHalLink)
+            + send (PlatingTransactionItemFinishHalLink)
+            + deliver (DeliveryTransactionDeliverHalLink)
+            + packing (GetPackingHalLink)
+            + plating (GetPlatingHalLink)
+            + logout (UserLogoutHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /delivery/send
+Changes status of the transaction to sent
++ Request
+    + Attributes
+        + transactionIDs (array, required) - IDs of the transactions
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (DeliveryTransactionSendHalLink)
+                + href: `/delivery/transactions/1/send`
+            + deliver (DeliveryTransactionDeliverHalLink)
+                + href: `/delivery/transactions/1/deliver`
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /delivery/deliver
+Changes status of the transaction to deliver finishing up the expedite process
++ Request
+    + Attributes
+        + transactionIDs (array, required) - IDs of the transactions
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (DeliveryTransactionDeliverHalLink)
+                + href: `/delivery/transactions/1/deliver`
+            + send (DeliveryTransactionSendHalLink)
+                + href: `/delivery/transactions/1/send`
+            + transactionsSent (GetSentTransactionsHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Group QR Manager
+
+## GET /qrmanager
+Fetches a list of available transactions in QR mode
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+            + qrTasks (array[Transaction])
+            + platingPackingTasks (array[Transaction])
+            + notificationChannels (array[string], required)
+            + permissions (Permissions, required)
+            + dateActive (string, required)
+            + stations (array[Station], required)
+        + _links
+            + self (GetQRManagerHalLink)
+            + start (QRManagerTransactionItemStartHalLink)
+                + href: `/qrmanager/transactions/1/items/10/start`
+            + finish (QRManagerTransactionItemFinishHalLink)
+                + href: `/qrmanager/transactions/1/items/10/finish`
+            + undo (QRManagerTransactionItemUndoHalLink)
+                + href: `/qrmanager/transactions/1/items/10/undo`
+            + done (QRManagerTransactionsDoneHalLink)
+                + href: `/qrmanager/transactions/1/done`
+            + scan (QRManagerTransactionsScanHalLink)
+                + href: `/qrmanager/transactions/1/scan`
+            + create (QRManagerCreateQRHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /qrmanager/transactions/{transactionID}/scan
+Fetches a list of available transactions in QR mode
++ Parameters
+      + transactionID: `1` (string, required) - ID of the transaction
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+        + _links
+            + self (QRManagerTransactionsScanHalLink)
+                + href: `/qrmanager/transactions/1/scan`
+            + start (QRManagerTransactionItemStartHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/start`
+            + finish (QRManagerTransactionItemFinishHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/finish`
+            + undo (QRManagerTransactionItemUndoHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/undo`
+            + done (QRManagerTransactionsDoneHalLink)
+                + href: `/qrmanager/transactions/1/done`
+            + create (QRManagerCreateQRHalLink)
+
+## POST /qrmanager/transactions/{transactionID}/items/{transactionItemID}/start
+Starts plating/packing on a single transaction item
++ Parameters
+      + transactionID: `1` (string, required) - ID of the transaction
+      + transactionItemID: `100` (string) - ID of the item transaction
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+        + _links
+            + self (QRManagerTransactionItemStartHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/start`
+            + scan (QRManagerTransactionsScanHalLink)
+                + href: `/qrmanager/transactions/1/scan`
+            + finish (QRManagerTransactionItemFinishHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/finish`
+            + undo (QRManagerTransactionItemUndoHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/undo`
+            + done (QRManagerTransactionsDoneHalLink)
+                + href: `/qrmanager/transactions/1/done`
+            + create (QRManagerCreateQRHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /qrmanager/transactions/{transactionID}/items/{transactionItemID}/finish
+Finish plating/packing on a single transaction item
++ Parameters
+      + transactionID: `1` (string, required) - ID of the transaction
+      + transactionItemID: `100` (string) - ID of the item transaction
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+        + _links
+            + self (QRManagerTransactionItemFinishHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/finish`
+            + start (QRManagerTransactionItemStartHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/start`
+            + scan (QRManagerTransactionsScanHalLink)
+                + href: `/qrmanager/transactions/1/scan`
+            + undo (QRManagerTransactionItemUndoHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/undo`
+            + done (QRManagerTransactionsDoneHalLink)
+                + href: `/qrmanager/transactions/1/done`
+            + create (QRManagerCreateQRHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /qrmanager/transactions/{transactionID}/items/{transactionItemID}/undo
+Undo last action in plating/packing on a single transaction item
++ Parameters
+      + transactionID: `1` (string, required) - ID of the transaction
+      + transactionItemID: `100` (string) - ID of the item transaction
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+        + _links
+            + self (QRManagerTransactionItemUndoHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/undo`
+            + start (QRManagerTransactionItemStartHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/start`
+            + finish (QRManagerTransactionItemFinishHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/finish`
+            + scan (QRManagerTransactionsScanHalLink)
+                + href: `/qrmanager/transactions/1/scan`
+            + done (QRManagerTransactionsDoneHalLink)
+                + href: `/qrmanager/transactions/1/done`
+            + create (QRManagerCreateQRHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /qrmanager/transactions/{transactionID}/done
+Mark the transaction as done plating/packaging
++ Parameters
+      + transactionID: `1` (string, required) - ID of the transaction
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+        + _links
+            + self (QRManagerTransactionsDoneHalLink)
+                + href: `/qrmanager/transactions/1/done`
+            + start (QRManagerTransactionItemStartHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/start`
+            + finish (QRManagerTransactionItemFinishHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/finish`
+            + undo (QRManagerTransactionItemUndoHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/undo`
+            + scan (QRManagerTransactionsScanHalLink)
+                + href: `/qrmanager/transactions/1/scan`
+            + create (QRManagerCreateQRHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /qrmanager
+Creates a new QR from given customerID and transactionID
++ Request
+    + Headers
+
+            Accept: application/json
+    + Attributes
+        + customerID `100` (string, required) - ID of the customer
+        + transactionID `1000` (string, required) - ID of the transaction
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+            + qr (QR)
+        + _links
+            + create (QRManagerCreateQRHalLink)
+            + start (QRManagerTransactionItemStartHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/start`
+            + finish (QRManagerTransactionItemFinishHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/finish`
+            + undo (QRManagerTransactionItemUndoHalLink)
+                + href: `/qrmanager/transactions/1/items/{transactionItemID}/undo`
+            + scan (QRManagerTransactionsScanHalLink)
+                + href: `/qrmanager/transactions/1/scan`
+            + done (QRManagerTransactionsDoneHalLink)
+                + href: `/qrmanager/transactions/1/done`
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Group Transactions
+
+## GET /transactions/sent
+Fetches a list of transactions with sent status
++ Parameters
+      + storeID: `183` (string) - ID of the store
+      + date: `YYYY-MM-DD` (string, optional) - Date to filter
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+            + tasks (array[Transaction], required)
+            + dateActive (string, required)
+            + stores (array[Store], required)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (GetSentTransactionsHalLink)
+            + transactionItem (TransactionsGetTransactionItemHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Group Store's Stock & Sales
+
+## GET /transactions/stores/sales
+Fetch sales for given store
++ Parameters
+      + storeID: `183` (string) - ID of the store
+      + date: `YYYY-MM-DD` (string, optional) - Date to filter
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+            + grandTotalGross (number, required)
+            + discountTotal (number, required)
+            + creditTotal (number, required)
+            + grandTotalNet (number, required)
+            + products (array[TransactionProduct], required)
+            + stores (array[Store], required)
+            + dateActive (string, required)
+            + activeStoreID (number, required)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (StoresGetSalesHalLink)
+                + href: `/stores/183/sales
+            + store (GetStoreHalLink)
+                + href: `/stores/183`
+            + stock (StoresGetStockHalLink)
+                + href: `/stores/183/stock`
+            + overallStock (OverallGetStockHalLink)
+            + overallActivity (OverallGetActivityHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## GET /transactions/stores/stock
+Fetches stock for given store
++ Parameters
+    + storeID: `183` (string) - ID of the store
+    + date: `YYYY-MM-DD` (string, optional) - Date to filter
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+            + products (array[TransactionProduct], required)
+            + stores (array[Store], required)
+            + dateActive (string, required)
+            + activeStoreID (number, required)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (StoresGetStockHalLink)
+                + href: `/stores/183/stock`
+            + store (GetStoreHalLink)
+                + href: `/stores/183`
+            + sales (StoresGetSalesHalLink)
+                + href: `/stores/183/sales
+            + overallStock (OverallGetStockHalLink)
+            + overallActivity (OverallGetActivityHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## GET /transactions/stock/overall
+Fetches available overall stock
++ Parameters
+    + date: `YYYY-MM-DD` (string, optional) - Date to filter
++ Response 200 (application/json)
+    + Attributes
+        + response (Success)
+            + menuCategories (array[OverallMenuCategories], required)
+            + stores (array[OverallStores], required)
+            + dateActive (string, required)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (OverallGetStockHalLink)
+            + activity (OverallGetActivityHalLink)
+            + storeSales (StoresGetSalesHalLink)
+            + store (GetStoreHalLink)
+            + storeStock (StoresGetStockHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Data Structures
+
+## OverallMenuCategories (object)
++ ID (string, required)
++ name (string, required)
++ products (array[OverallProducts], required)
+
+## OverallProducts (object)
++ ID (string, required)
++ name (string, required)
++ store (Store, required)
++ fulfillments (array[OverallFulfillments], required)
+
+## OverallFulfillments (object)
++ ID (string, required)
++ name (string)
++ quantity (number)
+
+## OverallStores (object)
++ ID (string, required)
++ name (string)
++ fulfillments (array[OverallFulfillments], required)
+
+## Session (object)
++ sessionID (string, required)
+
+## Site (object)
++ ID: `siteID` (string, required) - The unique identifier for the Site
++ name: `Morsum Site` (string, required) - The site name
++ siteURL (string, required)
++ description: `5th Ave, NY, NY` (string)
++ imageURL (string)
++ vocURL (string)
+
+## Station (object)
++ ID (string, required)
++ name (string, required)
++ available (boolean)
+
+## User (object)
++ ID: `userID` (string, required)
++ name: `Hugo` (string, required)
+
+## Otdt (object)
++ time: `hh:mm Z` (string, required)
++ dateTime: `YYYY-MM-DD hh:mm:ssZ` (string, required)
+
+## TasksByOrders (object)
++ orders (array[Order])
+
+## Time (object)
++ ID (string, required)
++ startDate: `YYYY-MM-DDThh:mm:ssZ` (string, required)
++ endDate: `YYYY-MM-DDThh:mm:ssZ` (string, required)
+
+## Combo (object)
++ parentTransactionItemID: `100` (string, optional)
++ portion (Portion, optional)
++ product (string, optional)
++ unit (string, optiona)
+
+## CustomizeOption (object)
++ options (string, optional)
++ removed (string, optional)
++ recipes (string, optional)
+
+## FulfillmentOption (object)
++ ID: `1` (string, required)
++ name (string, required)
+
+## QR (object)
++ ID (string, required)
++ url (string, required)
+
+## Success (object)
++ success (boolean, required)
+    + Default: `true`
+    + Members
+        + `true`
+        + `false`
+
+## TransactionItem (object)
++ ID: `1` (string, required)
++ customizeOption (CustomizeOption)
+
+## TransactionStatus (object)
++ ID: `1` (string, required)
++ status: `PREPARING` (string, required)
+
+## RecipesSoldPerCategory (object)
++ ID (string, required)
++ recipesSoldPerFulfillment (RecipesSoldPerFulfillment)
++ total: `10` (number, required)
+
+## RecipesSoldPerFulfillment (object)
++ ID (string, required)
++ total (number, required)
+
+## OverallStockPerRecipe (object)
++ ID: `1` (string, required)
++ name (string, required)
++ category (RecipeCategory)
++ fulfillments (FulfillmentOption)
++ total (number, required)
+
+## RecipeCategory (object)
++ ID: `1` (string, required)
++ name (string, required)
+
+## OverallActivity (object)
++ ID (string, required)
++ total (number, required)
+
+## Error (object)
++ code (string, required)
++ message (string, required)
+
+## UnauthorizedAccessError (Error)
++ code: UnauthorizedAccess
++ message: Unauthorized access or invalid access token
+
+## SignUpInvalidEmail (Error)
++ code: SignUpInvalidEmail
++ message: Invalid email format
+
+## InvalidUserName (Error)
++ code: InvalidUserName
++ message: Invalid user name
+
+## EmailAlreadyRegistered (Error)
++ code: EmailAlreadyRegistered
++ message: The email you're trying to use is already registered
+
+## InvalidPassword (Error)
++ code: InvalidPassword
++ message: The password has to have at least 8 character...
+
+## InvalidDateFormat (Error)
++ code: InvalidDateFormat
++ message: Date with invalid format
+
+## HalLink (object)
++ href (string , required)
++ method (string, required)
+
+## BaseLoggedInUserLinksHalLink (object)
++ plating (GetPlatingHalLink)
++ packing (GetPackingHalLink)
++ delivery (GetDeliveryHalLink)
++ qrmanager (GetQRManagerHalLink)
++ logout (UserLogoutHalLink)
+
+## TransactionProduct (object)
++ ID (string, required)
++ name (string, required)
++ menuCategory (MenuCategory, required)
++ portionsTotal (number, required)
++ portionsSold (number, required)
++ portionsCart (number, required)
++ portionsRemain (number, required)
++ sales (number, required)
+
+## MenuCategory
++ ID (string, required)
++ name (string, required)
+
+## Transaction (object)
++ ID (string, required)
++ store (Store, required)
++ customer (User, required)
++ orders (array[Order], required)
++ qrScannedAt: `2017-12-31T06:53:00+00:00` (string, optional)
++ fulfillment (object, required)
+    + ID (string, required)
+    + date: `2017-12-31T06:53:00+00:00` (string, required)
++ fulfillmentOption (FulfillmentOption, optional)
++ deliveryDate: `2017-12-31T06:53:00+00:00` (string, required)
++ deleted (boolean)
++ delivered (boolean)
++ packed (boolean)
++ sent (boolean)
+
+## Store (object)
++ ID (string, required)
++ name (string, required)
++ address (string)
+
+## Order (object)
++ ID (string, required)
++ product (Product, required)
++ portion (Portion, required)
++ platingEnabled (boolean, required)
++ plating (object, optional)
+    + startDate: `2017-12-31T06:53:00+00:00` (string, required)
+    + endDate: `2017-12-31T06:53:00+00:00` (string, optional)
+    + user (User, required)
++ packing (object, optional)
+    + startDate: `2017-12-31T06:53:00+00:00` (string, required)
+    + endDate: `2017-12-31T06:53:00+00:00` (string, optional)
+    + user (User, required)
++ station (Station, required)
++ customize (object, optional)
+    + added (array[string], required)
+    + removed (array[string], required)
++ deleted (boolean, required)
+
+## Product (object)
++ ID (string, required)
++ name (string, required)
+
+## Portion (object)
++ size (number, required)
++ count (number, required)
++ unit (string)
+
+## PlatingTimes (object)
++ averagePlatingTime (number, required)
++ currentPlatingTime (number, required)
++ performanceTime: `00:00:00` (string, required)
+
+## Permissions (object)
++ start (boolean, required)
++ finish (boolean, required)
++ undo (boolean, required)
+
+## UserLoginHalLink (HalLink)
++ href: /login
++ method: POST
+
+## UserLoginPinHalLink (HalLink)
++ href: /login/pin
++ method: POST
+
+## UserLogoutHalLink (HalLink)
++ href: /logout
++ method: POST
+
+## UsersGetSitesHalLink (HalLink)
++ href: /users/{userID}/sites
++ method: GET
+
+## GetPlatingHalLink (HalLink)
++ href: /plating
++ method: GET
+
+## PlatingTransactionItemStartHalLink (HalLink)
++ href: /plating/transactions/{transactionID}/items/{transactionItemID}/start
++ method: POST
+
+## PlatingTransactionItemFinishHalLink (HalLink)
++ href: /plating/transactions/{transactionID}/items/{transactionItemID}/finish
++ method: POST
+
+## PlatingTransactionItemUndoHalLink (HalLink)
++ href: /plating/transactions/{transactionID}/items/{transactionItemID}/undo
++ method: POST
+
+## GetPackingHalLink (HalLink)
++ href: /packing
++ method: GET
+
+## PackingTransactionItemStartHalLink (HalLink)
++ href: /packing/transactions/{transactionID}/items/{transactionItemID}/start
++ method: POST
+
+## PackingTransactionItemFinishHalLink (HalLink)
++ href: /packing/transactions/{transactionID}/items/{transactionItemID}/finish
++ method: POST
+
+## PackingTransactionItemUndoHalLink (HalLink)
++ href: /packing/transactions/{transactionID}/items/{transactionItemID}/undo
++ method: POST
+
+## PackingTransactionDoneHalLink (HalLink)
++ href: /packing/transactions/{transactionID}/done
++ method: POST
+
+## GetDeliveryHalLink (HalLink)
++ href: /delivery
++ method: GET
+
+## DeliveryTransactionSendHalLink (HalLink)
++ href: /delivery/transactions/{transactionID}/send
++ method: POST
+
+## DeliveryTransactionDeliverHalLink (HalLink)
++ href: /delivery/transactions/{transactionID}/deliver
++ method: POST
+
+## GetSentTransactionsHalLink (HalLink)
++ href: /transactions/sent
++ method: GET
+
+## TransactionsGetTransactionItemHalLink (HalLink)
++ href: /transactions/{transactionID}/items/{transactionItemID}
++ method: GET
+
+## GetStoreHalLink (HalLink)
++ href: /stores/{storeID}
++ method: GET
+
+## StoresGetStockHalLink (HalLink)
++ href: /stores/{storeID}/stock
++ method: GET
+
+## StoresGetSalesHalLink (HalLink)
++ href: /stores/{storeID}/sales
++ method: GET
+
+## OverallGetStockHalLink (HalLink)
++ href: /stock
++ method: GET
+
+## OverallGetActivityHalLink (HalLink)
++ href: /activity
++ method: GET
+
+## GetQRManagerHalLink (HalLink)
++ href: /qrmanager
++ method: GET
+
+## QRManagerTransactionsScanHalLink (HalLink)
++ href: /qrmanager/transactions/{transactionID}/scan
++ method: POST
+
+## QRManagerTransactionItemStartHalLink (HalLink)
++ href: /qrmanager/transactions/{transactionID}/items/{transactionItemID}/start
++ method: GET
+
+## QRManagerTransactionItemFinishHalLink (HalLink)
++ href: /qrmanager/transactions/{transactionID}/items/{transactionItemID}/finish
++ method: GET
+
+## QRManagerTransactionItemUndoHalLink (HalLink)
++ href: /qrmanager/transactions/{transactionID}/items/{transactionItemID}/undo
++ method: GET
+
+## QRManagerTransactionsDoneHalLink (HalLink)
++ href: /qrmanager/transactions/{transactionID}/done
++ method: GET
+
+## QRManagerCreateQRHalLink (HalLink)
++ href: /qrmanager
++ method: POST
+
+## QRScannerScanHalLink (HalLink)
++ href: /qrscanner/scan
++ method: POST

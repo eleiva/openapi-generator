@@ -5,6 +5,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Request;
+{{#operations}}
+    {{#operation}}
+use App\Http\Requests\{{{operationIdOriginal}}}Request;
+    {{/operation}}
+{{/operations}}
 
 {{#operations}}class {{classname}} extends Controller
 {
@@ -25,7 +30,7 @@ use Illuminate\Support\Facades\Request;
   {{/pathParams}}   *
      * @return Http response
      */
-    public function {{operationId}}({{#pathParams}}${{paramName}}{{^-last}}, {{/-last}}{{/pathParams}})
+    public function {{operationId}}({{#pathParams}}${{paramName}}{{^-last}}, {{/-last}}{{/pathParams}}{{#pathParams}}, {{/pathParams}}{{operationIdOriginal}}Request $request)
     {
         $input = Request::all();
 

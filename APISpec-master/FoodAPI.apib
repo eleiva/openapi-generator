@@ -1,0 +1,371 @@
+#Food API
+Developer Platform
+Food API Specification
+
+Base endpoint: https://api.morsum.co/food/v1/
+
+<!-- include(OpenAPIGeneral.apib) -->
+
+# Group Service Menus
+
+## GET /stores
+
+Fetch the full list of available stores within the _siteID_ given. Each store represents a location with its own menus, and service data.
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: `Bearer {accessToken}`
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+
++ Response 200 (application/json)
+    + Attributes
+        + response (array[Store], required)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidSite)
+
+## GET /stores/{storeID}
+
+Retrieve data for a single store.
++ Parameters
+    + storeID - ID of the Store
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+
++ Response 200 (application/json)
+    + Attributes
+        + response (Store, required)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidSite)
+
+## GET /stores/{storeID}/menus?startDate={startDate}&endDate={endDate}&date={date}
+
+Fetch the full list of menus available for the _ID_ given. If added, _startDate_ and _endDate_ params will filter menus returned by those params. Using _date_ will return any available menus for that specific date
++ Parameters
+    + storeID: `1` (string, required) - ID of the Store
+    + startDate: `2019-03-01` (string, optional) - Menu start date in this format YYYY-MM-DD
+    + endDate: `2019-03-30` (string, optional) - Menu end date in this format YYYY-MM-DD
+    + date: `2019-03-30` (string, optional) - Service date in this format YYYY-MM-DD
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+
++ Response 200 (application/json)
+    + Attributes
+        + response (array[Menu], required)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidSite)
+
++ Response 400 (application/json)
+  + Attributes
+      + error (InvalidStoreID)
+
+## GET /stores/{storeID}/menus/{menuID}/items
+
+Fetch the full list of available menu items in the _menuID_ and store _ID_ given.
++ Parameters
+    + storeID: `1` (string, required) - ID of the Store
+    + menuID: `600` (string, required) - ID of the Menu
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+
++ Response 200 (application/json)
+    + Attributes
+        + response (array[MenuRecipeWithDateAndStation], required)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidSite)
+
++ Response 400 (application/json)
+  + Attributes
+      + error (InvalidStoreID)
+
+## GET /stores/{storeID}/menuItems/{menuItemID}
+
+Retrieves a single menu item by its _menuItemID_
++ Parameters
+    + storeID: `1` (number, required) - ID of the Store
+    + menuItemID: `10000` (number, required) - ID of the menu item
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+
++ Response 200 (application/json)
+    + Attributes
+        + response (MenuRecipeWithDateAndStation)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidMenuItemID)
+
++ Response 401 (application/json)
+  + Attributes
+      + error (UnauthorizedAccessError)
+
++ Response 400 (application/json)
+  + Attributes
+      + error (InvalidSite)
+
+# Group Recipes
+
+## GET /recipes
+
+Fetch the full list of available recipes within a site by its _siteID_
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+
++ Response 200 (application/json)
+    + Attributes
+        + response (array[Recipe])
+
++ Response 401 (application/json)
+  + Attributes
+      + error (UnauthorizedAccessError)
+
++ Response 400 (application/json)
+  + Attributes
+      + error (InvalidSite)
+
+## GET /recipes/{ID}
+
+Retrieves a single recipe by its _ID_
++ Parameters
+    + ID: `1` (number, required) - ID of the Recipe
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+
++ Response 200 (application/json)
+    + Attributes
+        + response (FullRecipe)
+
++ Response 401 (application/json)
+  + Attributes
+      + error (UnauthorizedAccessError)
+
++ Response 400 (application/json)
+  + Attributes
+      + error (InvalidSite)
+
+## Group Ingredients
+
+## GET /ingredients
+
+Fetch the full list of available ingredients within a site by its _siteID_
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+
++ Response 200 (application/json)
+    + Attributes
+        + response (array[Ingredient])
+
++ Response 401 (application/json)
+  + Attributes
+      + error (UnauthorizedAccessError)
+
++ Response 400 (application/json)
+  + Attributes
+      + error (InvalidSite)
+
+## GET /ingredients/{ID}
+
+Retrieves a single ingredient by its _ID_
++ Parameters
+    + ID - ID of the Recipe
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+
++ Response 200 (application/json)
+    + Attributes
+        + response (FullIngredient)
+
++ Response 401 (application/json)
+  + Attributes
+      + error (UnauthorizedAccessError)
+
++ Response 400 (application/json)
+  + Attributes
+      + error (InvalidSite)
+
+## Group Units
+
+## GET /units
+
+Fetch the full list of available units within a site by its _siteID_
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+
++ Response 200 (application/json)
+    + Attributes
+        + response (array[Unit])
+
++ Response 401 (application/json)
+  + Attributes
+      + error (UnauthorizedAccessError)
+
++ Response 400 (application/json)
+  + Attributes
+      + error (InvalidSite)
+
+# Data Structures
+
+## Daypart (object)
++ ID: `1` (string, required) - The unique identifier
++ displayName: `Lunch` (string, required) - The daypart display name
+
+## Store (object)
++ ID: `183` (string, required) - The unique identifier
++ name: `Tower Cafe` (string, required) - The store name
++ dayparts (array[Daypart], required) - An array containing all the store dayparts
+
+## SimpleResource (object)
++ ID: `1` (string, required) - The unique identifier
++ name: `Resource` (string, required)
+
+## MenuStation (SimpleResource)
++ name: `Grill` (string, required) - The name of the station
++ recipes (array[MenuRecipe], required)
+
+## MenuDate (object)
++ displayName: `Today 12/26` (string, required) - Readable string of the menu date
++ date: `2019-03-23` (string, required) - Date string for the menu date
++ stations (array[MenuStation], required) - Array of available stations
+
+## Menu (object)
++ ID: `1` (string, required)
++ liveAt: `06/01/2017 01:00 am` (string, required)
++ startDate: `07/01/2017` (string, required)
++ endDate: `07/09/2017` (string, required)
++ title: `MENU 3.25_3.31 (Cycle 1)` (string, required)
+
+## MenuItemCategory (SimpleResource)
++ name: `SANDWICHES` (string, required) - The name of the menu item category
+
+## MenuRecipe (object)
++ ID: `32` (string, required) - The unique identifier for the menu item
++ recipe (object) - Object containing the recipe entity
+  + ID: `1` (string, required) - The unique identifier
+  + externalID: `MOR123` (string, required) - The external ID
+  + name: `All-American Black Bean Burger` (string, required) - Name of the recipe
+  + shortName: `BLK BEAN SAUCY` (string, required) - Short name of the recipe
+  + internalName: `All-American Black Bean Burger` (string, optional) - Internal name of the recipe
+  + category (MenuItemCategory, required) - Category object
+  + isCPG: true (boolean, required) - Consumer packaged goods boolean
+  + isMTO: true (boolean, required) - Made to order boolean
+  + temperatureRequired: true (boolean, required) - Temperature required boolean
+  + foodCost: `8.45` (number, required) - Food cost of the recipe expressed in percentage
++ portions: `100` (number, required) - Amount of portions allocated for this item
+
+## Station (SimpleResource)
++ name: `Grill` (string, required) - The name of the station
+
+## MenuRecipeWithDateAndStation (MenuRecipe)
++ station (Station) - The object containing the station entity
++ daypart (Daypart) - The object containing the daypart entity
++ date: `2017-07-04` (string)
+
+## Recipe (object)
++ ID: `1` (string, required) - The unique identifier
++ externalID: `MOR123` (string, required) - The external ID
++ name: `All-American Black Bean Burger` (string, required) - Name of the recipe
++ shortName: `BLK BEAN SAUCY` (string, optional) - Short name of the recipe
++ internalName: `All-American Black Bean Burger` (string, optional) - Internal name of the recipe
++ isCPG: true (boolean, required) - Consumer packaged goods boolean
++ isMTO: true (boolean, required) - Made to order boolean
++ temperatureRequired: true (boolean, required) - Temperature required boolean
+
+## PrepNote (SimpleResource)
++ name: `THAWED` (string, required) - The name of the prep note
+
+## RecipeIngredient (object)
++ ID: `1` (string, required) - The unique identifier
++ name: `BEEF STEAK SANDWICH SIRLOIN PUCK 4 OZ RAW FZ / SAUTEED, GRILLED OR STIR FRIED` (string, required) - The name of the ingredient
++ prepNote (PrepNote) - The object containing the prep note entity
++ unit (Unit, required) - The object containing the unit entity
++ quantity (number, required) - The amount of the ingredient needed in the recipe
+
+## IngredientCategory (object)
++ ID: `1` (string, required) - The unique identifier
++ name: `BASE` (string, required) - The name of the ingredient category
++ prepInstructions: `1.  Combine all ingredients. Whisk until well blended.` (string, required) - The prep instructions
++ ingredients (array[RecipeIngredient], required) - An array containing all the ingredients in this category
+
+## Unit (object)
++ ID: `1` (string, required) - The unique identifier
++ name: `oz w` (string, required) - The name of the unit
++ type: `mass` (string, required) - The type of the unit (mass|volume|weight)
+
+## RecipePortionSize (object)
++ ID: `1` (string, required) - The unique identifier
++ isDefault: true (boolean, required) - If this is the default portion, this will be true
++ size: `1` (number, required) - Size of the portion
++ stockConsumption (number, required) -  Stock consumption for inventory calculations
++ unit (Unit, required) - The object containing the unit
+
+## FullRecipe (Recipe)
++ prepInstructions: `1. Preheat char-grill to medium or flat-top griddle to 350 F.` (string, required)
++ ingredientCategories (array[IngredientCategory], required) - Prep instructions for the recipe
++ portionSizes (array[RecipePortionSize], required) - An array of available portion sizes
+
+## Ingredient (object)
++ ID: `1` (string, required) - The unique identifier
++ name: `BREAD BAVARIAN WHEAT` (string, required) - The name of the ingredient
++ externalID: `MOR567` (string, required) - The external ID
+
+## FullIngredient (Ingredient)
++ unitOfMeasurement (Unit) - Unit of measurement of the ingredient
++ prepNotes (array[PrepNote], required) - Array of preparation notes
+
+<!-- include(MobileAPICommonErrors.apib) -->
+
+<!-- include(OpenAPICommonDataStructures.apib) -->

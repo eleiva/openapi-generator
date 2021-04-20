@@ -1,0 +1,69 @@
+get:
+  tags: 
+    - Catalog
+  summary: Get a product from a vendor's catalog
+  operationId: GetProductFromCatalog
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/vendorID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/productID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+patch:
+  tags: 
+    - Catalog
+  summary: Update a product from a vendor's catalog
+  operationId: UpdateProductFromCatalog
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/vendorID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/productID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+delete:
+  tags: 
+    - Catalog
+  summary: Remove product from a vendor's catalog
+  operationId: RemoveProductFromCatalog
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/vendorID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/productID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

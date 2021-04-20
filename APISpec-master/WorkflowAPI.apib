@@ -1,0 +1,28 @@
+FORMAT: 1A
+HOST: https://workflow.morsum.co/api/v3
+
+# Workflow API
+
+Documentation for the DS Workflow API.
+Workflow does not have API endpoints, it has only one that can confirm status.
+
+Base endpoint: https://workflow.morsum.co/api/v3
+
+
+### Check if workflow is active [GET /workflow]
++ Request (application/json)
+    + Headers
+
+            Authorization: siteGUID {centralSiteGUID}
+
++ Response 200 (application/json)
+    + Attributes
+        - include WorkflowResponse
+
+
+# Data Structures
+
+
+## WorkflowResponse (object)
+- message: `This is a push only api` (string)
+

@@ -1,0 +1,800 @@
+#TaskMaster Production API
+Developer Platform
+TaskMaster Production API Specification
+
+Base endpoint: https://api.morsum.co/labor/tm/production/v1
+
+## Overview
+
+Some general specifications about our Developer Platform API
+- Available HTTP Verbs are GET, POST, PUT, PATCH and DELETE
+- JSON will be the standard output format
+- API’s response’s content-type is application/hal+json
+- Usage of Http Status Codes is a must (200 for ok, 201 for created, 404 not found and so on)
+- URI’s follow the RESTful constraints: https://base_url/resources/id/resources
+- Date and time are represented by Date and DateTime. Both types are formatted according to ISO 8607. Date is formatted as a complete date - YYYY-MM-DD (e.g. 1997-07-16)- and DateTime as complete date plus hours, minutes and seconds, always with the Z indicator for UTC timezone - YYYY-MM-DDThh:mm:ssZ (e.g. 1997-07-16T19:20:00Z)
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+
+```json
+{
+  "session": {
+    "sessionID" : String
+  }
+
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+
+### Error 4xx or 5xx
+
+HTTP status 4xx for client errors and 5xx for server errors.
+```json
+{
+  "error": {
+    "code": String,
+    "message": String
+  }
+}
+```
+
+## Paging
+
+If the resource used allows to be paginated, parameters page & perPage will be allowed thus enabling the API consumer to paginate the entire collection of the resource
+```json
+{
+  "session": {
+    "sessionID" : String
+  },
+  "response": {
+  ... //actual response from API
+  },
+  "paging":  {
+      "totalPages": Int,
+      "perPage": Int,
+      "currentPage": Int
+  }
+}
+```
+
+## Headers
+
+By default, every call to any endpoint behind authentication must include the Authorization header as stated by W3C in HTTP 1.0. The type will be Bearer since we’re implementing OAuth2 (explained below) and after the type, access token should go as it is like this:
+Authorization : Bearer <access-token>
+
+## Images
+
+All image urls have the following format “img_xxxxx_s.jpg” where “s” can be replaced with any of the following requested formats:
+s: 400
+m: 800
+l: 1200
+
+## HATEOAS - Hypermedia API
+
+A Hypermedia API offers self descriptive links that point one endpoint to another. These links are context aware and they change according to where your request is within the API and what features and data is available to consume at that single state. Morsum’s Developer Platform implements <a href="http://stateless.co/hal_specification.html" target="\_blank">HAL</a>, one of the most easy, readable and lightweight specifications for writing Hypermedia links.
+```json
+{
+    "response" : {
+    	//actual API response
+    },
+    "_links" : {
+     "sites" : {
+       "href" : "users/123/sites",
+       "method" : "GET"
+     }
+   }
+}
+```
+
+## Aliases
+
+If you need to get data about the current logged in User, you have available aliases of every endpoint documented here that automates this by replacing the {userID} for a string "me" eg: users/{userID}/sites for users/{userID}/sites.
+Also remember to take advantage from HATEOAS since you will likely have the url's preformatted with any ID's needed.
+
+# Group Authentication
+
+## POST /login
+Creates the user session
++ Request
+    + Headers
+
+            Accept: application/json
+    + Attributes
+        + email: `aaa@example.com` (string, required)
+        + password (string, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + user (User)
+        + _links
+            + self (UserLoginHalLink)
+            + logout (UserLogoutHalLink)
+            + home (GetHomeHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /login/pin
+Logins a user using a PIN
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + siteID (string, required)
+        + pin (string, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + user (User)
+        + _links
+            + self (UserLoginPinHalLink)
+            + logout (UserLogoutHalLink)
+            + home (GetHomeHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /logout
+Clears user session
++ Response 204 (application/json)
+
+## POST /users/password/reset
+Requests for a password reset
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + email: `aaa@example.com` (string, required)
+
++ Response 202 (application/json)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (SignUpInvalidEmail)
+
+## GET /users/me/sites
+Returns the list of sites the user belongs to
++ Parameters
+    + userID: `1` (string) - ID of the user
++ Response 200 (application/json)
+    + Attributes
+        + response (array[Site])
+        + _links
+            + self (UsersGetSitesHalLink)
+                + href: `/users/1/sites`
+            + home (GetHomeHalLink)
+            + logout (UserLogoutHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Group Products
+
+## GET /products?date={date}&stationID={stationID}&daypartID={daypartID}
+Fetches the list of products as tasks for the production. If no date is sent, current date is used
++ Parameters
+    + date: `2018-01-01` (string) - date of the menu with format YYYY-MM-DD. If not sent, the current date should be used
+    + daypartID: `1` (string, required) - ID of the day part. If not sent, last daypart used or current daypart will be used
+    + stationID: `10` (string, required) - ID of the menu station. If not sent, return the products from all stations
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response
+            + dateActive: `YYYY-MM-DD` (string, required)
+            + daypartActive (string, required)
+            + dayparts (array[MenuDaypart])
+            + stations (array[Station])
+            + feedback (Feedback)
+            + products (array[Product])
+        + _links
+            + self (GetHomeHalLink)
+                + href: `/products?date=2018-01-01&stationID=10&daypartID=1`
+            + findProductDetail (GetProductDetailHalLink)
+            + findProductTasks (ProductsGetTasksHalLink)
+            + logout (UserLogoutHalLink)
+
+## GET /products/{productID}?date={date}&stationID={stationID}&daypartID={daypartID}
+Returns product recipe detail according to the station, daypart and date. If no date is sent, current date is used
++ Parameters
+    + productID: `1` (string, required) - ID of the product
+    + date: `2018-01-01` (string, optional) - date of the menu with format YYYY-MM-DD. If not sent, the current date should be used
+    + stationID: `10` (string, required) - ID of the menu station. If not sent, return the products from all stations
+    + daypartID: `1` (string, required) - ID of the day part. If not sent, the current daypart should be used
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + dateActive: `YYYY-MM-DD` (string, required)
+            + daypartActive (string, required)
+            + product (ProductDetail)
+        + _links
+            + self (GetProductDetailHalLink)
+                + href: `/products/1?date=2018-01-01&stationID=10&daypartID=1`
+            + home (GetHomeHalLink)
+            + tasks (ProductsGetTasksHalLink)
+                + href: `/products/1/tasks?date=2018-01-01&stationID=10&daypartID=1`
+            + createFeedback (ProductsCreateFeedbackHalLink)
+                + href: `/products/1/feedback`
+            + uploadImage (UploadImageHalLink)
+            + logout (UserLogoutHalLink)
+
+## PATCH /products/{productID}
+Updates product's logs and/or image
++ Parameters
+    + productID: `1` - ID of the Product
+
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + date: `YYYY-MM-DD` (string, required) - date of the menu with format YYYY-MM-DD
+        + daypartID (string, required)
+        + menuID (string, required)
+        + stationID (string, required)
+        + storeID (string, required)
+        + prepTemp (number, optional)
+        + imageURL (string, optional)
+        + prepared (number, optional)
+        + onHand (number, optional)
+        + waste (number, optional)
+        + leftOver (number, optional)
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + _links
+            + self (UpdateProductHalLink)
+                + href: `/products/1`
+            + detail (GetProductDetailHalLink)
+                + href: `/products/1`
+            + tasks (ProductsGetTasksHalLink)
+                + href: `/products/1/tasks`
+
+## POST /products/{productID}/feedbacks
+Creates a new feedback for a single product
++ Parameters
+    + productID: `1` - ID of the Product
+
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + date: `YYYY-MM-DD` (string, required) - date of the menu with format YYYY-MM-DD
+        + daypartID (string, required)
+        + menuID (string, required)
+        + stationID (string, required)
+        + storeID (string, required)
+        + feedback (Feedback, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + _links
+            + self (ProductsCreateFeedbackHalLink)
+                + href: `/products/1/feedbacks`
+
+# Group Tasks
+
+## GET /products/{productID}/tasks?date={date}&stationID={stationID}&daypartID={daypartID}
+Fetches the list of tasks for a single product. If no date is sent, current date is sued
++ Parameters
+    + productID: `1` (string, required) - ID of the product
+    + date: `2018-01-01` (string, optional) - date of the menu with format YYYY-MM-DD. If not sent, the current date should be used
+    + stationID: `10` (string, required) - ID of the menu station. If not sent, return the products from all stations
+    + daypartID: `1` (string, required) - ID of the day part. If not sent, the current daypart should be used
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response
+            + dateActive: `YYYY-MM-DD` (string, required)
+            + feedback (Feedback)
+            + tasks (array[Task])
+        + _links
+            + self (ProductsGetTasksHalLink)
+                + href: `/products/1/tasks?date=2018-01-01&stationID=10&daypartID=1`
+            + home (GetHomeHalLink)
+            + start (TasksStartHalLink)
+                + href: `/products/1/tasks/{taskID}/start`
+            + finish (TasksFinishHalLink)
+                + href: `/products/1/tasks/{taskID}/finish`
+            + undo (TasksUndoHalLink)
+                + href: `/products/1/tasks/{taskID}/undo`
+            + batch (TasksBatchHalLink)
+                + href: `/products/1/tasks/{taskID}/batch`
+            + update (TasksUpdateHalLink)
+                + href: `/products/1/tasks/{taskID}`
+            + uploadImage (UploadImageHalLink)
+            + createFeedback (TasksCreateFeedbackHalLink)
+                + href: `/products/1/tasks/{taskID}/feedbacks`
+
+## POST /products/{productID}/tasks
+Creates a new manual task
++ Parameters
+    + productID: `1` - ID of the Product
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + date: `YYYY-MM-DD` (string, required) - date of the menu with format YYYY-MM-DD
+        + daypartID (string, required)
+        + menuID (string, required)
+        + stationID (string, required)
+        + categoryID (string, required)
+        + taskName (string, required)
+        + parentTaskID (string, optional)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + task (CreatedManualTask)
+        + _links
+            + self (ProductsCreateManualTaskHalLink)
+                + href: `/products/1/tasks`
+            + start (TasksStartHalLink)
+                + href: `/products/1/tasks/100/start`
+            + finish (TasksFinishHalLink)
+                + href: `/products/1/tasks/100/finish`
+            + undo (TasksUndoHalLink)
+                + href: `/products/1/tasks/100/undo`
+            + batch (TasksBatchHalLink)
+                + href: `/products/1/tasks/100/batch`
+            + update (TasksUpdateHalLink)
+                + href: `/products/1/tasks/100`
+
+## POST /products/{productID}/tasks/{taskID}/feedbacks
+Creates a new feedback for a single task within a product
++ Parameters
+    + productID: `1` - ID of the Product
+    + taskID: `100` - ID of the task
+
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + date: `YYYY-MM-DD` (string, required) - date of the menu with format YYYY-MM-DD
+        + daypartID (string, required)
+        + menuID (string, required)
+        + stationID (string, required)
+        + storeID (string, required)
+        + feedback (Feedback, required)
+
++ Response 200 (application/json)
+      + Attributes
+        + session (Session)
+
+## POST /products/{productID}/tasks/{taskID}/start
+Starts a single task
++ Parameters
+    + productID: `1` - ID of the Product
+    + taskID: `100` - ID of the task
+
++ Request
+    + Headers
+        Accept: application/json
+
++ Response 200 (application/json)
+    + Attributes
+        + _links
+            + self (TasksStartHalLink)
+                + href: `/products/1/tasks/100/start`
+            + finish (TasksFinishHalLink)
+                + href: `/products/1/tasks/100/finish`
+            + undo (TasksUndoHalLink)
+                + href: `/products/1/tasks/100/undo`
+            + batch (TasksBatchHalLink)
+                + href: `/products/1/tasks/100/batch`
+            + update (TasksUpdateHalLink)
+                + href: `/products/1/tasks/100`
+
+## POST /products/{productID}/tasks/{taskID}/finish
+Finishes a single task
++ Parameters
+    + productID: `1` - ID of the Product
+    + taskID: `100` - ID of the task
+
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + batch: `10` - Batch size for given task
+
++ Response 200 (application/json)
+    + Attributes
+        + response (object, required)
+            + question (Question, optional)
+        + _links
+            + self (TasksFinishHalLink)
+                + href: `/products/1/tasks/100/finish`
+            + start (TasksStartHalLink)
+                + href: `/products/1/tasks/100/start`
+            + undo (TasksUndoHalLink)
+                + href: `/products/1/tasks/100/undo`
+            + batch (TasksBatchHalLink)
+                + href: `/products/1/tasks/100/batch`
+            + update (TasksUpdateHalLink)
+                + href: `/products/1/tasks/100`
+
+## POST /products/{productID}/tasks/{taskID}/undo
+Undos last action made on a task
++ Parameters
+    + productID: `1` - ID of the Product
+    + taskID: `100` - ID of the task
+
++ Request
+    + Headers
+        Accept: application/json
+
++ Response 200 (application/json)
+    + Attributes
+        + _links
+            + self (TasksUndoHalLink)
+                + href: `/products/1/tasks/100/undo`
+            + start (TasksStartHalLink)
+                + href: `/products/1/tasks/100/start`
+            + finish (TasksFinishHalLink)
+                + href: `/products/1/tasks/100/finish`
+            + batch (TasksBatchHalLink)
+                + href: `/products/1/tasks/100/batch`
+            + update (TasksUpdateHalLink)
+                + href: `/products/1/tasks/100`
+
+## POST /products/{productID}/tasks/{taskID}/batch
+Creates a new batch for a task
++ Parameters
+    + productID: `1` - ID of the Product
+    + taskID: `100` - ID of the task
+
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + batch: `10` - Batch size for given task
+
++ Response 200 (application/json)
+    + Attributes
+        + _links
+            + self (TasksBatchHalLink)
+                + href: `/products/1/tasks/100/batch`
+            + start (TasksUndoHalLink)
+                + href: `/products/1/tasks/100/undo`
+            + start (TasksStartHalLink)
+                + href: `/products/1/tasks/100/start`
+            + finish (TasksFinishHalLink)
+                + href: `/products/1/tasks/100/finish`
+            + update (TasksUpdateHalLink)
+                + href: `/products/1/tasks/100`
+
+## DELETE /products/{productID}/tasks/{taskID}
+Deletes a manual task
++ Parameters
+    + productID: `1` - ID of the Product
+    + taskID: `100` - ID of the task
+
++ Request
+    + Headers
+        Accept: application/json
+
+## PATCH /products/{productID}/tasks/{taskID}
+Allows to update a batch, name, dependency task or date for a single task
++ Parameters
+    + productID: `1` - ID of the Product
+    + taskID: `100` - ID of the task
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + batch (number, optional) - adds a new batch
+        + name (number, optional) - task name
+        + dependecyTaskID (string, optional) - Set task dependency. If set to 0 will remove any dependency, otherwise will replace existent
+        + date: `YYYY-MM-DD` (string, optional) - task completion date with format YYYY-MM-DD
++ Response 200 (application/json)
+    + Attributes
+        + _links
+            + self (TasksUpdateHalLink)
+                + href: `/products/1/tasks/100`
+            + start (TasksStartHalLink)
+                + href: `/products/1/tasks/100/start`
+            + finish (TasksFinishHalLink)
+                + href: `/products/1/tasks/100/finish`
+            + undo (TasksUndoHalLink)
+                + href: `/products/1/tasks/100/undo`
+            + batch (TasksBatchHalLink)
+                + href: `/products/1/tasks/100/batch`
+
+## GET /products/{productID}/logs/temperatures?date={date}&stationID={stationID}&daypartID={daypartID}
+Returns the temperatures asocciated
++ Parameters
+    + productID: `1` (string, required) - ID of the product
+    + date: `2018-01-01` (string, optional) - date of the menu with format YYYY-MM-DD. If not sent, the current date should be used
+    + stationID: `10` (string, required) - ID of the menu station. If not sent, return the products from all stations
+    + daypartID: `1` (string, required) - ID of the day part. If not sent, the current daypart should be used
++ Response 200 (application/json)
+    + Attributes
+        + response
+          + temperatures (array[Temperature])
+
+## DELETE /products/{productID}/logs/temperatures/{temperatureID}
+Deletes a temperature log
++ Parameters
+    + productID: `1` - ID of the Product
+    + temperatureID: `100` - ID of the temperature log
+
+# Group Images
+
+## POST /images
+Uploads a photo used later to PATCH product or task imageURL
++ Request (multipart/form-data;boundary=----WebKitFormBoundary8M3sSU13ul5lXSJm)
+    + Body
+        ------WebKitFormBoundary8M3sSU13ul5lXSJm
+
+        Content-Disposition: form-data; name="image"; filename="filename.jpg"
+        Content-Type: image/jpeg
+
+        data
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+          + imageURL (string)
+        + _links
+          + self (UploadImageHalLink)
+          + updateProduct (UpdateProductHalLink)
+          + updateTask (TasksUpdateHalLink)
+
+# Data Structures
+
+## Session (object)
++ sessionID (string, required)
+
+## Site (object)
++ ID: `siteID` (string, required) - The unique identifier for the Site
++ name: `Morsum Site` (string, required) - The site name
++ siteURL (string, required)
++ description: `5th Ave, NY, NY` (string)
++ imageURL (string)
++ vocURL (string)
+
+## Station (object)
++ ID (string, required)
++ name (string, required)
+
+## Store (object)
++ ID (string, required)
++ name (string, required)
+
+## User (object)
++ ID: `userID` (string, required)
++ name: `Hugo` (string, required)
+
+## MenuDaypart (object)
++ ID: `1` (string, required)
++ startTime: `2017-12-31T06:53:00+00:00` (string, required) - yyyy-MM-ddTHH:mm:ss.SSSXXX
++ endTime: `2017-12-31T14:53:00+00:00` (string, required) - yyyy-MM-ddTHH:mm:ss.SSSXXX
++ displayName: `Lunch` (string, required)
+
+## Product (object)
++ ID: `productID` (string, required) - The unique identifier for the Product
++ name (string, required)
++ imageURL (string, optional)
++ portion (Portion, required)
++ recipeID (string, required)
++ stationID (string, required)
++ menuID (string, required)
++ storeID (string, required)
++ prepTemp (number, optional)
++ totalTasks (number, required)
++ completedTasks (number, required)
++ users (array[User], required)
++ productionDepartments (array[User], required)
++ question (Question, optional)
+
+## Portion (object)
++ ID (string, optional)
++ name (string, required)
++ planned (number, required)
++ prepared (number, optional)
++ onHand (number, optional)
++ waste (number, optional)
++ leftOver (number, optional)
+
+## ProductionDepartment (object)
++ ID (string, optional)
++ name (string, required)
+
+## Question (object)
++ ID (string, optional)
++ displayText (string, required)
++ actions (array[QuestionType], required)
+
+## QuestionType (object)
++ type (string, required)
++ actionURL (string, required)
+
+## ProductDetail (Product)
++ imageURL (string, required)
++ prepInstructions (string, required)
++ instructions (array[InstructionsGroup], required)
++ totalServings (number, required)
++ ingredients (array[IngredientsGroup], required)
++ components (array[string], required)
++ dietaries (array[string], required)
+
+## IngredientsGroup (object)
++ name (string, required)
++ ingredients (array[string], required)
+
+## InstructionsGroup (object)
++ name (string, required)
++ instructions (string, required)
+
+## CreatedManualTask (object)
++ ID: `100` (string, required)
++ name (string, required)
++ taskCategory (Category, required)
++ user (User, optional)
++ completionTime: `2017-12-31T14:53:00+00:00` (string, required) - yyyy-MM-ddTHH:mm:ss.SSSXXX
++ originalCompletionTime: `2017-12-31T14:53:00+00:00` (string, required) - yyyy-MM-ddTHH:mm:ss.SSSXXX
++ parentTaskID (string, optional)
++ isParentTask (boolean, required)
++ dependencyTaskID (string, optional)
+
+## Task (object)
++ ID: `100` (string, required)
++ name (string, required)
++ taskCategory (Category, required)
++ portion (Portion, required)
++ imageURL (string)
++ productID (string, required)
++ productName (string, required)
++ stationID (string, required)
++ menuID (string, required)
++ menuCategory (Category, required)
++ ingredientCategory (Category, required)
++ store (Store, required)
++ startTime: `2017-12-31T06:53:00+00:00` (string, required) - yyyy-MM-ddTHH:mm:ss.SSSXXX
++ endTime: `2017-12-31T14:53:00+00:00` (string, required) - yyyy-MM-ddTHH:mm:ss.SSSXXX
++ updateTime: `2017-12-31T14:53:00+00:00` (string, required) - yyyy-MM-ddTHH:mm:ss.SSSXXX
++ completionTime: `2017-12-31T14:53:00+00:00` (string, required) - yyyy-MM-ddTHH:mm:ss.SSSXXX
++ user (User, optional)
++ parentTaskID (string, optional)
++ isParentTask (boolean, required)
++ displayOrder (string)
++ batches (array[Batch])
++ dependencyTaskID (string, optional)
++ isEditable (boolean, required)
+
+## Batch (object)
++ ID (string, required)
++ count (number, required)
+
+## Category (object)
++ ID: `menuCategoryID` (string, required)
++ name: `Entrees` (string, required)
+
+## Feedback
++ feedbackOptions (array[FeedbackOption])
++ comment (string, optional)
+
+## FeedbackOption (object)
++ ID (string, required)
++ name (string, required)
++ closeOut (boolean, optional)
+
+## Error (object)
++ code (string, required)
++ message (string, required)
+
+## Temperature (object)
++ ID: `temperatureID` (string, required)
++ value: `number` (string, required)
++ createdAt: `2017-12-31T06:53:00+00:00` (string, required) - yyyy-MM-ddTHH:mm:ss.SSSXXX
++ user (User, required)
+
+## UnauthorizedAccessError (Error)
++ code: UnauthorizedAccess
++ message: Unauthorized access or invalid access token
+
+## SignUpInvalidEmail (Error)
++ code: SignUpInvalidEmail
++ message: Invalid email format
+
+## InvalidUserName (Error)
++ code: InvalidUserName
++ message: Invalid user name
+
+## EmailAlreadyRegistered (Error)
++ code: EmailAlreadyRegistered
++ message: The email you're trying to use is already registered
+
+## InvalidPassword (Error)
++ code: InvalidPassword
++ message: The password has to have at least 8 character...
+
+## InvalidDateFormat (Error)
++ code: InvalidDateFormat
++ message: Date with invalid format
+
+## HalLink (object)
++ href (string , required)
++ method (string, required)
+
+## UserLoginHalLink (HalLink)
++ href: /login
++ method: POST
+
+## UserLoginPinHalLink (HalLink)
++ href: /login/pin
++ method: POST
+
+## UserLogoutHalLink (HalLink)
++ href: /logout
++ method: POST
+
+## UsersGetSitesHalLink (HalLink)
++ href: /users/me/sites
++ method: GET
+
+## GetHomeHalLink (HalLink)
++ href: /products?date={date}&stationID={stationID}&daypartID={daypartID}
++ method: GET
+
+## GetProductDetailHalLink (HalLink)
++ href: /products/{productID}?date={date}&stationID={stationID}&daypartID={daypartID}
++ method: GET
+
+## UpdateProductHalLink (HalLink)
++ href: /products/{productID}
++ method: PATCH
+
+## ProductsGetTasksHalLink (HalLink)
++ href: /products/{productID}/tasks?date={date}&stationID={stationID}&daypartID={daypartID}
++ method: GET
+
+## ProductsCreateManualTaskHalLink (HalLink)
++ href: /products/{productID}/tasks
++ method: POST
+
+## UploadImageHalLink (HalLink)
++ href: /images
++ method: POST
+
+## ProductsCreateFeedbackHalLink (HalLink)
++ href: /products/{productID}/feedbacks
++ method: POST
+
+## TasksCreateFeedbackHalLink (HalLink)
++ href: /products/{productID}/tasks/{taskID}/feedbacks
++ method: POST
+
+## TasksActionsHalLink (HalLink)
++ method: POST
+
+## TasksStartHalLink (TasksActionsHalLink)
++ href: /products/{productID}/tasks/{taskID}/start
+
+## TasksFinishHalLink (TasksActionsHalLink)
++ href: /products/{productID}/tasks/{taskID}/finish
+
+## TasksUndoHalLink (TasksActionsHalLink)
++ href: /products/{productID}/tasks/{taskID}/undo
+
+## TasksBatchHalLink (TasksActionsHalLink)
++ href: /products/{productID}/tasks/{taskID}/batch
+
+## TasksDeleteHalLink (HalLink)
++ href: /products/{productID}/tasks/{taskID}
++ method: DELETE
+
+## TasksUpdateHalLink (HalLink)
++ href: /products/{productID}/tasks/{taskID}
++ method: PATCH

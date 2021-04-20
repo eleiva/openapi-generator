@@ -1,0 +1,73 @@
+openapi: 3.0.0
+info:
+  title: Vendors Service API
+  description: >-
+    Vendors Service API
+  contact: {}
+  version: '1.0'
+servers:
+- url: https://vendor.morsum.co/api/v1
+  variables: {}
+- url: http://localhost:5000/api/v1
+  variables: {}
+paths:
+  /vendors:
+    $ref: './Paths/Vendors/Vendors.yaml'
+  /vendors/{vendorID}:
+    $ref: './Paths/Vendors/VendorsById.yaml'
+  /vendors/{vendorID}/distributions-centers:
+    $ref: './Paths/Vendors/DistributionsCenters/DistributionsCenters.yaml'
+  /vendors/{vendorID}/distributions-centers/{distributionCenterID}:
+    $ref: './Paths/Vendors/DistributionsCenters/DistributionsCentersById.yaml'
+  /vendors/{vendorID}/distributions-centers/{distributionCenterID}/products:
+    $ref: './Paths/Vendors/DistributionsCenters/Products.yaml'
+  /vendors/{vendorID}/distributions-centers/{distributionCenterID}/products/{productID}:
+    $ref: './Paths/Vendors/DistributionsCenters/ProductsById.yaml'
+  /vendors/{vendorID}/operators:
+    $ref: './Paths/Vendors/Operators.yaml'
+  /vendors/{vendorID}/operators/{operatorID}:
+    $ref: './Paths/Vendors/OperatorsById.yaml'
+  /vendors/{vendorID}/orders-guides:
+    $ref: './Paths/Vendors/OrdersGuides/OrdersGuides.yaml'
+  /vendors/{vendorID}/orders-guides/{orderGuideID}/attach:
+    $ref: './Paths/Vendors/OrdersGuides/OrdersGuidesActions.yaml'
+  /vendors/{vendorID}/orders-guides/{orderGuideID}/products:
+    $ref: './Paths/Vendors/OrdersGuides/Products.yaml'
+  /vendors/{vendorID}/orders-guides/{orderGuideID}/products/{productID}:
+    $ref: './Paths/Vendors/OrdersGuides/ProductsById.yaml'
+  /vendors/{vendorID}/products:
+    $ref: './Paths/Vendors/Products.yaml'
+  /vendors/{vendorID}/products/{productID}:
+    $ref: './Paths/Vendors/ProductsById.yaml'
+  /orders:
+    $ref: './Paths/Orders/Orders.yaml'
+  /orders/{orderID}:
+    $ref: './Paths/Orders/OrdersById.yaml'
+  /orders/{orderID}/items:
+    $ref: './Paths/Orders/OrdersItems.yaml'
+  /orders/{orderID}/items/{orderItemID}:
+    $ref: './Paths/Orders/OrdersItemsById.yaml'
+  /orders/{orderID}/items/{orderItemID}/{action}:
+    $ref: './Paths/Orders/OrdersItemsActions.yaml'
+  /invoices:
+    $ref: './Paths/Invoices/Invoices.yaml'
+  /invoices/{invoiceID}:
+    $ref: './Paths/Invoices/InvoicesById.yaml'
+  /invoices/{invoiceID}/{action}:
+    $ref: './Paths/Invoices/InvoicesActions.yaml'
+  /transactions:
+    $ref: './Paths/Transactions/Transactions.yaml'
+  /transactions/{transactionID}:
+    $ref: './Paths/Transactions/TransactionsById.yaml'
+  /transactions/{transactionID}/items:
+    $ref: './Paths/Transactions/TransactionsItems.yaml'
+  /transactions/{transactionID}/items/{transactionItemID}:
+    $ref: './Paths/Transactions/TransactionsItemsById.yaml'
+  /transactions/{transactionID}/payments:
+    $ref: './Paths/Transactions/Payments.yaml'
+  /transactions/{transactionID}/payments/{paymentID}:
+    $ref: './Paths/Transactions/PaymentsById.yaml'
+  /transactions/{transactionID}/payments/{paymentID}/refund:
+    $ref: './Paths/Transactions/PaymentsActions.yaml'
+  /deeplinks/{deeplinkID}:
+    $ref: './Paths/Deeplinks/Deeplinks.yaml'

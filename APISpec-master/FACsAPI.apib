@@ -1,0 +1,112 @@
+FORMAT: 1A
+HOST: https://analytics.morsum.co/api/v3
+
+# FACs API
+
+Documentation for the DS Analytics API.
+Base endpoint: https://analytics.morsum.co/api/v3
+
+## Overview
+
+Some general specifications about our Developer Platform API
+- Available HTTP Verbs are GET, POST, PUT, PATCH and DELETE
+- JSON will be the standard output format
+- API’s response’s content-type is application/json
+- Usage of Http Status Codes is a must (200 for ok, 201 for created, 404 not found and so on)
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+
+```json
+{
+  "parameters": {
+    ... // The parameters sent in the request
+  }
+
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+
+
+## Paging
+
+If the resource used allows to be paginated, parameters page & perPage will be allowed thus enabling the API consumer to paginate the entire collection of the resource
+
+```json
+{
+  "parameters": {
+    ... // parameters
+  },
+  "response": {
+  ... //actual response from API
+  },
+  "paging": {
+    "currentPage": Int,
+    "perPage": Int,
+    "totalPages": Int,
+    "totalResults": Int
+ }
+}
+```
+
+# Group FACs
+
+## GET Customer FACs scores [GET /customers/{customerID}/facs{?store_id}]
++ Parameter
+    + store_id: `182` (number) - Number of the store to return score
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID}
+
++ Response 200 (application/json)
+    + Attributes
+        - include FACsResponse
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+# Data Structures
+
+
+## Pagination (object)
+- totalResults (required, number)
+- totalPages (required, number)
+- perPage (required, number)
+- page (required, number)
+
+
+## FACsHistoricalObject (object)
+- {index} (object)
+    - score (number)
+    - food_profile (number)
+    - transaction_profile (number)
+    - behaviour_profile (number)
+    - engagement_profile (number)
+
+
+## FACsResponse (object)
+- all_avg: `1.23` (required, number)
+- all_avg_percentile: `1.23` (required, number)
+- stores (object)
+    - {store_id} (object)
+        - score (number)
+        - percentile (number)
+        - store_score (number)
+        - store_percentile (number)
+        - food_profile (number)
+        - transaction_profile (number)
+        - behaviour_profile (number)
+        - engagement_profile (number)
+        - historical (required, array[FACsHistoricalObject])

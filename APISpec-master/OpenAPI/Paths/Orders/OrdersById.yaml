@@ -1,0 +1,66 @@
+get:
+  tags: 
+    - Orders
+  summary: Get a single order by its orderID
+  operationId: GetOrder
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/orderID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+patch:
+  tags: 
+    - Orders
+  summary: Update an order by its orderID
+  operationId: UpdateOrder
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/orderID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+delete:
+  tags: 
+    - Orders
+  summary: Delete an order by its orderID
+  operationId: DeleteOrder
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/orderID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

@@ -1,0 +1,96 @@
+# Group SSO
+
+## Login [POST /login]
+Login into Nutrait
++ Attributes
+    + email: `test@mailinator.com` (string)
+    + password: `Password1` (string)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (Session)
+
+## Login with 3rd Party [POST /login/{provider}]
+Login/Signup customer using 3rd party services
+Provider can be one of the following ones  “facebook” | “google” | “apple”
++ Parameters
+    + provider: `facebook` (string)
++ Attributes
+    + token: `abcd` (string)
+    + referralUrl: `/dl/pler/5e9e62c3887d1` (string)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (Session)
+
+## Register on Nutrait [POST /register]
+Register on Nutrait
++ Attributes
+    + name: `Jhon` (string)
+    + surname: `Doe` (string)
+    + email: `test@mailinator.com` (string)
+    + password: `Password1` (string)
+    + phone: `+541133201990` (string)
+    + referralUrl: `/dl/pler/5e9e62c3887d1` (string)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (Session)
+
+## Returns info needed for signup process [GET /register/info]
+Returns info needed for signup process (countries)
++ Response 200 (application/json)
+    + Attributes
+        + response (RegisterInfo)
+
+## Session status [GET /session/status]
+Returns the customer session status.
++ Response 200 (application/json)
+    + Attributes
+        + response (Session)
+
+## Logout [POST /logout]
+Logs out an user.
++ Response 200 (application/json)
+
+## Password reset request [POST /password/reset]
+Initiates password reset flow
++ Attributes
+    + email: `test@mailinator.com` (string)
++ Request (application/json)
++ Response 200 (application/json)
+
+## Password reset [POST /password/reset/{token}]
+Resets password for given token
++ Parameters
+    + token: `abcd` (string)
++ Attributes
+    + email: `test@mailinator.com` (string)
+    + password: `Password1` (string)
+    + password_confirmation: `Password1` (string)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (Session)
+
+## Updates profile [PATCH /me]
+Updates profile for current logged in customer.
++ Attributes
+    + email: `test@mailinator.com` (string)
+    + name: `Jhon` (string)
+    + surname: `Dow` (string)
+    + phone: `5491133201990` (string)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (Session)
+
+## Updates password [PATCH /me/password]
+Updates password for logged in customer
++ Attributes
+    + password: `Password1`
+    + password_confirmation: `Password1`
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (Session)

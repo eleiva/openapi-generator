@@ -1,0 +1,333 @@
+# Group Event
+
+# EventCustomer Resource [/events/{id}/customers]
++ Parameters
+    + id (string)
+        The ID of the desired event.
+
+## Retrieves all customers for given event_id. [GET]
+Retrieves all customers for given event_id.
++ Response 200 (application/json)
+    + Attributes
+        + response (EventCustomer)
+
+## Removes a customer from event [DELETE /events/{id}/customers/{customerId}]
+Removes a customer from event.
++ Parameters
+    + id (string)
+        The ID of the desired event.
+    + customerId (string)
+        The ID of the desired customer.
++ Response 204 (application/json)
+
+# EventTask Resource [/events/{id}/tasks]
++ Parameters
+    + id (string)
+        The ID of the desired event.
+
+## Returns events tasks [GET]
+Returns events tasks.
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + prep (array[CustomerEventTask])
+            + cook (array[CustomerEventTask])
+            + ingredients (array[IngredientDetail])
+            + startedAt (string)
+
+## Start a specific task [POST /events/{id}/tasks/{taskId}/start]
+Start a specific task.
++ Parameters
+    + id (string)
+        The ID of the desired event.
+    + taskId (string)
+        The ID of the desired task.
++ Response 204 (application/json)
+ + Attributes
+        + response (CustomerEventTask)
+
+## Finish a specific task [POST /events/{id}/tasks/{taskId}/finish]
+Finish a specific task.
++ Parameters
+    + id (string)
+        The ID of the desired event.
+    + taskId (string)
+        The ID of the desired task.
++ Response 204 (application/json)
+
+## Starts the event recipe. [POST /events/{id}/recipe/start]
+Starts the event recipe.
++ Parameters
+    + id (string)
+        The ID of the desired event.
++ Response 204 (application/json)
+
+## Update the number of portions [PUT /events/{id}/portions]
+Update the number of portions to be made.
++ Attributes (EventPortionRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + prep (array[CustomerEventTask])
+            + cook (array[CustomerEventTask])
+            + ingredients (array[IngredientDetail])
+            + startedAt (string)
+
+# EventFeedbackOption Resource [/events/feedbacks-options]
+
+## List feedback options [GET]
+List feedback options available for leaving an event
++ Response 200 (application/json)
+    + Attributes (EventFeedbackOption)
+
+# EventReservation Resource [/events/{id}/reservation]
++ Parameters
+    + id (string)
+        The ID of the desired event.
+
+## Create a reservation [POST]
+Create a new reservation for the event.
++ Response 200 (application/json)
+    + Attributes
+        + response  (EventReservation)
+
+## Cancel a reservation [DELETE]
+Cancel a reservation for the event.
++ Response 204 (application/json)
+    + Attributes
+        + response (EventReservation)
+
+## Confirms a reservation [POST /events/{id}/reservation/confirm]
+Confirms a reservation for the event.
++ Attributes (EventReservationRequest)
++ Request (application/json)
++ Response 204 (application/json)
+    + Attributes
+        + response  (EventReservation)
+
+# EventPriceOption Resource [/events/prices]
+
+## List all available prices [GET]
+List all available prices for the events.
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + prices (array[EventPriceOption])
+
+## Return an specific price [GET /events/prices/{priceId}]
+Return an specific price option.
++ Parameters
+    + priceId (string)
++ Response 200 (application/json)
+    + Attributes
+        + response  (EventPriceOption)
+
+## Event Resource [/events]
+
+## Create an event [POST]
+Creates a new event
++ Attributes (EventRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (Event)
+
+## Updates an event [PUT /events/{id}]
+Updates an event
++ Parameters
+    + id (string)
+        The ID of the desired event.
++ Attributes (EventRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (Event)
+
+## Retrieve an event by ID [GET /events/{id}]
+Retrieves an event by ID
++ Parameters
+    + id (string)
+        The ID of the desired event.
++ Response 200 (application/json)
+    + Attributes
+        + response (Event)
+
+## Cancel an event [DELETE /events/{id}]
+Cancel an event by ID
++ Parameters
+    + id (string)
+        The ID of the desired event.
++ Response 204 (application/json)
+    + Attributes
+        + response (Event)
+
+### Returns all the events [GET /events{?dietaries}{?topicID}{?ethnicities}{?searchableIngredients}{?date}{?search}{?communityMembers}]
+Returns all the events.
++ Parameters
+    + dietaries:  `3,2` (string, optional)
+    + ethnicities:  `4,2,1` (string, optional)
+    + searchableIngredients: `1,2` (string, optional)
+    + search: `carrot` (string, optional)
+    + date: `YYYY-MM-DD` (date, optional)
+    + topicID: `1` (string, optional)
+    + communityMembers: true (string, optional)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + events (array[Event]),
+            + filters (Filter)
+
+## Returns friends events [GET /events/friends{?dietaries}{?topicID}{?ethnicities}{?searchableIngredients}{?date}{?search}{?communityMembers}]
+Returns all the events created by the current user friends.
++ Parameters
+    + dietaries: `3,2` (string, optional)
+    + ethnicities:  `4,2,1` (string, optional)
+    + searchableIngredients: `1,2` (string, optional)
+    + search: `carrot` (string, optional)
+    + date: `YYYY-MM-DD` (date, optional)
+    + topicID: `1` (string, optional)
+    + communityMembers: true (string, optional)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + events (array[Event]),
+            + filters (Filter)
+
+## Returns live events [GET /events/live{?dietaries}{?topicID}{?ethnicities}{?searchableIngredients}{?date}{?search}{?communityMembers}]
+Returns all the matching live events.
++ Parameters
+    + dietaries: `3,2` (string, optional)
+    + ethnicities: `4,2,1` (string, optional)
+    + searchableIngredients: `1,2` (string, optional)
+    + search: `carrot` (string, optional)
+    + date: `YYYY-MM-DD` (date, optional)
+    + topicID: `1` (string, optional)
+    + communityMembers: true (string, optional)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + events (array[Event]),
+            + filters (Filter)
+
+## Returns future events [GET /events/future{?dietaries}{?topicID}{?ethnicities}{?searchableIngredients}{?date}{?search}{?communityMembers}]
+Returns all the future events.
++ Parameters
+    + dietaries:  `3,2` (string, optional)
+    + ethnicities:  `4,2,1` (string, optional)
+    + searchableIngredients: `1,2` (string, optional)
+    + search: `carrot` (string, optional)
+    + date: `YYYY-MM-DD` (date, optional)
+    + topicID: `1` (string, optional)
+    + communityMembers: true (string, optional)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + events (array[Event]),
+            + filters (Filter)
+
+## Returns recommended events [GET /events/recommended{?dietaries}{?topicID}{?ethnicities}{?searchableIngredients}{?date}{?search}{?communityMembers}]
+Returns recommended events.
++ Parameters
+    + dietaries:  `3,2` (string, optional)
+    + ethnicities:  `4,2,1` (string, optional)
+    + searchableIngredients: `1,2` (string, optional)
+    + search: `carrot` (string, optional)
+    + date: `YYYY-MM-DD` (date, optional)
+    + topicID: `1` (string, optional)
+    + communityMembers: true (string, optional)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + events (array[Event]),
+            + filters (Filter)
+
+## Store the video recorded [POST /events/{id}/videos]
+Store the video recorded, and if provided attach an image to it.
++ Parameters
+    + id (string)
+        The ID of the desired event.
++ Attributes (EventStoreVideoRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (Event)
+
+## Publishes the video o an event [POST /events/{id}/publish]
+Publishes the video o an event and uploads an image.
++ Parameters
+    + id: `1` (string)
+        The ID of the desired event.
++ Attributes (EventPublishVideoRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (Event)
+
+## Shares an event [POST /events/{id}/share]
+Shares an event to specific emails.
++ Parameters
+    + id (string)
+        The ID of the desired event.
++ Attributes (EventShareRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (Event)
+
+
+## Accepts a user [POST /events/{id}/accept]
+Accepts a user into an event.
++ Parameters
+    + id (string)
+        The ID of the desired event.
++ Attributes (EventAcceptRequest)
++ Request (application/json)
++ Response 204 (application/json)
+
+## Join user to an event [POST /events/{id}/join]
+Join user to an event. In paid events, *paymentToken* is required.
++ Parameters
+    + id (string)
+        The ID of the desired event.
++ Attributes (EventJoinRequest)
++ Request (application/json)
++ Response 204 (application/json)
+
+## Creates a dine [POST /events/{id}/dine]
+Creates a dine event from an event.
+*Only available for conference mode events.
++ Parameters
+    + id (string)
+        The ID of the desired event.
++ Attributes (EventDineRequest)
++ Request (application/json)
++ Response 204 (application/json)
+
+## Join a dine event. [POST /events/{id}/dine/join]
+Join a dine event. Only event participants can join the dine event*
++ Response 204 (application/json)
+
+## Leave a dine event. [POST /events/{id}/dine/leave]
+Leave a dine event.
++ Parameters
+    + id (string)
+        The ID of the desired event.
++ Response 204 (application/json)
+
+## Lave an event. [POST /events/{id}/leave]
+Flags an user is no longer in the event and receives feedback from him. If feedback.isPositive is false, then comments are required
++ Parameters
+    + id (string)
+        The ID of the desired event.
++ Attributes
+    + feedback (EventFeedback, optional) //Register a feedback when leaving the event
++ Request (application/json)
++ Response 204 (application/json)
+
+## Get event form data [GET /events/form-data]
+Retrieves all parameters and variables to be used on the creation of an event.
++ Response 200 (application/json)
+    + Attributes
+        + prices (array[EventPriceOption])
+        + communities (array[Community])

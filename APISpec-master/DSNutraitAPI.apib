@@ -1,0 +1,369 @@
+FORMAT: 1A
+HOST: https://analytics.morsum.co/api/v3
+
+# Nutrait API
+
+Documentation for the DS Analytics API (Nutrait & Nutrait FF).
+Base endpoint: https://analytics.morsum.co/api/v3
+
+## Overview
+
+Some general specifications about our Developer Platform API
+- Available HTTP Verbs are GET, POST, PUT, PATCH and DELETE
+- JSON will be the standard output format
+- API’s response’s content-type is application/json
+- Usage of Http Status Codes is a must (200 for ok, 201 for created, 404 not found and so on)
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+
+```json
+{
+  "parameters": {
+    ... // The parameters sent in the request
+  }
+
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+
+
+## Paging
+
+If the resource used allows to be paginated, parameters page & perPage will be allowed thus enabling the API consumer to paginate the entire collection of the resource
+
+```json
+{
+  "parameters": {
+    ... // parameters
+  },
+  "response": {
+  ... //actual response from API
+  },
+  "paging": {
+    "currentPage": Int,
+    "perPage": Int,
+    "totalPages": Int,
+    "totalResults": Int
+ }
+}
+```
+# Group Nutrait
+
+
+### Get nutrait from central level [GET /central/nutrait/{type}/{resourceID}{?data}]
++ Parameter
+    + type: `customer` (string) - The type of nutrait. This can be one of 'customer' or 'recipe'.
+    + resourceID: `1883` (number) - The unique is the entity at central level. If customer, this is the customerID, if recipe this is the recipeID at centralization. In the response, a customer_id or recipe_id will be present accordingly.
+    + data: True (boolean, optional) - Whether to return the data too or just the url. 
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {centralSiteGUID}
+
++ Response 200 (application/json)
+    + Attributes
+        - include NutraitResponse
+
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+### Get nutrait from site level [GET /nutrait/{type}/{resourceID}{?data}]
++ Parameter
+    + type: `customer` (string) - The type of nutrait. This can be one of 'customer' or 'recipe'.
+    + resourceID: `1883` (number) - The unique is the entity at central level for customer or site level for recipe. If customer, this is the customerID, if recipe this is the recipeID on the site. In the response, a customer_id or recipe_id will be present accordingly. The returned ID will be the one at central.
+    + data: True (boolean, optional) - Whether to return the data too or just the url. 
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID}
+
++ Response 200 (application/json)
+    + Attributes
+        - include NutraitResponse
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+### Create default nutrait [POST /nutrait/customer/{customerID}/default]
++ Parameter
+    + customerID: `1883` (number) - The internal ID of the customer at central level
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID|CentralSiteGUID}
+
+    + Attributes
+        - include CustomNutraitQuestions
+
++ Response 204 (application/json)
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+# Group Groceries
+
+### Get available grocery stores/supermarkets [GET /groceries/stores]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID}
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + stores (array[GroceryStore])
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+### Get all units [GET /groceries/units]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID}
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + units (array[GroceryUnit])
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+## Retrieve grocery products [POST /groceries/stores/{storeID}/products]
++ parameters
+    + storeID: `1` (string)
+
++ Attributes
+    + ingredients (array[GroceryStoresIngredientRequest])
+    + lat: 0.1 (number)
+    + lng: 0.1 (number)
+
++ Request (application/json)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + products (array[GroceryStoreProduct])
+
++ Response 404 (application/json)
+    + Attributes
+        + error: (NoStoresAvailableError)
+
+
+## Get formatted ingredients list for Amazon Fresh [POST /groceries/stores/{storeID}/amazon-fresh-ingredients]
++ parameters
+    + storeID: `1` (string)
+
++ Attributes
+    + ingredients (array[GroceryStoresIngredientRequest])
+    + lat: 0.1 (number)
+    + lng: 0.1 (number)
+
++ Request (application/json)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + ingredients (array[AmazonFreshIngredientObject])
+            + url: `https://www.amazon.com/afx/ingredients/landing` (string)
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+
+## Retrieve alternative grocery products [GET /groceries/stores/{storeID}/products/{productID}/alternatives?term={term}&lat={lat}&lng={lng}]
++ parameters
+    + storeID: `1` (string)
+    + productID: `1` (string)
+    + term: `carrot` (string)
+    + lat: 0.1 (number)
+    + lng: 0.1 (number)
+
++ Request (application/json)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + products (array[GroceryStoreProduct])
+
+
+
+# Group Video Processor
+
+### Create highlights/randoms videos from event recording [POST /nutrait-video/process]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID|CentralSiteGUID}
+
+    + Attributes
+        - include VideoProcessingRequest
+
++ Response 200 (application/json)
+
++ Response 204 (application/json)
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+# Data Structures
+
+
+## Pagination (object)
+- totalResults (required, number)
+- totalPages (required, number)
+- perPage (required, number)
+- page (required, number)
+
+
+## CustomNutraitQuestions (object)
+- options: `1`,`2`,`3` (required, array[number])
+
+
+## NutraitResponse (object)
+- url: `https://analytics.morsum.co/html/central/nutrait/dF9yLmlfMTg4My5kXzIwMjAtMDQtMDcuc29fYXBw` (required, string) - Public encrypted string for nutrait
+- data (object)
+    - customer_id: `1` (required, number) - Customer central id
+    - allergies: `peanut` (required, array) - List of allergies
+    - macronutrients (object)
+        - protein_perc: `66.6` (required, number) - Protein percentage
+        - minerals_perc: `66.6` (required, number) - Minerals percentage
+        - water_perc: `66.6` (required, number) - Water percentage
+        - vitamins_perc: `66.6` (required, number) - Vitamins percentage
+        - fat_perc: `66.6` (required, number) - Fat percentage
+        - caffeine_perc: `66.6` (required, number) - Caffeine percentage
+        - carbs_perc: `66.6` (required, number) - Carbohydrates percentage
+    - microbiome (object)
+        - gut_brain_connection: `negative` (required, string) - Negative, positive no influence for gut brain connection
+        - microbiome_improvement: `positive` (required, string) - Negative, positive no influence for microbiome improvement
+    - categories (object)
+        - appearance: `leafy` (required, array) - Array of strings with the appearances
+        - texture: `crispy` (required, array) - Array of strings with the textures
+        - taste: `salty` (required, array) - Array of strings with the tastes
+        - ethnicities: `italian` (required, array) - Array of strings with the ethnicities
+        - allergy: `peanut` (required, array) - Array of strings with the allergies
+    - taste (object)
+        - Salty: `49.4` (required, number) - Salty percentage
+        - Sweet: `50.6` (required, number) - Sweet percentage
+        - Bitter: `0` (required, number) - Bitter percentage
+        - Sour: `0` (required, number) - Sour percentage
+        - Umami: `0` (required, number) - Umami percentage
+
+
+## NoStoresAvailableError
+- code: `storeID` (string)
+- message: `Oops! It looks like there are no grocery stores in your area available on Nutrait!` (string)
+
+## GroceryOauth2 (object)
+- clientID: `1` (string, required)
+- clientSecret: `12345` (string, required)
+
+
+## GroceryStore (object)
+- ID: `1` (string, required)
+- name: `Grocery Corner` (string, required)
+- imageURL: `https://image.png` (string, required)
+- oauth2 (array[GroceryOauth2])
+- kind: `grocerystorename` (string, required)
+
+
+## Unit (object)
++ ID: `1` (string, required)
++ name: `each` (string, required)
+
+
+## UnitSystem (object)
++ ID: `1` (string)
++ name: `US` (string)
+
+
+## GroceryUnit
++ ID: `1` (string)
++ name: `each` (string)
++ unitsSystems (array[UnitSystem])
+
+
+## GroceryStoresIngredientRequest (object)
++ ID: `1` (string, required)
++ unitID: `1` (string, required)
++ quantity: 123 (number, required)
+
+
+## GroceryStoreProduct
++ ID: `1` (string, required)
++ upc: `0004601515840` (string, required)
++ name: `Carrot` (string, required)
++ price: 1 (optional, number)
++ imageURL: `https://image.png` (string, required)
++ itemURL: `https://provider/00001` (string, required)
++ ingredientID: `1` (string, required)
++ quantity: 2 (number, required)
++ amount: `5.5` (string, required)
++ unit (Unit)
+
+
+## AmazonFreshIngredientObject (object)
++ name: `green apples` (string, required)
++ quantityList (array[AmazonFreshQuantityObject])
+
+## AmazonFreshQuantityObject (object)
++ unit: `kilograms` (string, required)
++ amount: `1.5` (number, required)
+
+
+
+## RecipeTask (object)
+- id: `1` (string, required) - Recipe task ID
+- action: `Add the garam masala and turmeric to the pan` (string, required) - Recipe task text (instructions)
+- time: `30` (number, required) - Time in seconds from when host joined video until task "started_at" (started_at - time host joined)
+
+
+## VideoProcessingRequest (object)
+- recording_id: `1` (string, required)
+- url: `https://example.com` (string, required)
+- tasks (array[RecipeTask], required)

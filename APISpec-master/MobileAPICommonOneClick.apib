@@ -1,0 +1,33 @@
+## POST /customers/me/oneClick/cart
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + date: `YYYY-MM-DD` (string, required)
+        + storeID (string, required)
+        + oneClickRecommendationID (array[string])
+
++ Response 200 (application/json)
+    + Attributes
+        + ID (string)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
+## POST /customers/me/oneClick/cart/checkout
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + date: `YYYY-MM-DD` (string, required)
+        + storeID (string, required)
+        + oneClickRecommendationID (array[string])
+
++ Response 200 (application/json)
+    + Attributes
+        + ID (string)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InsufficientBalance)

@@ -1,0 +1,67 @@
+# Group Suppliers
+
+## Supplier Resource [/suppliers/{id}]
++ Parameters
+    + id (string)
+
+### Retrieve a Supplier [GET]
+Retrieves the supplier with the given ID.
++ Response 200 (application/json)
+    + Attributes (Supplier)
+
+### Update a Supplier [PUT]
+Updates a Supplier using the id.
++ Attributes (SupplierRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (Supplier)
+
+### Update a Supplier [PUT /suppliers/{external_id}/external]
+Updates a Supplier using the external id.
++ Parameters
+    + external_id (string)
++ Attributes (SupplierRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (Supplier)
+
+### Restores a Supplier [PATCH /suppliers/{id}/restore]
+Restores a Supplier.
++ Parameters
+    + id (string)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Deletes a Supplier [DELETE /suppliers/{id}]
+Deletes a Supplier.
++ Parameters
+    + id (string)
++ Request (application/json)
++ Response 200 (application/json)
+
+### List all Suppliers [GET /suppliers]
+Returns a list of suppliers.
++ Response 200 (application/json)
+    + Attributes (array[Supplier])
+
+### Create a Supplier [POST /suppliers]
+Creates a new Supplier.
++ Attributes (SupplierRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (Supplier)
+
+## Supplier Client Resource [/suppliers/{supplier_id}/clients/{client_id}]
++ Parameters
+    + supplier_id (string)
+    + client_id (string)
+
+### Assigns a Supplier to Client [PATCH]
+Restores a Supplier.
++ Request (application/json)
++ Response 200 (application/json)
+
+### Unassign a Supplier from Client [DELETE]
+Unassign a Supplier from Client.
++ Request (application/json)
++ Response 200 (application/json)

@@ -1,0 +1,65 @@
+get:
+  tags:
+    - Operators
+  summary: Get a single store location from an operator by its storeLocationID
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/operatorID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/storeLocationID'
+  operationId: GetStoreLocation
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+patch:
+  tags:
+    - Operators
+  summary: Update a store location from an operator by its storeLocationID
+  operationId: UpdateStoreLocation
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/operatorID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/storeLocationID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+delete:
+  tags:
+    - Operators
+  summary: Delete a store location from an operator by its storeLocationID
+  operationId: DeleteStoreLocation
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/operatorID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/storeLocationID'
+  responses:
+    '204':
+      description: 'No Content'
+      headers: {}
+    '401':
+      description: 'Unauthorized Access'
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

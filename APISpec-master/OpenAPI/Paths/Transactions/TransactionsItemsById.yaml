@@ -1,0 +1,69 @@
+get:
+  tags: 
+    - Transactions
+  summary: Get an item from an transaction by their id's
+  operationId: GetTransactionItem
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/transactionID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/transactionItemID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+patch:
+  tags: 
+    - Transactions
+  summary: Update an item within an transaction by their id's
+  operationId: UpdateTransactionItem
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/transactionID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/transactionItemID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+delete:
+  tags: 
+    - Transactions
+  summary: Remove an item from a given transaction
+  operationId: RemoveTransactionItem
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/transactionID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/transactionItemID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

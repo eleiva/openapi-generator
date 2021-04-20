@@ -1,0 +1,182 @@
+# Group Recipes
+
+# Recipe Resource [/recipes]
+
+## Returns all Recipes [GET /recipes{?dietaries}{?ethnicities}{?searchableIngredients}{?scope}{?search}{?date}]
+Returns all the Recipes based on filter.
++ Parameters
+    + dietaries: `1,2,3` (array[string])
+    + ethnicities: `1,2,3` (array[string])
+    + searchableIngredients: `1,2,3` (array[string])
+    + search: `tomato` (string)
+    + scope: `ecommended_recipes` (string)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + recipes (array[Recipe]),
+            + filters (Filter)
+
+## Get a recipe by ID [GET /recipes/{id}]
+Get a recipe by ID
++ Parameters
+    + id (string)
+        The ID of the desired recipe.
++ Response 200 (application/json)
+    + Attributes
+        + response (RecipeDetails)
+
+## Delete a recipe by ID [DELETE /recipes/{id}]
+Delete a recipe by ID
++ Parameters
+    + id (string)
++ Attributes
+    + reason (string, optional)
++ Request (application/json)
++ Response 204 (application/json)
+
+## Get the recipe gallery [GET /recipes/{id}/gallery]
+Get the recipe gallery
++ Parameters
+    + id (string)
+        The ID of the desired recipe.
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + media (array[Media])
+
+## Get recipe ingredients [GET /recipes/{id}/ingredients]
+Get recipe ingredients
++ Parameters
+    + id (string)
+        The ID of the desired recipe.
++ Attributes (EventPortionRequest)
+    + portionsNumber (number)
+        Number of portions to be made.
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + ingredients (array[IngredientDetail])
+
+## List events from recipe [GET /recipes/{recipeID}/events{?dietaries}{?ethnicities}{?searchableIngredients}{?scope}{?search}{?topicID}]
+List events from recipe. Only list events where the logged in customer is the host
++ Parameters
+    + dietaries: `1,2,3` (array[string])
+    + ethnicities: `1,2,3` (array[string])
+    + searchableIngredients: `1,2,3` (array[string])
+    + search: `tomato`  (string)
+    + scope: `recommended_recipes` (string)
+    + topicID (string)
+    + recipeID (string)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + events (array[Event])
+
+## Retrieve all recipe nutrients [GET /recipes/{id}/nutrients]
+Retrieve all recipe nutrients
++ Parameters
+    + id (string)
+        The ID of the desired recipe.
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + calories (Nutrient)
+            + macroNutrients (array[Nutrient])
+            + chemicals (array[Nutrient])
+
+# RecipeRequest Resource [/recipes/requests]
+
+## Retrieve all information [GET /recipes/requests/form-data]
+Retrieve all information required for creating a new recipe
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + units (FormDataUnit)
+            + ethnicities (array[Ethnicity])
+            + unitSystems (array[UnitSystem])
+
+## Request the creation of a recipe [POST /recipes/requests]
+Request the creation of a recipe
++ Attributes
+    + name: `My brand new recipe` (string)
+    + description: `A description` (string)
+    + image (Image)
+    + portionUnitId: `1` (string)
+    + portionSize: `2` (string)
+    + servingsNumber: `3` (string)
+    + prepTimeMinutes: `30` (string)
+    + ethnicityId: `2` (string)
+    + components (array[Component])
+    + unitSystemId: `1` string
++ Request (application/json)
++ Response 204 (application/json)
+
+# Ingredient Resource [/ingredients]
+
+## Search ingredients by given expression [GET /ingredients]
+Search ingredients by given expression
++ Attributes
+    + expression: `carrot`
+    + page: `2` (optional)
+    + perPage: `10` (optional)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (SearchableIngredient)
+
+## Returns a list of available human conversions  [POST /recipes/{recipeID}/ingredients/{centralizationIngredientID}/options]
+Returns a list of available human conversions for ingredient quantities.
++ Parameters
+    + recipeID: `1` (string)
+    + centralizationIngredientID: `2` (string)
++ Attributes
+    + unitID: `1` (string)
+    + quantity: `22` (number)
+    + servingsNumber: `2` (number)
+    + formattedQuantity: `1 case` (string)
+    + portions: `4` (number)
+    + unitSystemID: `1` (string)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (array[string]) // “2.01 g”, “1 each”, “4 slice”
+
+## Retrieve all the recipes [GET /recipes/me{?dietaries}{?ethnicities}{?searchableIngredients}{?search}]
+Retrieve all the recipes submitted by customer
++ Parameters
+    + dietaries: `1,2,3` (string)
+    + ethnicities: `1,2,3` (string)
+    + searchableIngredients: `1,2,3` (string)
+    + search: `tomato` (string)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + recipes (array[Recipe]),
+            + filters (Filter)
+
+# RecipeFavorite Resource [/recipes/{recipeID}/favorites]
++ Parameters
+    + recipeID: `1` string
+        Id of the recipe to add in favorites
+
+## Adds a new recipe in my favorites [POST /recipes/{recipeID}/favorites]
+Adds a new recipe in my favorites
++ Response 204 (application/json)
+
+## Deletes a new recipe from my favorites [DELETE /recipes/{recipeID}/favorites]
+Deletes a new recipe from my favorites
++ Response 204 (application/json)
+
+## Retrieve all my favorites [GET /recipes/favorites{?dietaries}{?ethnicities}{?searchableIngredients}{?search}]
+Retrieve all my favorites
++ Parameters
+    + dietaries: `1,2,3`
+    + ethnicities: `1,2,3`
+    + searchableIngredients: `1,2,3`
+    + search: `tomato`
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + recipes (array[Recipe]),
+            + filters (Filter)

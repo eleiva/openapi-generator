@@ -1,0 +1,39 @@
+# Group Communities
+
+## User Communities Resource [/users/me/communities]
+
+### List all Communities [GET]
+Returns a list of communities available for the current user.
++ Response 200 (application/json)
+    + Attributes (array[Community])
+
+### Attaches a community to profile [POST]
+Attaches a new community to the user profile
++ Attributes
+    + keyName: `NUTRAIT-PUBLIC-KEY`
++ Request (application/json)
++ Response 204 (application/json)
+
+## User Community Resource [/users/me/communities/{id}]
+
+### Sets a community as default [PATCH]
+Sets a community as default to the current user
++ Parameters
+    + id (string)
+        The ID of the community.
++ Response 204 (application/json)
+
+### Detaches a community from profile [DELETE]
+Attaches a new community to the user profile
++ Parameters
+    + id (string)
+        The ID of the community.
++ Response 204 (application/json)
+
+## Community Categories Resource [/users/me/communities/categories]
+
+### List all current community categories [GET]
+Returns a list of all categories from the current user community
++ Response 200 (application/json)
+    + Attributes
+        + response (array[CommunityCategory])

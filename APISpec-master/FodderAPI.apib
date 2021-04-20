@@ -1,0 +1,325 @@
+FORMAT: 1A
+HOST: https://analytics.morsum.co/api/v3
+
+# Fodder API
+
+Documentation for the DS Analytics API.
+Base endpoint: https://analytics.morsum.co/api/v3
+
+## Overview
+
+Some general specifications about our Developer Platform API
+- Available HTTP Verbs are GET, POST, PUT, PATCH and DELETE
+- JSON will be the standard output format
+- API’s response’s content-type is application/json
+- Usage of Http Status Codes is a must (200 for ok, 201 for created, 404 not found and so on)
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+
+```json
+{
+  "parameters": {
+    ... // The parameters sent in the request
+  }
+
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+
+## Paging
+
+If the resource used allows to be paginated, parameters page & perPage will be allowed thus enabling the API consumer to paginate the entire collection of the resource
+
+```json
+{
+  "parameters": {
+    ... // parameters
+  },
+  "response": {
+  ... //actual response from API
+  },
+  "paging": {
+    "currentPage": Int,
+    "perPage": Int,
+    "totalPages": Int,
+    "totalResults": Int
+ }
+}
+```
+
+# Group Fodder
+
+## GET fodder/overview [GET /customers/{customerID}/fodder/overview]
+
++ Parameters
+    + customerID: 1 (number) - Central Customer ID
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID>
+
++ Response 200 (application/json)
+    + Attributes
+        + parameters (object)
+            + customer_central_id: 1 (number)
+        + response (object)
+            + allUsersGrade: 1 (number)
+            + grade: 1 (number)
+            + groupGrade: 1 (number)
+            + lastUpdated: `2018-04-01T20:51:10Z` (string)
+            + myBehaviors (array[MyBehaviorsItem])
+            + nutrait (FodderNutrait)
+            + nutrients (array[FodderNutrient])
+            + topGoals (array[Goal])
+            + whatINeed (array[whatINeedElement])
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+## GET fodder/needToEat [GET /customers/{customerID}/fodder/needToEat]
+
++ Parameters
+    + customerID: 1 (number) - Central Customer ID
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID>
+
++ Response 200 (application/json)
+    + Attributes
+        + parameters (object)
+            + customer_central_id: 1 (number)
+        + response (object)
+            + help
+                + footer: `(based on a daily 2,000 calorie diet)` (string)
+                + text: `We compare the nutrition levels from your last and average orders to the FDA's daily recommended intakes` (string)
+                + title: `WHAT I NEED TO EAT` (string)
+            + nutrientDetails (array[FodderNutrientDetail])
+            + topAdjustments (array[topAdjustment])
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+## GET fodder/behaviors [GET /customers/{customerID}/fodder/behaviors]
+
++ Parameters
+    + customerID: 1 (number) - Central Customer ID
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID>
+
++ Response 200 (application/json)
+    + Attributes
+        + parameters (object)
+            + customer_central_id: 1 (number)
+        + response (object)
+            + help
+                + footer: `` (string)
+                + text: `An overview of trends and patterns we've noticed in your ordering behavior` (string)
+                + title: `MY BEHAVIORS` (string)
+            + orderPatterns (array[MyBehaviorsItem])
+            + tops (array[fodderTop])
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+## GET fodder/goals [GET /customers/{customerID}/fodder/goals]
+
++ Parameters
+    + customerID: 1 (number) - Central Customer ID
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID>
+
++ Response 200 (application/json)
+    + Attributes
+        + parameters (object)
+            + customer_central_id: 1 (number)
+            + `filtered_by` : `customer_central_id` (string)
+        + response (array[Goal])
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+## POST fodder/goals [POST /customers/{customerID}/fodder/goals?nutrient_id={nutrientID}&value={value}]
+
++ Parameters
+    + customerID: 1 (number) - Central Customer ID
+    + nutrientID: 1 (number) - Nutrient ID
+    + value: 1 (number) - Value of the new goal
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID>
+
++ Response 200 (application/json)
+    + Attributes
+        + parameters (object)
+            + customer_central_id: 1 (number)
+            + nutrient_id: 1 (number)
+            + value: 1 (number)
+        + response
+            + goal_id: 191 (number)
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
++ Response 422 (application/json)
+    + Attributes
+        + errors
+            + code: `GoalAlreadySet` (string)
+            + message: `You already have a Fat goal created. Please delete it before you create another.` (string)
+
+## DELETE fodder/goals [DELETE /customers/{customerID}/fodder/goals/{goalID}]
+
++ Parameters
+    + customerID: 1 (number) - Central Customer ID
+    + goalID: 1 (number) - Goal ID
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID>
+
++ Response 200 (application/json)
+    + Attributes
+        + parameters (object)
+            + customer_central_id: 1 (number)
+        + response
+            + goal_id: 191 (number)
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
++ Response 422 (application/json)
+    + Attributes
+        + errors: `Not valid nutrition goal id` (string)
+
+## PUT fodder/goals [PUT /customers/{customerID}/fodder/goals/{goalID}?nutrient_id={nutrientID}&value={value}]
+
++ Parameters
+    + customerID: 1 (number) - Central Customer ID
+    + goalID: 1 (number) - Goal ID
+    + nutrientID: 1 (number) - Nutrient ID
+    + value: 1 (number) - Value of the new goal
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID>
+
++ Response 200 (application/json)
+    + Attributes
+        + parameters (object)
+            + customer_central_id: 1 (number)
+            + nutrient_id: 1 (number)
+            + value: 1 (number)
+        + response
+            + goal_id: 191 (number)
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
++ Response 422 (application/json)
+    + Attributes
+        + errors: `Not valid nutrition goal id` (string)
+
+
+# Data Structures
+
+
+## Pagination (object)
+- totalResults (required, number)
+- totalPages (required, number)
+- perPage (required, number)
+- page (required, number)
+
+
+## Goal (object)
++ ID: 60 (number)
++ currentValue: 10 (number)
++ goalValue: 1 (number)
++ nutrient (FodderNutrient)
+
+
+## FodderNutrient (object)
++ ID: 2 (number)
++ name: `Vitamin A` (string)
++ units: `%` (string)
+
+
+## fodderTop (object)
++ list: `Indonesian` (array[string])
++ name: `Top ethnicities` (string)
+
+
+## MyBehaviorsItem (object)
++ groupValue (string)
++ key (string)
++ myValue (string)
++ name (string)
+
+
+## whatINeedElement (object)
++ averageOrder: 3760 (number)
++ dailyRecommendation: 2000 (number)
++ lastOrder: 3760 (number)
++ name: `Calories` (string)
++ unit: `cal` (string)
+
+
+## topAdjustment (object)
++ text: `Your last order contained 88.0% more than one meal USDA recommendation` (string)
++ title: `Reduce Calories` (string)
+
+
+## FodderNutrientDetail (object)
++ averageOrder: 3760 (number)
++ dailyRecommendation: 2000 (number)
++ lastOrder: 3760 (number)
++ name: `Calories` (string)
++ unit: `cal` (string)
+
+
+## FodderNutrait (object)
++ carbohydrates: 96.53 (number)
++ dietary_fiber: 13.28 (number)
++ fat: 335.02 (number)
++ proteins: 292.29 (number)
++ saturated_fat: 732.3 (number)
++ sodium: 971.41 (number)
++ total_sugar: 57.1 (number)

@@ -1,0 +1,909 @@
+# Mobile Kiosk API
+
+<!-- include(MobileAPIGeneral.apib) -->
+
+# Group Session Control
+
+## GET /customers/verify
+
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + mobile: `1-877-453-1304` (string, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + newCustomer (boolean, required) - returns true if the phone number is unknown
+
+## POST /customers/login
+
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + mobile: `1-877-453-1304` (string, optional) - for guest login, mobile is empty
+        + termsAccepted (boolean, optional)
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
++ Response 401 (application/json)
+
+## POST /customers/login/payrollDeduct
+
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + payrollDeductID (string, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response
+            + hasMobilePhone (boolean)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (MobilePhoneRequired)
+
++ Response 401 (application/json)
+    + Attributes
+        + error(InvalidPayrollDeductID)
+
+## POST /customers/signup/payrollDeduct
+Signup payroll deduct user after he scans his card but isn't yet known on the system. In that case /customers/login/payrollDeduct will return the error MobilePhoneRequired and this endpoint will be called. Required by Cleveland payroll deduct flow
+
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + mobile (string)
+        + payrollDeductID (string)
+
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+
+
+## PATCH /customers/me
+Associates a mobile phone to the currently logged in account.
+
++ Request
+    + Headers
+        Accept: application/json
+
+    + Attributes
+        + mobile (string)
+
++ Response 200 (application/json)
+
+## POST /logout
+Terminates the customer session
++ Response 204 (application/json)
+
+# Group Menu
+
+## GET /stores
+List site stores.
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (array[Store])
+
+## GET /stores/{ID}/menus?date={date}&categoryID={categoryID}&daypartID={daypartID}
+This endpoint will be called both for preloading of menu content and live updates. For preloading, the `CACHED` header is sent as `true`.
+
++ Parameters
+    + ID - ID of the Store
+    + date - date of the menu with format YYYY-MM-DD
+    + categoryID - ID of the menu category
+    + daypartID - ID of the day part
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + storeID (string, required)
+            + date: `YYYY-MM-DD` (string)
+            + categoryID (string, required)
+            + daypartID (string, required)
+            + menuCategories (array[MenuCategory])
+            + items (array[MenuItem])
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
+## GET /stores/{storeID}/menuItems/{menuItemID}?date={date}&daypartID={daypartID}
+This endpoint will be called both for preloading of menu content and live updates. For preloading, the `CACHED` header is sent as `true`.
+
++ Parameters
+    + storeID - ID of the Store
+    + menuItemID - ID of the menu category
+    + date - date of the menu with format YYYY-MM-DD
+    + daypartID - ID of the day part
+
++ Response 200 (application/json)
+    + Attributes
+        + response (MenuItemDetail)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidMenuItemID)
+
+
+<!-- include(MobileAPICommonMenu.apib) -->
+
+# Group OneClick
+
+## GET /stores/{storeID}/oneClick?date={date}
++ Parameters
+    + storeID - ID of the Store
+    + date - date of the menu with format YYYY-MM-DD
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response
+            + storeStatus (StoreStatus)
+            + storeID (string)
+            + date: `YYYY-MM-DD` (string)
+            + lastTransaction
+              + publicTransactionID (string) - deprecated
+              + date: `YYYY-MM-DD` (string)
+              + orders (array[Order])
+              + canRepeat (boolean)
+            + oneClickRecommendation
+                + mainItem (MenuItem)
+                + subItems (array[MenuItem])
+
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
+
+<!-- include(MobileAPICommonOneClick.apib) -->
+
+
+# Group Nutrait
+
+## GET /customers/me/nutrait
++ Response 200 (application/json)
+   + Attributes
+    + session (Session)
+    + response
+       + url (string)
+
+
+# Group Cart
+
+## GET /customers/me/cart?restaurantTableID=1
+Returns the server side cart, created before with a 'pay at cashier' checkout.
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response
+          + cart (Cart, optional) - returns the cart if there is one server-side (for pay at register flow)
+          + hasPayrollDeduct (boolean)
+          + balance (number)
+
+## GET /stores/{storeID}/discounts?code={string}
+Returns the details for a given code. This is required for the free text input discount functionality. The discount is applied to the local cart.
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (DiscountCode)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidDiscountCode)
+
+## POST /customers/me/cart/checkout
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes (Checkout)
+
++ Response 200 (application/json)
+    + Attributes
+      + session (Session)
+      + response (ReceiptInfo)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InsufficientBalance)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidPaymentMethodID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (QuantityNotAllowed)
+
+## POST /customers/me/cart/checkout/{transactionID}/complete
+Mark a transaction as completed after all payments are added to the transsaction
+
++ Parameters
+    + transaction - ID of the transaction created on the /checkout call
+
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes (CheckoutComplete)
+
+ + Response 200 (application/json)
+    + Attributes
+      + session (Session)
+      + response (ReceiptInfo)
+
+## POST /customers/me/cart/checkout/{transactionID}/confirm
+For card present transactions this endoint is called after successfull card payment. Deprecated.
+
++ Parameters
+    + transaction - ID of the transaction created on the /checkout call
+
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes (CheckoutConfirm)
+
+ + Response 200 (application/json)
+    + Attributes
+      + session (Session)
+      + response (ReceiptInfo)
+
+
+## POST /customers/me/cart/checkout/{transactionID}/cancel
+For card present transactions this endpoint is called when the card payment has failed.
+
++ Parameters
+    + transaction - ID of the transaction created on the /checkout call
+
++ Request
+    + Headers
+        Accept: application/json
+
+ + Response 200 (application/json)
+    + Attributes
+      + session (Session)
+
+## PATCH /customers/me/cart/checkout/{transactionID}
+Use this endpoint to add payments to a transaction.
+
++ Parameters
+    + transaction - ID of the transaction created on the /checkout call
+
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes (CheckoutPayment)
+
+ + Response 200 (application/json)
+    + Attributes
+      + session (Session)
+      + response (ReceiptInfo)
+
+## POST /customers/me/cart/checkout/offline
+Uploads offline transactions to the backend. Not currently implemented
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes (array[Checkout])
+
++ Response 202 (application/json) - 202 if handled asynchronaly, 200 if synchronaly
+
+
+
+<!-- include(MobileAPICommonCart.apib) -->
+
+# Group Configuration
+
+## POST /configuration/login
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + email (string, required)
+        + password (string, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session, required)
+
+## GET /configuration/login/token
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + token (required)
+            + expiredAt (required)
+
+## POST /configuration/login/pin
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + pin (string, required)
+        + token (string, required)
+
++ Response 4XX (application/json)
+    + Attributes
+[comment]:        + error (InvalidCredentials)
+[comment]:        + error (InvalidRequest)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + session (Session, required)
+            + shift
+                + startedAt (optional)
+                + startedBy (optional)
+                + pausedAt (optional)
+                + beginCashCount (number)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidOperatorCode)
+
+## GET /sites
++ Response 200 (application/json)
+    + Attributes
+        + session (Session, required)
+        + response (array[Site], required)
+
+## GET /configuration
++ Response 200 (application/json)
+    + Attributes
+        + session (Session, required)
+        + response
+            + ID (string, required) - the Kiosk ID
+            + site (Site, required)
+            + countries (array[Country], required)
+            + openTime: `07:30` (string, required)
+            + closeTime: `23:30` (string, required)
+            + open (boolean, required) - overrides the open and close times
+            + mode (enum[string], required)
+              + Members
+                + KIOSK
+                + POS
+                + SELF_CHECKOUT
+                + RESTAURANT
+            + termsAcceptanceRequired (boolean, required)
+            + allowPayrollDeduct (boolean, required)
+            + allowGuestLogin (boolean, required)
+            + allowPayAtRegister (boolean, required)
+            + allowPaymentProcessing (boolean, required)
+            + allowCreditCardPayments (boolean, required)
+            + allowCashPayments (boolean, required)
+            + allowSingleShift (boolean, required)
+            + initialCashAmount (number, required)
+            + payworks (optional)
+              + merchantID (string, required)
+              + merchantKey (string, required)
+              + stripePercentFee (number, required)
+              + stripeFixedFee (number, required)
+            + freedompay (optional)
+              + transactionCurrencyCode (string) - Indicates the currency code of the transaction according to ISO 4217. Values should be confirmed with Freedompay
+              + transactionCurrencyExponent (string) - Idicates the implied position of the decimal point from the right of the transaction amount represented according to ISO 4217. Values should be confirmed with Freedompay
+              + terminalCountryCode (string) - Indicates the country of the terminal, represented according to ISO 3166. Values should be confirmed with Freedompay
+              + storeID (string)
+              + terminalID (string)
+              + registerID (string) - Identifier of the register making the operation request; It must be 8 characters long and must be composed of numeric characters only
+              + esbKey (string)
+              + iFCCcontactEMVAvailable (boolean)
+            + cardReader (optional) - deprecated
+                + merchantID (string, required)
+                + merchantKey (string, required)
+            + stripePercentFee (number, required) - deprecated
+            + stripeFixedFee (number, required) - deprecated
+            + tipOption (enum[string], required)
+              + Members
+                + NO_TIPPING
+                + PRE_PAYMENT
+                + POST_PAYMENT
+
+## POST /configure
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + siteID (string, required)
+        + posMode (boolean, required) - deprecated
+        + mode (enum[string], required)
+          + Members
+             + KIOSK
+             + POS
+             + SELF_CHECKOUT
+             + RESTAURANT
+
++ Response 200
+    + Attributes
+        + session (Session, required)
+        + response
+            + ID (string, required) - the Kiosk ID
+
+# Group Cashier
+
+## POST /operator/validate
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + code (string, required)
+
++ Response 200
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidOperatorCode)
+
+## POST /operators/shifts/start
++ Request
+    + Headers
+        Accept: application/json
+
+    + Attributes
+        + response
+            + beginCashCount: "100.0" (number, positive)
+
++ Response 200
+    + Attributes
+        + response
+            + shift
+                + startedAt (optional)
+                + startedBy (optional)
+                + pausedAt (optional)
+                + beginCashCount (number)
+
++ Response 4XX (application/json)
+    + Attributes
+        + error (ShiftAlreadyStarted)
+[comment]:        + error (InvalidBeginCashCount)
+
+## POST /operators/shifts/pause
+
+## POST /operators/shifts/resume
+
+## POST /operators/shifts/end
+
++ Response 4XX (application/json)
+    + Attributes
+[comment]:        + error (ForbiddenOperatorException)
+[comment]:        + error (ShiftNotFoundException)
+
+## GET /operators/transactions?date={date}&q={query}
+Returns list of transactions for the requesting POS, sorted by the most recent transaction to the first of the day. The result should support paging.
+
++ Parameters
+    + date - return the transactions for the given date
+    + query - a search string. Return transactions whose tansaction number, customer name or total match the search string
+
++ Request
+    + Headers
+        Accept: application/json
+
++ Response 200
+    + Attributes
+        + response
+            + transactions (array[Transaction])
+
+
+## GET /operators/transactions/{ID}
++ Response 200
+    + Attributes
+        + response
+            +  transaction (Transaction)
+
+## POST /operators/transactions/{ID}/refund
+Refunds a transaction. Deprecated.
+
++ Request
+    + Headers
+        Accept: application/json
+
++ Response 200
+    + Attributes
+        + response
+            + transaction (Transaction) - the updated transaction
+
+## POST /operators/transactions/{transactionID}/payments/{paymentID}/refund
+Refunds a payment from the transaction.
+
++ Parameters
+    + transaction - ID of the transaction
+    + payment - ID of the transaction
+
++ Request
+    + Headers
+        Accept: application/json
+
++ Response 200
+    + Attributes
+        + response
+            + transaction (Transaction) - the updated transaction
+
+## POST /operators/transactions/{ID}/closeout
+Close out a transaction. Deprecated.
+
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + response
+            + tipAmount: 0 (number, positive)
+            + tipPaymentMethod: CARD (enum[string], nullable)
+              + Members
+                + CARD
+                + CASH
+
++ Response 200
+    + Attributes
+        + response
+            + transaction (Transaction) - the updated transaction
+
+## POST /operators/transactions/{transactionID}/payments/{paymentID}/closeout
+Close out a payment. Once all payments are closed out, the transaction is closed out.
+
++ Parameters
+    + transaction - ID of the transaction
+    + payment - ID of the transaction
+
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + response
+            + tipAmount: 0 (number, positive)
+            + tipPaymentMethod: CARD (enum[string], nullable)
+              + Members
+                + CARD
+                + CASH
+
++ Response 200
+    + Attributes
+        + response
+            + transaction (Transaction) - the updated transaction
+
+## POST /operators/transactions/{ID}/resend
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + response
+            + cartItemID: `7357` (number, required) - the cart's item id of the item to be resent
+
++ Response 204
+
+## POST /operators/support-tickets
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+          + transactionCompleted: (required, boolean)
+          + issueType: (required, array[string])
+          + comments: (required, string)
+          + name: (required, string)
+          + phone: (required, string)
+
++ Response 200
+    + Attributes
+        + response
+            + supportTicket (SupportTicket) - the created ticket
+
+## POST /operators/cashouts
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+          + typeID:`1` (number, required) - 1= Tips, 2= Lottery
+          + amount:`10` (number, required) - this number may be negative
+          + description (string, optional)
+
++ Response 204
+
+# Data Structures
+
+<!-- include(MobileAPICommonData.apib) -->
+
+## Store (object)
++ ID: `storeID` (string) - The unique identifier for the Store
++ name: `Morsum Store` (string) - The store name
++ description: `Morsum Store Description` (string)
++ imageURL: `https://placehold.it/200x200` (string)
++ formattedAddress (string)
++ isNew (boolean)
++ status (StoreStatus)
++ allowOneClick (boolean)
++ waitingTimeSeconds (number)
++ discountCodes (array[DiscountCodeOption])
++ dayparts (array[StoreDaypart])
++ storeTax: 0.05 (number) - Store tax as fraction e.g. 0.05 for 5%
++ receiptDisclaimer: (string) - if not null, contains store's disclaimer for receipts
++ restaurantTables (array[RestaurantTable])
+
+## RestaurantTable (object)
++ ID: 1 (string, required)
++ name: `101` (string, required)
+
+## StoreDaypart (MenuDaypart)
++ menuCategories (array[MenuCategory])
+
+## MenuItem (object)
++ ID (string, required)
++ name (string, required)
++ description (string)
++ imageURL (string)
++ isNew (boolean)
++ isAvailable (boolean)
++ hasCustomOptions (boolean),
++ hasOptions (boolean)
++ calories (number)
++ caloriesUnit (string)
++ recommendation (string)
++ taxExempt (boolean)
++ nutritionStatement (string)
++ weightBased (boolean)
++ hidden (boolean)
++ requireOperatorValidation: true (boolean)
++ characteristics (array[MenuItemCharacteristics])
++ serialNumberRequired: false (boolean)
++ serialNumberDescription: `Coke 20 oz` (string)
++ isVoided: false (boolean)
++ defaultPortion (Portion)
+
+## MenuItemDetail (MenuItem)
++ menuDateActive: `YYYY-MM-DD` (string, required)
++ nutritionStatement (string)
++ ingredients (array[Ingredient])
++ customizeOptionsByCategory (array[OptionByCategory]) - Where option in OptionByCategory is a CustomizeOption
++ comboOptionsByCategory (array[OptionByCategory]) - Where option in OptionByCategory is a ComboOption
++ portions (array[Portion])
+
+## Portion (object)
++ ID (string)
++ name (string) - if weight based, this should be the unit descriptor "Kg", "Lb"
++ price (number)
++ availableCount (number, optional)
++ tares (array[Tare], optional)
+
+## Tare (object)
++ ID (string)
++ name (string)
++ value (string)
+
+## Cart (object)
++ date: `YYYY-MM-DD` (string)
++ daypartID: (string)
++ store (Store)
++ orders (array[Order])
++ discount (DiscountCode, optional)
+
+## Order (object)
++ ID (string, optional) - orders created localy won't have an ID. IDs are attributed server side on chekcout
++ menuItem
+    + ID: 185504 (string)
+    + name (string)
+    + description (string)
+    + portion
+      + ID (string)
+      + name (string) - if weight based, this should be the unit descriptor "Kg", "Lb"
+      + tare (Tare, optional)
+    + count (number)
+    + weight (number, optional)
+    + subtotal (number)
+    + tax (number)
+    + cartItemID: 6420 (string, optional)
+    + serialNumber: 123456 (string, optional)
+    + serialNumberDescription: coke 20 oz (string, optional)
+    + weightBased: false (boolean)
+    + isVoided: false (boolean)
++ comboOptions
+    + options (array[OrderComboOption])
+    + subtotal (number)
+    + tax (number)
++ customizeOptions
+    + options (array[OrderCustomizeOption])
+    + subtotal (number)
+    + tax (number)
++ comment: `Without cheese` (required, string)
++ total (number)
+
+
+## OrderCustomizeOption (object)
++ ingredient (Ingredient)
++ isCombo (boolean)
++ count (number)
++ cartItemID (string, optional)
+
+
+## OrderComboOption (object)
++ ID (string)
++ name (string)
++ portionSizeLabel (string)
++ count (number)
++ cartItemID (string, optional)
+
+
+## Checkout
++ cart (Cart)
++ total (number)
++ time
++ paymentMethodID: cash, payrollDeduct, thirdparty (enum, optional) - Deprecated
++ processPayment: false (boolean, optional) - Deprecated
++ cashAmount: 10 (number, optional) - For cash payments - the cash amount given by the client (including change). Deprecated
++ operatorSessionID: `$2y$10$uf79chYYDv8TtPbgQ5IYBOGy7bboYGD5hqL4soM/LbrdYVXIZiCzO` (string, nullable)
++ customerToken: `0e4a61e9-275a-4d05-95b4-dde696fe2932` (string, nullable)
++ restaurantTableID: 2 (number, optional)
++ tipAmount: 1 (number, nullable)
++ restaurantTableID: 1 (number, optional) - For restaurant mode
+
+## CheckoutConfirm
++ payworks (optional)
+  + cardReaderTransactionID (string)
+  + stripeChargeID (string)
++ freedompay (optional)
+  + requestID: "01Z6HCMRCB01U65UO1F26AL7E5XXXXXX" (string)
+  + merchantReferenceCode: "123" (string)
+  + approvalCode: "123456" (string)
+  + message: "APPROVED" (string)
+  + receipt (string)
+  + approvedAmount: "5.00" (string)
+  + maskedCardNumber:  "************1234" (string)
+  + cardType: "CREDIT" (string)
+  + issuerName: "MASTERCARD" (string)
+  + expiryDate (string)
+  + aid: "A0000000041010" (string)
+  + arc: "00" (string)
+  + iad: "XXXXXXX00124000000000000000XXXXXXXXX" (string)
+  + method: "05" (string)
+  + pinVerified: true (boolean)
+  + signatureRequired: true (boolean)
+  + tsi: "1111" (string)
+  + tvr: "1111111111" (string)
++ cardReaderTransactionID (string, optional) - For card payments - the payment processor transaction ID. (deprecated)
++ tipAmount: 1 (number, nullable)
+
+## CheckoutComplete (object)
++ force: true (boolean, optional) - Ignores payment validation and force to complete the transaction
+
+## CheckoutPayment (object)
++ paymentMethod: CARD, CASH, PAYROLLDEDUCT, THIRDPARTY, FREE_CHECKOUT, CARDVOUCHER, VOUCHER (enum, required)
++ paymentDetails: (CheckoutPaymentDetails, required) - Values depends on the payment method
++ total: 10 (number, required)
++ tipAmount: 1.5 (number, optional)
+
+## CheckoutPaymentDetails (object)
++ freedompay (optional) - Card payments
+    + requestID: "01Z6HCMRCB01U65UO1F26AL7E5XXXXXX" (string, required)
+    + receipt (string, required)
++ payworks (optional) - Card payments
+    + cardReaderTransactionID (string, required)
+    + stripeChargeID (string, required)
++ cashAmount: 10 (number, optional) - Cash payments
+
+## ReceiptInfo (object)
++ ID: 1636 (string)
++ merchantReferenceCode: 15791209231636 (string)
++ fulfillmentTime: `YYYY-MM-DDThh:mm:ssZ` (string)
++ transactionTime: `YYYY-MM-DDThh:mm:ssZ` (string)
+
+## DiscountCode (object)
++ code (string, required)
++ type: percentage, fixed (enum, required)
++ value (number, required)
++ includes (DiscountCodeCriteria)
++ excludes (DiscountCodeCriteria)
+
+## DiscountCodeCriteria (object)
++ menuItemIDs: (array[string]) - an array of menu item IDs. IDs must mach menuItem IDs inside an order
+
+## DiscountCodeOption (DiscountCode)
++ name (string, required)
++ description (string, required)
+
+## Transaction (object)
++ ID: `1` (string) - The transaction number
++ customerName: `Guest` (string)
++ store
+    + ID: `storeID` (string) - The unique identifier for the Store
+    + name: `Morsum Store` (string) - The store name
+    + description: `Morsum Store Description` (string)
+    + formattedAddress (string)
++ transactionTime: `2017-12-31T06:53:00+00:00` (string) - yyyy-MM-ddTHH:mm:ss.SSSXXX
++ orders (array[Order])
++ costOfgoods (number) - the sum total of cost of goods for all orders (menu item subtotal + combo options subtotal + customize options subtotal)
++ tax (number) - the sum total of tax for all orders (menu item tax + combo option tax + customize option tax)
++ subtotal (number) - the sum of cost of goods and tax
++ discount
+    + name (string)
+    + absoluteValue (number)
++ total (number) - the subtotal minus the discount value
++ paymentMethod: card, cash, payrollDeduct, thirdparty, split (enum, optional)
++ status: paid, refunded, canceled (enum[string])
++ operator: (Operator, required)
++ payment :
+    + card (optional)
+        + freedompay (optional)
+            + cardType: "CREDIT" (string)
+            + method: "05" (string)
+            + maskedCardNumber:  "************1234" (string)
+            + merchantReferenceCode: "123" (string)
+            + aid: "A0000000041010" (string)
+            + tvr: "1111111111" (string)
+            + tsi: "1111" (string)
+            + iad: "XXXXXXX00124000000000000000XXXXXXXXX" (string)
+            + arc: "00" (string)
+        + payworks (optional)
+            + issuerName: "Visa" (string)
+            + maskedCardNumber: "************1234" (string)
+            + entryMode: "Contactless" (string)
+            + aid: "A0000000041010" (string)
+            + authorizationID: "721100/0502392" (string)
+            + merchantID: "10349492942" (string)
+            + terminalID: "BAD429492" (string)
+    + cash (optional)
+        + cashTendered (number)
+        + cashDue (number)
+    + payrollDeduct (optional)
+        + amountCharged (number)
++ tipAmount: 1 (number, nullable)
++ closedOut: true (boolean)
++ payments (array[Payment])
+
+## Operator (object)
++ ID: `95` (required, string)
++ name: `John Doe` (required, string)
+
+## SupportTicket (object)
++ ID: `TECH-123` (required, string)
+
+## Payment
++ ID (string, required)
++ type: (PaymentType)
++ amount: 2.1 (number, required)
++ status: PAID,REFUNDED (enum[string])
++ refunds: (array[Refund])
++ details: array
++ isClosedOut: true (boolean) 
+
+## Refund
++ ID (string, required)
++ amount: 2.1 (number, required)
+
+## PaymentType
++ name: "Cash" (string, required)
++ key: "CASH" (string, required)
+
+[comment]: # (Errors are described below)
+
+<!-- include(MobileAPICommonErrors.apib) -->
+
+## InvalidOperatorCode (Error)
++ code: InvalidOperatorCode
++ message: Invalid operator code
+
+## MobilePhoneRequired (Error)
++ code: MobilePhoneRequired
++ message: Mobile phone is required to complete signup
+
+## InvalidPayrollDeductID (Error)
++ code: InvalidPayrollDeductID
++ message: Invalid payroll deduct ID
+
+## ShiftNotStarted (Error)
++ code: ShiftNotStarted
++ message: Shift not started
+
+## ShiftAlreadyStarted (Error)
++ code: ShiftAlreadyStarted
++ message: Shift already started

@@ -1,0 +1,22 @@
+get:
+  tags: 
+    - Deeplinks
+  summary: Get details on a deeplink by it's code
+  operationId: GetDeeplink
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/deeplinkCode'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

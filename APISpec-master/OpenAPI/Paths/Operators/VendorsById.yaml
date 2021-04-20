@@ -1,0 +1,19 @@
+delete:
+  tags:
+    - Operators
+  summary: Remove an operator from a vendor by its vendorID
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/operatorID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/vendorID'
+  operationId: DetachVendorFromOperator
+  responses:
+    '204':
+      description: 'No Content'
+      headers: {}
+    '401':
+      description: 'Unauthorized Access'
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

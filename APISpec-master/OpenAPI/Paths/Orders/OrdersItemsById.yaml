@@ -1,0 +1,69 @@
+get:
+  tags: 
+    - Orders
+  summary: Get an item from an order by their id's
+  operationId: GetOrderItem
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/orderID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/orderItemID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+patch:
+  tags: 
+    - Orders
+  summary: Update an item within an order by their id's
+  operationId: UpdateOrderItem
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/orderID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/orderItemID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+delete:
+  tags: 
+    - Orders
+  summary: Remove an item from a given order
+  operationId: RemoveOrderItem
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/orderID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/orderItemID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

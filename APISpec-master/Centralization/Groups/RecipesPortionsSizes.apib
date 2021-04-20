@@ -1,0 +1,39 @@
+# Group Recipes Portions Sizes
+
+## PortionSize Resource [/recipes/{id}/portions-sizes]
++ Parameters
+    + id (string)
+
+### Retrieve a list of PortionSize [GET]
+Returns a list of PortionSize
++ Response 200 (application/json)
+    + Attributes (array[PortionSize])
+
+### Create a PortionSize [POST]
+Creates a PortionSize using the id.
++ Parameters
+    + id (string)
++ Attributes (RecipePortionSizeRequest)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Update a PortionSize [PUT /recipes/{id}/portions-sizes/{portionSizeId}]
+Updates a PortionSize using the id.
++ Parameters
+    + id (string)
+    + portionSizeId (string)
++ Attributes (RecipePortionSizeRequest)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Delete a PortionSize [DELETE /recipes/{id}/portions-sizes/{portionSizeId}]
+Delete a PortionSize using the id.
++ Response 200 (application/json)
+
+### Bulk create PortionSize [POST /recipes/{id}/portions-sizes/bulk]
+Creates a PortionSize using the id.
++ Parameters
+    + id (string)
++ Attributes (RecipePortionSizeBulkRequest)
++ Request (application/json)
++ Response 200 (application/json)

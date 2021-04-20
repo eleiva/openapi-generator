@@ -1,0 +1,71 @@
+# Group Recipes
+
+## Recipe Resource [/recipes/{id}]
++ Parameters
+    + id (string)
+
+### Retrieve a Recipe [GET]
+Retrieves the Recipe with the given ID.
++ Response 200 (application/json)
+    + Attributes (Recipe)
+
+### Update a Recipe [PUT]
+Updates a Recipe using the id.
++ Attributes (RecipeRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (Recipe)
+
+### Update a Recipe [PUT /recipes/{external_id}/external]
+Updates a Recipe using the external id.
++ Parameters
+    + external_id (string)
++ Attributes (RecipeRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (Recipe)
+
+### Update a Recipe [PUT /recipes/{external_id}/external/{source_id}/source]
+Updates a Recipe using the external id and source id.
++ Parameters
+    + external_id (string)
+    + source_id (string)
++ Attributes (RecipeRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (Recipe)
+
+### Restores a Recipe [PATCH /recipes/{id}/restore]
+Restores a Recipe.
++ Parameters
+    + id (string)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Deletes a Recipe [DELETE /recipes/{id}]
+Deletes a Recipe.
++ Parameters
+    + id (string)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Attaches an image to a Recipe [PATCH /recipes/{id}/images]
+Attaches an image to a Recipe.
++ Parameters
+    + id (string)
++ Request (application/json)
+    + Attributes
+        + image_url (string)
++ Response 200 (application/json)
+
+### List all Recipes [GET /recipes]
+Returns a list of Recipes.
++ Response 200 (application/json)
+    + Attributes (array[Recipe])
+
+### Create a Recipe [POST /recipes]
+Creates a new Recipe.
++ Attributes (RecipeRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (Recipe)

@@ -1,0 +1,44 @@
+get:
+  tags: 
+    - Order Guides
+  summary: Get all available order guides
+  operationId: GetOrdersGuidesByVendorId
+  parameters:
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/vendorID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+post:
+  tags: 
+    - Order Guides
+  summary: Create a new order guide for a specific vendor
+  operationId: CreateOrderGuideForVendor
+  parameters:
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/vendorID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

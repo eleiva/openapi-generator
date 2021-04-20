@@ -1,0 +1,66 @@
+get:
+  tags:
+    - Shopping Lists
+  summary: Get a single shopping list by its shoppingListID
+  operationId: GetShoppingList
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/shoppingListID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+patch:
+  tags:
+    - Shopping Lists
+  summary: Update an existing shopping list by its shoppingListID
+  operationId: UpdateShoppingList
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/shoppingListID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+delete:
+  tags:
+    - Shopping Lists
+  summary: Delete an existing shopping list by its shoppingListID
+  operationId: DeleteShoppingList
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/shoppingListID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

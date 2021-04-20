@@ -1,0 +1,27 @@
+# Group Content Report
+
+# ContentReport Resource [/reports]
+
+## Retrieve report options. [GET /reports/options]
+Retrieve report options.
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + contentReportOptions (array[ContentReportOption])
+
+## Create a content Report. [POST /reports]
+Create a content Report
++ Attributes
+    + reportableKey: `eventRecording|event|recipe` (string)
+    + reportableID: `1` (string)
+    + optionsSelected": `[1,2]` (array[string]) // Array of ids, at least one is mandatory
+    + comments: `my comments` (string,optional)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + ID (string)
+            + reportableKey: `eventRecording` (string)
+                Can be  `eventRecording` or `event`
+            + reportableID: `1` (string)
+            + comments: 'Comments' (string)

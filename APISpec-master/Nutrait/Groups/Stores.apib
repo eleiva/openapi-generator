@@ -1,0 +1,128 @@
+# Group Store
+
+# Store Resource [/stores]
+
+## Retrieve available stores [GET /stores{?lat}{?lng}{?kind}]
+Retrieve available stores
++ Parameters
+   + lat: 39.95216710 (number)
+    Required if *kind=community*
+   + lng: 75.15841430 (number)
+    Required if *kind=community*
+   + kind: `community` (string, optional)
+    Options are: *community* (default) , *meal-delivery* and *marketplace*
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + stores (array[Store])
+
+# MenuItem Resource [/stores/{storeID}/menu-items]
++ parameter
+    + storeID: `1` (string)
+
+
+## Retrieve the menu of a store [GET /stores/{storeID}/menu-items{?date}]
+Retrieve the menu of a store
++ Parameters
+    + storeID: `1` (string)
+    + date: `2020-02-02` (string, optional)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + menuItems (array[MenuItem])
++ Response 400 (application/json)
+    + Attributes
+        + error (StoreClosedError)
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidMenu)
+
+## Retrieve the menu item detail [GET /stores/{storeID}/menu-items/{menuItemID}]
+Retrieve the menu item detail
++ Parameters
+    + storeID: `1` (string)
+    + menuItemID: `1` (string)
++ Response 200 (application/json)
+    + Attributes
+        + response (MenuItemDetail)
+
+# Transaction Resource [/stores/{storeID}/checkout]
++ parameters
+    + storeID: `1` (string)
+
+## Order Checkout [POST]
+Order Checkout
++ Attributes (CheckoutRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (CheckoutTransaction)
+
+## Retrieve checkout info [GET]
+Retrieve checkout information
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (CheckoutInfo)
+
+# Discount Resource [/stores/{storeID}/discounts/validate]
++ parameters
+    + storeID: `1` (string)
+
+## Validate Discount [POST]
+Vaidate and retrieve a discount available for user
++ Attributes
+    + code: `8off` (string)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (Discount)
+
+# Delivery Quote Resource [/stores/{storeID}/deliveries/quotes]
+
+## Delivery Quote [POST]
+Retrieve a quote for the address provided 
++ Attributes
+    + dropoffAddress: `201 Third St. San Francisco, CA` (string)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (DeliveryQuote)
+
+# Shipping Address Resource [/stores/{storeID}/shipping/addresses]
+
+## Validate address [POST /stores/{storeID}/shipping/addresses/validate]
+Validate and get the address identificator
++ Attributes
+    + street1: `1 E 161st St.`
+    + street2: `apart 2` (string, optional)
+    + city: `Bronx`
+    + state: `NY`
+    + zip: `10451`
+    + email: `abcd@mailinator.com` (string)
+    + phone: `415-528-7555` (string)
+    + name: `Eduardo` (string)
+    + company: `My Company` (string, optional)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + ID: `adr_caac9add0c874df6bbebc090d976722d` (string)
++ Response 400 (application/json)
+    + Attributes
+        + error
+            + code: `E.ADDRESS.NOT_FOUND` (string)
+            + message: `Address not found` (string)
+
+
+## Retrieve Rates [POST /stores/{storeID}/shipping/rates]
+Retrieve a list of rates for the shipping requested
++ Attributes
+    + toAddressID: `adr_caac9add0c874df6bbebc090d976722d` (string)
+    + amountOfItemsToShip: 2 (number)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + shippingID: `shp_d015e20461674089bce28d4d413fa6e5` (string)
+            + rates (array[ShippingRate])

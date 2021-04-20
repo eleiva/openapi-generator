@@ -1,0 +1,344 @@
+#Bodie API
+Developer Platform
+Bodie API Specification
+
+Base endpoint: https://api.morsum.co/bodie/v1/
+
+## Overview
+
+Some general specifications about our Developer Platform API
+- Available HTTP Verbs are GET, POST, PUT, PATCH and DELETE
+- JSON will be the standard output format
+- API’s response’s content-type is application/hal+json
+- Usage of Http Status Codes is a must (200 for ok, 201 for created, 404 not found and so on)
+- URI’s follow the RESTful constraints: https://base_url/resources/id/resources
+- Date and time are represented by Date and DateTime. Both types are formatted according to ISO 8607. Date is formatted as a complete date - YYYY-MM-DD (e.g. 1997-07-16)- and DateTime as complete date plus hours, minutes and seconds, always with the Z indicator for UTC timezone - YYYY-MM-DDThh:mm:ssZ (e.g. 1997-07-16T19:20:00Z)
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+
+```json
+{
+  "session": {
+    "sessionID" : String
+  }
+
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+
+### Error 4xx or 5xx
+
+HTTP status 4xx for client errors and 5xx for server errors.
+```json
+{
+  "error": {
+    "code": String,
+    "message": String
+  }
+}
+```
+
+## Paging
+
+If the resource used allows to be paginated, parameters page & perPage will be allowed thus enabling the API consumer to paginate the entire collection of the resource
+```json
+{
+  "session": {
+    "sessionID" : String
+  },
+  "response": {
+  ... //actual response from API
+  },
+  "paging":  {
+      "totalPages": Int,
+      "perPage": Int,
+      "currentPage": Int
+  }
+}
+```
+
+## Headers
+
+By default, every call to any endpoint behind authentication must include the Authorization header as stated by W3C in HTTP 1.0. The type will be Bearer since we’re implementing OAuth2 (explained below) and after the type, access token should go as it is like this:
+Authorization : Bearer <access-token>
+
+## Images
+
+All image urls have the following format “img_xxxxx_s.jpg” where “s” can be replaced with any of the following requested formats:
+s: 400
+m: 800
+l: 1200
+
+## HATEOAS - Hypermedia API
+
+A Hypermedia API offers self descriptive links that point one endpoint to another. These links are context aware and they change according to where your request is within the API and what features and data is available to consume at that single state. Morsum’s Developer Platform implements <a href="http://stateless.co/hal_specification.html" target="\_blank">HAL</a>, one of the most easy, readable and lightweight specifications for writing Hypermedia links.
+```json
+{
+    "response" : {
+    	//actual API response
+    },
+    "_links" : {
+     "self" : {
+       "href" : "forecast/123",
+       "method" : "GET"
+     }
+   }
+}
+```
+
+## Aliases
+
+If you need to get data about the current logged in Customer, you have available aliases of every endpoint documented here that automates this by replacing the {customerID} for a string "me" eg: customers/{customerID}/cart for customers/me/cart.
+Also remember to take advantage from HATEOAS since you will likely have the url's preformatted with any ID's needed.
+
+# Group API Authentication - OAuth
+
+## POST /oauth/token
+Create a new access token with given credentials
++ Request
+    + Headers
+
+            Accept: application/json
+    + Attributes
+        + grantType (string, required)
+        + clientID (string, required)
+        + clientSecret (string, required)
+
++ Response 200 (application/hal+json)
+    + Attributes
+        + response
+            + accessToken (AccessToken)
+        + _links (AuthenticationLinks)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /oauth/token/refresh
+This will try to refresh a token using the refresh token.
++ Request
+    + Headers
+
+            Accept: application/json
+            Bearer: {accessToken}
+    + Attributes
+        + grantType (string, required)
+        + clientID (string, required)
+        + clientSecret (string, required)
+        + refreshToken (RefreshToken, required)
+
++ Response 200 (application/hal+json)
+    + Attributes
+        + response
+            + accessToken (AccessToken)
+        + _links (AuthenticationLinks)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Group Pos / Production
+
+## POST /production
+Push data to the Bodie models in order to be able to get forecast predictions from it.
++ Request
+    + Headers
+
+            Accept: application/json
+            Bearer: {accessToken}
+    + Attributes (ProductionRequest)
+
++ Response 200 (application/hal+json)
+    + Attributes
+        + response (Success)
+        + _links
+            + self (ProductionHalLink)
+            + forecast (ForecastHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## GET /forecast
+Get prediction forecast
++ Request
+    + Headers
+
+            Accept: application/json
+            Bearer: {accessToken}
+    + Attributes
+        + site (Site, required)
+        + store (Store, required)
+        + date: `YYYY-MM-DD` (string, required)
+        + period (Period, optional)
+        + menuID: `900` (string, optional)
+        + predictions (array[PredictionRequest], required)
+
++ Response 200 (application/hal+json)
+    + Attributes
+        + response (Success)
+            + site (Site, required)
+            + store (Store, required)
+            + date: `YYYY-MM-DD` (string, required)
+            + period (Period, optional)
+            + menuID: `900` (string, optional)
+            + predictions (array[Prediction], required)
+        + _links
+            + self (ForecastHalLink)
+            + production (ProductionHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+
+# Data Structures
+
+## AccessToken (object)
++ token (string, required)
++ expiresIn (string, required)
++ refreshToken (RefreshToken, required)
+
+## RefreshToken (object)
++ token (string, required)
++ expiresIn (string, required)
+
+## Session (object)
++ sessionID (string, required)
+
+## ProductionRequest (object)
++ site (Site, required)
++ store (Store, required)
++ station (Station, optional)
++ recipe (Recipe, required)
++ servedAmount (number, required)
++ soldAmount (number, required)
++ serviceDate (string, required)
++ period (Period, optional)
++ isMTO (boolean, required)
+    + Default: `false`
+    + Members
+        + `true`
+        + `false`
++ isCPG (boolean, required)
+    + Default: `false`
+    + Members
+        + `true`
+        + `false`
++ code (string, required)
++ price (number, required)
++ nutrients (array[Nutrient], optional)
++ ingredients (array[Ingredient], optional)
+
+## Site (object)
++ ID: `10` (string, required)
++ siteName (string, required)
++ siteLOB (string, optional)
+
+## Store (object)
++ ID: `10` (string, required)
++ storeName (string, required)
++ location (string, required)
+
+## Station (object)
++ ID: `10` (string, required)
++ stationName (string, required)
+
+## Recipe (object)
++ ID: `10` (string, required)
++ recipeName (string, required)
++ categoryID (string, required)
++ categoryName (string, required)
+
+## Period (object)
++ ID: `10` (string, required)
++ period (string, required)
+
+## Nutrient (object)
++ ID: `1` (string, required)
++ name (string, required)
++ value  (number, required)
++ units (string, required)
++ referenceValue (number, required)
+
+## Ingredient (object)
++ ID: `1` (string, required)
++ name (string, required)
++ value  (number, required)
++ units (string, required)
+
+## PredictionRequest (object)
++ station (Station, optional)
++ recipe (Recipe, required)
+
+## Prediction (object)
++ station (Station, optional)
++ recipe (Recipe, required)
++ portions (string, optional)
++ confidence (ConfidenceInterval, optional)
+
+## ConfidenceInterval (object)
++ ID: `1` (string, required)
++ lower: `10` (number, required)
++ upper: `90` (number, required)
+
+## Success (object)
++ success (boolean, required)
+    + Default: `true`
+    + Members
+        + `true`
+        + `false`
+
+## Error (object)
++ code (string, required)
++ message (string, required)
+
+## UnauthorizedAccessError (Error)
++ code: UnauthorizedAccess
++ message: Unauthorized access or invalid access token
+
+## InvalidStoreID (Error)
++ code: InvalidStoreID
++ message: Invalid Store ID
+
+## InvalidDateFormat (Error)
++ code: InvalidDateFormat
++ message: Date with invalid format
+
+## InvalidMenuItemID (Error)
++ code: InvalidMenuItemID
++ message: Invalid Menu Item ID
+
+## InvalidTransactionID (Error)
++ code: InvalidTransactionID
++ message: Invalid Transaction ID
+
+## HalLink (object)
++ href (string, required)
++ method (string, required)
+
+## AuthenticationLinks (object)
++ self (RequestAccessTokenHalLink, required)
++ refreshToken (RefreshAccessTokenHalLink, required)
+
+## RequestAccessTokenHalLink (HalLink)
++ href: /oauth/token
++ method: POST
+
+## RefreshAccessTokenHalLink (HalLink)
++ href: /oauth/token/refresh
++ method: POST
+
+## ProductionHalLink (HalLink)
++ href: /production
++ method: POST
+
+## ForecastHalLink (HalLink)
++ href: /forecast
++ method: GET

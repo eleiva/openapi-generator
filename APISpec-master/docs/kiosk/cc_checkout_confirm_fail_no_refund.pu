@@ -1,0 +1,32 @@
+@startuml
+
+autonumber
+actor Customer as CUS
+participant POS
+participant "Card Processor" as CP
+participant Backend as BE
+
+BE --> POS: confirm failed, couldn't refund
+BE --> CUS: confirm failed, couldn't refund
+note right of CUS: Couldn't confirm order\nRetry|Cancel
+alt customer retries
+    |||
+    ref over CUS, BE: confirm flow
+    |||
+else customer cancels
+    CUS -> POS: cancel
+    POS -> BE: cancel transaction (/checkout/cancel)
+    alt cancel succeeds
+        BE -> BE: cancel transaction
+        BE -> BE: refund payment
+        BE --> POS: ok
+        POS -> BE: /logout
+    else cancel fails
+        return error
+        POS --> CUS: cancel failed screen
+        note right: Cancel failed screen prompts\ncustomer to reach support\nfor a refund
+        CUS -> POS: ok
+        POS -> BE: /logout
+    end
+end
+@enduml

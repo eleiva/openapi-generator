@@ -1,0 +1,207 @@
+FORMAT: 1A
+HOST: https://analytics.morsum.co/api/v3
+
+# Signum API
+
+Documentation for the DS Analytics API.
+Base endpoint: https://analytics.morsum.co/api/v3
+
+## Overview
+
+Some general specifications about our Developer Platform API
+- Available HTTP Verbs are GET, POST, PUT, PATCH and DELETE
+- JSON will be the standard output format
+- API’s response’s content-type is application/json
+- Usage of Http Status Codes is a must (200 for ok, 201 for created, 404 not found and so on)
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+
+```json
+{
+  "parameters": {
+    ... // The parameters sent in the request
+  }
+
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+
+
+## Paging
+
+If the resource used allows to be paginated, parameters page & perPage will be allowed thus enabling the API consumer to paginate the entire collection of the resource
+
+```json
+{
+  "parameters": {
+    ... // parameters
+  },
+  "response": {
+  ... //actual response from API
+  },
+  "paging": {
+    "currentPage": Int,
+    "perPage": Int,
+    "totalPages": Int,
+    "totalResults": Int
+ }
+}
+```
+# Group IngredientCategorizer
+
+
+### Create ingredient categories [POST /ingredients/categorize]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID|CentralSiteGUID}
+
+    + Attributes
+        - include IngredientObjectRequest
+
++ Response 200 (application/json)
+
+    + Attributes
+        - include IngredientCategorizerResponse
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+# Group SupplierProductCategorizer
+
+
+### Create supplier product categories [POST /supplier-products/categorize]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID|CentralSiteGUID}
+
+    + Attributes
+        - include SupplierProductObjectRequest
+
++ Response 200 (application/json)
+
+    + Attributes
+        - include SupplierProductCategorizerResponse
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+# Group SupplierProductMatcher
+
+
+### Match supplier products to ingredients [POST /supplier-products/ingredients-match]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID|CentralSiteGUID}
+
+    + Attributes
+        - include SupplierProductMatcherRequest
+
++ Response 200 (application/json)
+
+    + Attributes
+        - include SupplierProductMatcherResponse
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+# Data Structures
+
+
+## Pagination (object)
+- totalResults (required, number)
+- totalPages (required, number)
+- perPage (required, number)
+- page (required, number)
+
+
+## IngredientNameObject (object)
+- name: `juice, concentrated, unsweetened, apple` (string, required)
+- external_id: `P00001` (string, required)
+
+## SupplierProductNameObject (object)
+- name: `JUICE APPLE 100% PLST BTL SHLF12/15/` (string, required)
+- external_id: `6484695` (string, required)
+
+## IngredientObjectRequest (object)
+- ingredients (array[IngredientNameObject], required)
+
+## SupplierProductObjectRequest (object)
+- products (array[SupplierProductNameObject], required)
+
+## IngredientObject (object)
+- name: `juice, concentrated, unsweetened, apple` (string, required)
+- external_id: `P00001` (string, required)
+- ingredient_category: `beverage` (string, required)
+- parent_ingredient: `juice` (string, required)
+- types: (array[string], optional)
+- characteristics: (array[string], optional)
+- geographies: (array[string], optional)
+- colors: (array[string], optional)
+- treatments: `concentrated` (array[string], optional)
+- pre_cooking_methods: (array[string], optional)
+- health_categories: `unsweetened` (array[string], optional)
+- seasoning: (array[string], optional)
+- flavors: `apple` (array[string], optional)
+- shapes: (array[string], optional)
+- packaging: (array[string], optional)
+- preservation_methods: (array[string], optional)
+- purchase_category: `BEVERAGE - COLD` (string, required)
+
+## SupplierProductObject (object)
+- name: `JUICE APPLE 100% PLST BTL SHLF12/15/` (string, required)
+- external_id: `6484695` (string, required)
+- ingredient_category: `beverage` (string, required)
+- parent_supplier_product: `juice` (string, required)
+- characteristics: (array[string], optional)
+- geography: (array[string], optional)
+- colors: (array[string], optional)
+- treatments: (array[string], optional)
+- pre_cooking_methods: (array[string], optional)
+- health_categories: (array[string], optional)
+- ingredients_types: (array[string], optional)
+- seasoning: (array[string], optional)
+- flavors: `apple` (array[string], optional)
+- shapes: (array[string], optional)
+- packaging: (array[string], optional)
+- preservation_methods: (array[string], optional)
+
+## IngredientCategorizerResponse (object)
+- ingredients (required, array[IngredientObject])
+
+## SupplierProductCategorizerResponse (object)
+- products (required, array[SupplierProductObject])
+
+## SupplierProductMatcherObject (object)
+- external_id: `6484695` (string, required)
+- ingredient_external_id: `P00001` (string, optional)
+- ingredient_cpg_external_id: `C00001` (string, optional)
+
+## SupplierProductMatcherRequest (object)
+- products (required, array[SupplierProductObject])
+
+## SupplierProductMatcherResponse (object)
+- products (required, array[SupplierProductMatcherObject])

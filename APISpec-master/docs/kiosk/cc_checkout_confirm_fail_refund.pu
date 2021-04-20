@@ -1,0 +1,26 @@
+@startuml
+
+autonumber
+actor Customer as CUS
+participant POS
+participant "Card Processor" as CP
+participant Backend as BE
+
+BE --> POS: confirm failed, payment was refunded
+POS --> CUS: confirm failed, payment was refunded
+note right of CUS: Show payment was refunded screen\nwith Retry|Cancel buttons
+alt customer retries
+    CUS -> POS: retry
+    POS -> CP : start CC payment
+    note right: Starts again the CC payment \nwith the same transction ID
+    ...
+else customer cancels
+    CUS -> POS: cancel
+    POS -> BE: cancel transaction (/checkout/cancel)
+    note left of BE: This is a fire and forget call\nIf it fails, there will be a pending\ntransaction that needs to be\nclosed on the next login
+    BE -> BE: cancel transaction
+    POS -> BE: /logout
+end
+
+@enduml
+

@@ -1,0 +1,39 @@
+components:
+  schemas:
+    UnauthorizedException:
+      title: Unauthorized access to resource
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+    ValidationException:
+      title: Validation error
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+    Error:
+      title: Base error
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: string
+          example: "Error"
+        message:
+          type: string
+          example: "Base Error"
+    NoModelFound:
+      title: No data found
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'

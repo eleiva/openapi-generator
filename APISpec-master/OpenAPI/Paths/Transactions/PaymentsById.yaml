@@ -1,0 +1,46 @@
+get:
+  tags: 
+    - Payments
+  summary: Get a single payment by its paymentID
+  operationId: GetPayment
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/transactionID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/paymentID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+patch:
+  tags: 
+    - Payments
+  summary: Update an payment by its paymentID
+  operationId: UpdatePayment
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/transactionID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/paymentID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

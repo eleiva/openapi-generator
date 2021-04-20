@@ -1,0 +1,261 @@
+#Recover Smart API
+Developer Platform
+Recover Smart API Specification
+
+Base endpoint: https://api.morsum.co/recover/smart/v1/
+
+<!-- include(OpenAPIGeneral.apib) -->
+
+# Group Patients
+
+## POST /patients/validate
+
+Validates if _email_ corresponds to an active Patient in Recover.
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: `Bearer {accessToken}`
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+    + Attributes
+        + email: `john-scofield@morsum.co` (string, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + response (PatientResponse, required)
+
++ Response 204 (application/json)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /patients
+
+Enrolls a patient to the Recover program.
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+    + Attributes (PatientRequest)
+
++ Response 200 (application/json)
+    + Attributes
+        + response (PatientResponse, required)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## PATCH /patients/{id}/prestay
+
+Modifies the prestay dates for a given _id_
++ Parameters
+    + id: `1` (string, required) - ID of the Patient
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+    + Attributes (StayInfo, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + response (Patient, required)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Group Orders
+
+## GET /patients/{id}/orders?date={date}&daypartID={daypartID}
+
+Fetch the full list of order items by the given single _date_ and/or _daypartID_. If no _date_ is given, default is the current date. If no _daypartID_ given, the full list of items will be retrieved.
++ Parameters
+    + id: `1` (string, required) - ID of the Patient
+    + daypartID: `1` (string, optional) - ID of the Daypart
+    + date: `2019-03-30` (string, optional) - date in this format YYYY-MM-DD
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: `Bearer {accessToken}`
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+
++ Response 200 (application/json)
+    + Attributes
+        + response (array[Order], required)
+        + dayparts (array[Daypart], required) - All available dayparts for default store
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidSite)
+
+## PUT /orders/{id}
+
+Edits the items within an order. if no items sent, it'll cancel the order
++ Parameters
+    + id: `1` (string, required) - ID of the Order
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: `Bearer {accessToken}`
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+    + Attributes
+      + date: `2019-03-30` (string, required) - date in this format YYYY-MM-DD
+      + daypartID: `1` (string, required) - ID of the Daypart
+      + menuItems: (array[MenuItemRequest])
+      + reason (string, required) - The reason typed by doctor for changing the patient's order
+
++ Response 200 (application/json)
+    + Attributes
+        + response (Order, required)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidSite)
+
+## POST /orders/approve
+
+Approves all orders given in _orderIds_ array.
++ Parameters
+    + id: `1` (string, required) - ID of the Order
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: `Bearer {accessToken}`
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+    + Attributes
+      + orderIds (array[number], required)
++ Response 200 (application/json)
+    + Attributes
+        + response (Order, required)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidSite)
+
+## DELETE /orders/{id}
+
+Deletes an existing order by _id_
++ Parameters
+    + id: `1` (string, required) - ID of the Order
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: `Bearer {accessToken}`
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+
++ Response 204 (application/json)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidSite)
+
+# Group Menu Items
+
+## GET /patients/{id}/menuItems?date={date}&daypartID={daypartID}
+
+Fetch the full list of menu items available to the _id_. If no _date_ is given, default is the current _date_.
+If no _daypartID_, the active daypart will be the default.
++ Parameters
+    + id: `1` (string, required) - ID of the Patient
+    + daypartID: `1` (string, required) - ID of the Daypart
+    + date: `2019-03-30` (string, optional) - date in this format YYYY-MM-DD
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: `Bearer {accessToken}`
+        siteID: `1` (number, required) - The id of the site, this id can be retrieved in the "API Authentication - OAuth" docs
+
++ Response 200 (application/json)
+    + Attributes
+        + response (array[MenuItem], required)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidSite)
+
+# Data Structures
+
+## Daypart (object)
++ ID: `1` (string, required) - The unique identifier
++ displayName: `Lunch` (string, required) - The daypart display name
++ displayOrder: 1 (number, required) - The daypart display order
+
+## SimpleResource (object)
++ ID: `1` (string, required) - The unique identifier
++ name: `Resource` (string, required)
+
+## Patient (object)
++ firstName: `John` (string)
++ lastName: `Scofield` (string)
++ email: `john-scofield@morsum.co` (string)
++ stayInfo: (StayInfo, required)
+
+## PatientResponse (Patient)
++ ID: `1` (string, required) - The unique identifier for the Patient
++ nutrait: `https://analyticsdev.morsum.co/html/nutrait/c18yLnRfYy5pXzM2LmRfMjAxOS0wNC0wOQ%3D%3D` (string, required) - The url for nutrait iframe
+
+## PatientRecommendationSeeds (object)
++ code: `http://snomed.info/sct` (string, required)
++ system: `299703001` (string, required)
+
+## PatientRequest (Patient)
++ patientID: `SM123` (string, required) - The unique identifier for the Patient from external source
++ allergies (array[PatientRecommendationSeeds], optional)
++ conditions (array[PatientRecommendationSeeds], optional)
+
+## StayInfo (object)
++ startDate: `2019-03-01` (string, required) - Prestay start date in this format YYYY-MM-DD
++ endDate: `2019-03-30` (string, required) - Prestay end date in this format YYYY-MM-DD
+
+## Category (SimpleResource)
++ name: `DESSERT` (string, required) - The name of the menu item category
+
+## Recipe (SimpleResource)
++ name: `Butter Cookies` (string, required)
++ category (Category, optional)
+
+## OrderItem (object)
++ ID: `1` (string, required) - The unique identifier for the order item
++ recipe (Recipe, required)
+
+## Order (object)
++ ID: `1` (string, required) - The unique identifier for the order
++ daypart (Daypart, required)
++ isApproved: true (boolean, required)
++ items (array[OrderItem], required)
+
+## MenuItem (object)
++ ID: `1` (string, required) - The unique identifier for the Menu Item
++ recipe (Recipe, required)
++ cartItemID: `1` (string, required) - The unique identifier for the cart item
+
+## MenuItemRequest (object)
++ ID: `1` (string, required) - The unique identifier for the Menu Item
++ cartItemID: `1` (string, optional) - The unique identifier for the cart item
+
+<!-- include(MobileAPICommonErrors.apib) -->
+
+<!-- include(OpenAPICommonDataStructures.apib) -->

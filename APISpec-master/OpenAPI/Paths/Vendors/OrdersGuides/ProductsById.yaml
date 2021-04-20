@@ -1,0 +1,72 @@
+get:
+  tags: 
+    - Order Guides
+  summary: Get a product from an order guide by its orderGuideID & productID
+  operationId: GetProductFromOrderGuide
+  parameters:
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/vendorID'
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/orderGuideID'
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/productID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+patch:
+  tags: 
+    - Order Guides
+  summary: Update a product within an order guide
+  operationId: UpdateProductFromOrderGuide
+  parameters:
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/vendorID'
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/orderGuideID'
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/productID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+delete:
+  tags: 
+    - Order Guides
+  summary: Remove product from a order guide
+  operationId: RemoveProductFromOrderGuide
+  parameters:
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/vendorID'
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/orderGuideID'
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/productID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

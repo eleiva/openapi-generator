@@ -1,0 +1,44 @@
+get:
+  tags: 
+    - Vendors
+  summary: Get a list of available operators for a single vendor by its vendorID
+  operationId: GetOperatorByVendorId
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/vendorID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+post:
+  tags: 
+    - Vendors
+  summary: Create a new operator and assign to a vendor by its vendorID
+  operationId: CreateOperatorByVendorId
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/vendorID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

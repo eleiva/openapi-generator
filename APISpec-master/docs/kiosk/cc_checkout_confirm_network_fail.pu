@@ -1,0 +1,42 @@
+@startuml
+
+autonumber
+actor Customer as CUS
+participant POS
+participant "Card Processor" as CP
+participant Backend as BE
+
+CUS -> POS : guest login
+POS -> BE : /login
+BE --> POS : [session ID]
+CUS -> POS : add items to cart
+CUS -> POS : CC payment
+POS -> BE : create transaction (/checkout)
+BE -> BE : create transaction
+BE --> POS : [transaction ID]
+|||
+POS -> CP : start CC payment
+...
+return approved
+|||
+POS ->X BE: confirm transaction payment \n(/checkout/confirm)
+note right: Network failure.\nPOS can't determine what's the state\nof the request 
+POS --> CUS: network error
+note right of CUS: Show error screen saying\nthe state of the transaction\ncouldn't be determined\nand a button to Verify the transaction
+CUS -> POS : press Verify button
+POS -> BE : verify transaction payment\n(/checkout/verify)
+alt confirm succeeds
+    BE --> POS: ok
+    POS --> CUS: show success screen
+    POS -> BE: /logout
+else confirm fails, payment refunded
+    |||
+    ref over CUS, BE: confirm failure with refund flow
+     |||
+else confirm fails, couldn't refund
+    |||
+    ref over CUS, BE: confirm failure without refund flow    
+    |||
+end
+
+@enduml

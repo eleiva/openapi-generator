@@ -1,0 +1,44 @@
+get:
+  tags:
+    - Carts
+  summary: Get all orders related to a cart by its cartID
+  operationId: GetOrdersFromCart
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/cartID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+post:
+  tags:
+    - Carts
+  summary: Create orders from a cart by its cartID
+  operationId: CreateOrdersFromCart
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/cartID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

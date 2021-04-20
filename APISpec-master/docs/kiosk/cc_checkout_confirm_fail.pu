@@ -1,0 +1,43 @@
+@startuml
+
+autonumber
+actor Customer as CUS
+participant POS
+participant "Card Processor" as CP
+participant Backend as BE
+
+CUS -> POS : guest login
+POS -> BE : /login
+BE --> POS : [session ID]
+CUS -> POS : add items to cart
+CUS -> POS : CC payment
+POS -> BE : Create transaction (/checkout)
+BE -> BE : Create transaction
+BE --> POS : [transaction ID]
+|||
+POS -> CP : start CC payment
+...
+return approved
+|||
+POS -> BE: Confirm transaction payment \n(/checkout/confirm)
+note right: Confirm fails
+BE -> BE: Refund payment
+BE --> POS: payment refunded
+POS --> CUS: payment refunded
+note left: Show payment was refunded screen\nwith Retry|Cancel buttons
+alt success
+    CUS -> POS: cancel
+    note right: The payment has been refunded\nnothing to do here besides\nlogging out
+    POS -> BE: /logout
+else customer retries
+    CUS -> POS: retry
+    POS -> CP : start CC payment
+    note right: Starts again the CC payment \nwith the same transction ID
+    ...
+else customer cancels
+    CUS -> POS: cancel
+    note right: The payment has been refunded\nnothing to do here besides\nlogging out
+    POS -> BE: /logout
+end
+@enduml
+

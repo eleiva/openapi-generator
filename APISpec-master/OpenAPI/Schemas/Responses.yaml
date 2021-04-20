@@ -1,0 +1,7 @@
+components:
+  schemas:
+    BaseResponse:
+      title: Base placeholder for all responses
+      properties:
+        response:
+          type: array

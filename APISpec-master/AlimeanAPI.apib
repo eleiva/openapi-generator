@@ -1,0 +1,267 @@
+FORMAT: 1A
+HOST: https://bodie.morsum.co/api/v1
+
+# Alimean API
+
+Documentation for the DS Analytics API.
+Base endpoint: https://bodie.morsum.co/api/v1
+
+## Overview
+
+Some general specifications about our Developer Platform API
+- Available HTTP Verbs are GET, POST, PUT, PATCH and DELETE
+- JSON will be the standard output format
+- API’s response’s content-type is application/json
+- Usage of Http Status Codes is a must (200 for ok, 201 for created, 404 not found and so on)
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+
+```json
+{
+  "parameters": {
+    ... // The parameters sent in the request
+  }
+
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+
+
+## Paging
+
+If the resource used allows to be paginated, parameters page & perPage will be allowed thus enabling the API consumer to paginate the entire collection of the resource
+
+```json
+{
+  "parameters": {
+    ... // parameters
+  },
+  "response": {
+  ... //actual response from API
+  },
+  "paging": {
+    "currentPage": Int,
+    "perPage": Int,
+    "totalPages": Int,
+    "totalResults": Int
+ }
+}
+```
+# Group Alimean
+
+### Get menus attributes limits [GET /menu-attributes-limits{?store_id}{?daypart_id}]
++ Parameter
+    + store_id: `1` (number, optional) - The internal ID of the store at site level
+    + daypart_id: `1` (number, optional) - The ID for the requested daypart
+    
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID}
+
+
++ Response 200 (application/json)
+    + Attributes
+        - include AttributeLimitsResponse
+
+
+### Get menus matched to attributes [PUT /menu-matches]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID}
+
+    + Attributes
+        - include MenusMatchesRequest
+
+
++ Response 200 (application/json)
+    + Attributes
+        - include MenusMatchesResponse
+
+
+### Get menu [PUT /menu{?flatten}{?expanded}{?checkMissing}{?useCached}]
++ Parameter
+    + flatten: `False` (boolean, optional) - Whether to flatten result or not. Flatten would been the response is an array of objects, each with date, station_id, product_id, value. The shown response is NOT flattened.
+    + expanded: `False` (boolean, optional) - If expanded is true, paging is ignored and all the results are returned. Please use cautiously.
+    + checkMissing: `False` (boolean, optional) - If checkMissing is True and MenuID is provided in the request, the returned menu will only contain items missing form the active menuID (used to update menus without repopulation).
+    + useCached: `False` (boolean, optional) - If useCached is True, if another previously cached menu is available for the same parameters, it is returned.
+
++ Request (application/json)
+
+    + Headers
+            
+            Authorization: siteGUID {siteGUID}
+
+    + Attributes
+        - include MenuRequest
+
+
++ Response 200 (application/json)
+    + Attributes
+        - include MenuResponse
+
+
+# Data Structures
+
+
+## Pagination (object)
+- totalResults (required, number)
+- totalPages (required, number)
+- perPage (required, number)
+- page (required, number)
+
+
+## AttributeLimitsResponse (object)
+- parameters: (object)
+    - daypartID: `1` (number, required)
+    - storeID: `1` (number, required)
+    - siteID: `1` (number, required)
+- response (object)
+    - menu_attributes (object)
+        - protein (object)
+            - min: `10` (number, required)
+            - max: `10` (number, required)
+            - start: `10` (number, required)
+            - end: `10` (number, required)
+            - unit: `g` (string, required)
+        - calories (object)
+            - min: `10` (number, required)
+            - max: `10` (number, required)
+            - start: `10` (number, required)
+            - end: `10` (number, required)
+            - unit: `g` (string, required)
+        - total_fats (object)
+            - min: `10` (number, required)
+            - max: `10` (number, required)
+            - start: `10` (number, required)
+            - end: `10` (number, required)
+            - unit: `g` (string, required)
+        - total_sugars (object)
+            - min: `10` (number, required)
+            - max: `10` (number, required)
+            - start: `10` (number, required)
+            - end: `10` (number, required)
+            - unit: `g` (string, required)
+        - sat_fats (object)
+            - min: `10` (number, required)
+            - max: `10` (number, required)
+            - start: `10` (number, required)
+            - end: `10` (number, required)
+            - unit: `g` (string, required)
+        - sodium (object)
+            - min: `10` (number, required)
+            - max: `10` (number, required)
+            - start: `10` (number, required)
+            - end: `10` (number, required)
+            - unit: `g` (string, required)
+        - cost (object)
+            - min: `10` (number, required)
+            - max: `10` (number, required)
+            - start: `10` (number, required)
+            - end: `10` (number, required)
+            - unit: `g` (string, required)
+
+        
+## MenusMatchesRequest (object)
+- daypartID: `1` (required, number)
+- storeID: `1` (required, number)
+- menu_attributes (object)
+    - cost: `234;234` (string, optional)
+    - protein: `234;234` (string, optional)
+    - calories: `234;234` (string, optional)
+    - total_fats: `234;234` (string, optional)
+    - sat_fats: `234;234` (string, optional)
+    - total_sugars: `234;234` (string, optional)
+    - sodium: `234;234` (string, optional)
+
+
+## MenusMatchesResponse (object)
+- parameters: (object)
+    - daypartID: `1` (number, required)
+    - storeID: `1` (number, required)
+    - siteID: `1` (number, required)
+- response
+    - total_menus: `104` (required, number)
+    - match_menus: `56` (required, number)
+
+
+## MenuRequest (object)
+- daypartID: `1` (required, number)
+- storeID: `1` (required, number)
+- start_date: `2020-01-01` (required, string)
+- end_date: `2020-02-01` (required, string)
+- menuID: `1` (required, number)
+- menu_attributes (object)
+    - cost: `234;234` (string, optional)
+    - protein: `234;234` (string, optional)
+    - calories: `234;234` (string, optional)
+    - total_fats: `234;234` (string, optional)
+    - sat_fats: `234;234` (string, optional)
+    - total_sugars: `234;234` (string, optional)
+    - sodium: `234;234` (string, optional)
+
+
+## MenuStationRecipeObject (object)
+- ID: `1` (required, number)
+- value: `10` (required, number)
+
+
+## MenuResponseStationObject (object)
+- ID: `1` (required, number)
+- recipes (required, array[MenuStationRecipeObject])
+
+
+## MenuResponseDatesObject (object)
+- date: `2020-02-01` (required, string)
+- stations (required, array[MenuResponseStationObject])
+
+# MenuResponse (object)
+- parameters: (object)
+    - daypartID: `1` (number, required)
+    - storeID: `1` (number, required)
+    - siteID: `1` (number, required)
+    - menuID: `1` (number, optional)
+    - start_date: `2020-01-01` (required, string)
+    - end_date: `2020-02-01` (required, string)
+- response (object)
+    - menu (object)
+        - dates (required, array[MenuResponseDatesObject])
+    - menu_attributes (object)
+        - protein (object)
+            - value: `10` (number, required)
+            - percentile: `10` (number, required)
+            - unit: `g` (string, required)
+        - cost (object)
+            - value: `10` (number, required)
+            - percentile: `10` (number, required)
+            - unit: `g` (string, required)
+        - calories (object)
+            - value: `10` (number, required)
+            - percentile: `10` (number, required)
+            - unit: `g` (string, required)
+        - sodium (object)
+            - value: `10` (number, required)
+            - percentile: `10` (number, required)
+            - unit: `g` (string, required)
+        - total_fats (object)
+            - value: `10` (number, required)
+            - percentile: `10` (number, required)
+            - unit: `g` (string, required)
+        - sat_fats (object)
+            - value: `10` (number, required)
+            - percentile: `10` (number, required)
+            - unit: `g` (string, required)
+        - total_sugars (object)
+            - value: `10` (number, required)
+            - percentile: `10` (number, required)
+            - unit: `g` (string, required)
+- paging (Pagination)

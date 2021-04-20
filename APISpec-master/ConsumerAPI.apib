@@ -1,0 +1,595 @@
+#Consumer API
+Developer Platform
+Consumer API Specification
+
+Base endpoint: https://api.morsum.co/consumer/v1/
+
+<!-- include(OpenAPIGeneral.apib) -->
+
+# Group Configuration
+
+## POST /configuration/login
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+    + Attributes
+        + email (string, required)
+        + password (string, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session, required)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## GET /configuration
++ Request
+    + Headers
+        Authorization: Bearer {accessToken}
+        deviceID: {deviceID} - Kiosk device ID
+        sessionID: {sessionID} - Session ID of logged user
++ Response 200 (application/json)
+    + Attributes
+        + session (Session, required)
+        + response
+            + ID (string, required) - the Kiosk ID
+            + site (Site, required)
+            + countries (array[Country], required)
+            + openTime: `07:30` (string, required)
+            + closeTime: `23:30` (string, required)
+            + open (boolean, required) - overrides the open and close times
+            + mode (enum[string], required)
+              + Members
+                + KIOSK
+                + POS
+                + SELF_CHECKOUT
+            + posMode (boolean, required) - deprecated
+            + termsAcceptanceRequired (boolean, required)
+            + allowPayrollDeduct (boolean, required)
+            + allowGuestLogin (boolean, required)
+            + allowPayAtRegister (boolean, required)
+            + allowPaymentProcessing (boolean, required)
+            + allowCreditCardPayments (boolean, required)
+            + allowCashPayments (boolean, required)
+            + cardReader (optional)
+                + merchantID (string, required)
+                + merchantKey (string, required)
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /configuration
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        deviceID: {deviceID} - Kiosk device ID
+        sessionID: {sessionID} - Session ID of logged user
+    + Attributes
+        + siteID (string, required)
+        + posMode (boolean, required) - deprecated
+        + mode (enum[string], required)
+          + Members
+             + KIOSK
+             + POS
+             + SELF_CHECKOUT
+
++ Response 200
+    + Attributes
+        + session (Session, required)
+        + response
+            + ID (string, required) - the Kiosk ID
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Group Sign Up / Authentication
+
+## GET /customers/verify
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+    + Attributes
+        + mobile: `1-877-453-1304` (string, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + newCustomer (boolean, required) - returns true if the phone number is unknown
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /customers/login
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        deviceID: {deviceID} - Kiosk device ID
+        kioskID: {kioskID} - Kiosk UUID
+    + Attributes
+        + mobile: `1-877-453-1304` (string, optional) - for guest login, mobile is empty
+        + termsAccepted (boolean, optional)
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
++ Response 401 (application/json)
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /customers/login/payrollDeduct
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        deviceID: {deviceID} - Kiosk device ID
+        kioskID: {kioskID} - Kiosk UUID
+    + Attributes
+        + payrollDeductID (string, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (MobilePhoneRequired)
+
++ Response 401 (application/json)
+    + Attributes
+        + error(InvalidPayrollDeductID)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /customers/signup/payrollDeduct
+Add mobile phone to customer profile. Required by Cleveland payroll deduct flow
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        deviceID: {deviceID} - Kiosk device ID
+        kioskID: {kioskID} - Kiosk UUID
+    + Attributes
+        + mobile (string, required)
+
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /logout
+Terminates the customer session
+
++ Request
+    + Headers
+        Authorization: Bearer {accessToken}
+        deviceID: {deviceID} - Kiosk device ID
+        kioskID: {kioskID} - Kiosk UUID
+        sessionID: {sessionID} - Customer's Token Session ID
++ Response 204 (application/json)
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Group Menu
+
+## GET /stores
+List site stores.
++ Request
+    + Headers
+        Authorization: Bearer {accessToken}
+        deviceID: {deviceID} - Kiosk device ID
+        kioskID: {kioskID} - Kiosk UUID
+        sessionID: {sessionID} - Customer's Token Session ID
+        siteID: {siteID}
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (array[Store])
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+
+## GET /stores/{ID}/menus?date={date}&categoryID={categoryID}&daypartID={daypartID}
+This endpoint will be called both for preloading of menu content and live updates. For preloading, the `CACHED` header is sent as `true`.
+
++ Parameters
+    + ID - ID of the Store
+    + date - date of the menu with format YYYY-MM-DD
+    + categoryID - ID of the menu category
+    + daypartID - ID of the day part
+
++ Request
+    + Headers
+        Authorization: Bearer {accessToken}
+        deviceID: {deviceID} - Kiosk device ID
+        kioskID: {kioskID} - Kiosk UUID
+        sessionID: {sessionID} - Customer's Token Session ID
+        siteID: {siteID}
+        cached: {cached} - If sent, will return an already cached menu for improved performance
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + storeID (string, required)
+            + date: `YYYY-MM-DD` (string)
+            + categoryID (string, required)
+            + daypartID (string, required)
+            + menuCategories (array[MenuCategory])
+            + items (array[MenuItem])
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## GET /stores/{storeID}/menuItems/{menuItemID}?date={date}&daypartID={daypartID}
+This endpoint will be called both for preloading of menu content and live updates. For preloading, the `CACHED` header is sent as `true`.
+
++ Parameters
+    + storeID - ID of the Store
+    + menuItemID - ID of the menu category
+    + date - date of the menu with format YYYY-MM-DD
+    + daypartID - ID of the day part
+
++ Request
+    + Headers
+        Authorization: Bearer {accessToken}
+        deviceID: {deviceID} - Kiosk device ID
+        kioskID: {kioskID} - Kiosk UUID
+        sessionID: {sessionID} - Customer's Token Session ID
+        siteID: {siteID}
+        cached: {cached} - If sent, will return an already cached menu for improved performance
+
++ Response 200 (application/json)
+    + Attributes
+        + response (MenuItemDetail)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidMenuItemID)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /nutrition/calculate
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        deviceID: {deviceID} - Kiosk device ID
+        kioskID: {kioskID} - Kiosk UUID
+        sessionID: {sessionID} - Customer's Token Session ID
+        siteID: {siteID}
+    + Attributes (Meal)
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (array[Nutrient])
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidMenuItemID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidCustomizeOptions)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidComboOptions)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidPortionID)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Group OneClick
+
+## GET /stores/{storeID}/oneClick?date={date}
++ Parameters
+    + storeID - ID of the Store
+    + date - date of the menu with format YYYY-MM-DD
++ Request
+    + Headers
+        Authorization: Bearer {accessToken}
+        deviceID: {deviceID} - Kiosk device ID
+        kioskID: {kioskID} - Kiosk UUID
+        sessionID: {sessionID} - Customer's Token Session ID
+        siteID: {siteID}
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response
+            + storeStatus (StoreStatus)
+            + storeID (string)
+            + date: `YYYY-MM-DD` (string)
+            + lastTransaction
+              + publicTransactionID (string) - deprecated
+              + date: `YYYY-MM-DD` (string)
+              + orders (array[Order])
+              + canRepeat (boolean)
+            + oneClickRecommendation
+                + mainItem (MenuItem)
+                + subItems (array[MenuItem])
+
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Group Cart Logic
+
+## GET /customers/me/cart
+Returns the server side cart, created before with a 'pay at cashier' checkout.
++ Request
+    + Headers
+        Authorization: Bearer {accessToken}
+        deviceID: {deviceID} - Kiosk device ID
+        kioskID: {kioskID} - Kiosk UUID
+        sessionID: {sessionID} - Customer's Token Session ID
+        siteID: {siteID}
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response
+          + cart (Cart, optional) - returns the cart if there is one server-side (for pay at register flow)
+          + hasPayrollDeduct (boolean)
+          + balance (number)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## GET /stores/{storeID}/discounts?code={string}
+Returns the details for a given code. This is required for the free text input discount functionality. The discount is applied to the local cart.
++ Parameters
+    + storeID - ID of the Store
+    + code - Discount code (string)
++ Request
+    + Headers
+        Authorization: Bearer {accessToken}
+        deviceID: {deviceID} - Kiosk device ID
+        kioskID: {kioskID} - Kiosk UUID
+        sessionID: {sessionID} - Customer's Token Session ID
+        siteID: {siteID}
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (DiscountCode)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidDiscountCode)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /customers/me/cart/checkout
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        deviceID: {deviceID} - Kiosk device ID
+        kioskID: {kioskID} - Kiosk UUID
+        sessionID: {sessionID} - Customer's Token Session ID
+        siteID: {siteID}
+
+    + Attributes (Checkout)
+
++ Response 200 (application/json)
+    + Attributes
+      + session (Session)
+      + response (ReceiptInfo)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InsufficientBalance)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidPaymentMethodID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (QuantityNotAllowed)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /operator/validate
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: Bearer {accessToken}
+        deviceID: {deviceID} - Kiosk device ID
+        kioskID: {kioskID} - Kiosk UUID
+        sessionID: {sessionID} - Customer's Token Session ID
+        siteID: {siteID}
+
+    + Attributes
+        + code (string, required)
+
++ Response 200
+    + Attributes
+        + session (Session, required)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidOperatorCode)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Data Structures
+
+<!-- include(MobileAPICommonData.apib) -->
+
+## Store (object)
++ ID: `storeID` (string) - The unique identifier for the Store
++ name: `Morsum Store` (string) - The store name
++ description: `Morsum Store Description` (string)
++ imageURL: `https://placehold.it/200x200` (string)
++ formattedAddress (string)
++ isNew (boolean)
++ status (StoreStatus)
++ allowOneClick (boolean)
++ waitingTimeSeconds (number)
++ discountCodes (array[DiscountCodeOption])
++ dayparts (array[StoreDaypart])
++ storeTax: 0.05 (number) - Store tax as fraction e.g. 0.05 for 5%
++ stripePercentFee (number, required)
++ stripeFixedFee (number, required)
+
+# StoreDaypart (MenuDaypart)
++ menuCategories (array[MenuCategory])
+
+## Barcode (object)
++ code (string)
++ storeID (string)
++ menuItemID (string)
++ daypartID (string)
++ portionID (string)
+
+## Cart (object)
++ date: `YYYY-MM-DD` (string)
++ daypartID: (string)
++ store (Store)
++ orders (array[Order])
++ discount (DiscountCode, optional)
+
+
+## Order (object)
++ ID (string, optional) - orders created localy won't have an ID. IDs are attributed server side on chekcout
++ menuItem
+    + ID (string)
+    + name (string)
+    + description (string)
+    + portion
+      + ID (string, required)
+      + name (string, required)
+    + count (number)
+    + subtotal (number)
+    + tax (number)
+    + cartItemID (string, optional)
++ comboOptions
+    + options (array[OrderComboOption])
+    + subtotal (number)
+    + tax (number)
++ customizeOptions
+    + options (array[OrderCustomizeOption])
+    + subtotal (number)
+    + tax (number)
++ total (number)
+
+
+## OrderCustomizeOption (object)
++ ingredient (Ingredient)
++ isCombo (boolean)
++ count (number)
++ cartItemID (string, optional)
+
+
+## OrderComboOption (object)
++ ID (string)
++ name (string)
++ portionSizeLabel (string)
++ count (number)
++ cartItemID (string, optional)
+
+## Checkout
++ cart (Cart)
++ total (number)
++ paymentMethodID: cash, payrollDeduct, thirdParty (enum, optional)
++ processPayment (boolean)
++ cashAmount (number, optional) - For cash payments - the cash amount give by the client (including change)
++ cardReaderTransactionID (string, optional) - For card payments - the payment processor transaction ID.
+
+
+## ReceiptInfo (object)
++ ID (string)
++ fulfillmentTime: `YYYY-MM-DDThh:mm:ssZ` (string)
++ transactionTime: `YYYY-MM-DDThh:mm:ssZ` (string)
++ cardPayment (CardPayment, optional)
+
+## CardPayment (object)
++ cardType (string, required)
++ cardNumber (string, required)
++ cardEntryMode (string, required)
++ verificationType (string, required)
++ AID (string, required)
++ PWID (string, required)
++ authorizationID (string, required)
++ merchantID (string, required)
++ terminalID (string, required)
+
+## DiscountCode (object)
++ code (string, required)
++ type: percentage, fixed (enum, required)
++ value (number, required)
+
+## DiscountCodeOption (DiscountCode)
++ name (string, required)
++ description (string, required)
+
+[comment]: # (Errors are described below)
+
+<!-- include(MobileAPICommonErrors.apib) -->
+
+## InvalidOperatorCode (Error)
++ code: InvalidOperatorCode
++ message: Invalid operator code
+
+## MobilePhoneRequired (Error)
++ code: MobilePhoneRequired
++ message: Mobile phone is required to complete signup
+
+## InvalidPayrollDeductID (Error)
++ code: InvalidPayrollDeductID
++ message: Invalid payroll deduct ID
+
+<!-- include(OpenAPICommonDataStructures.apib) -->

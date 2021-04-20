@@ -1,0 +1,25 @@
+@startuml
+
+autonumber
+actor Customer as CUS
+participant POS
+participant "Card Processor" as CP
+participant Backend as BE
+
+CUS -> POS : guest login
+POS -> BE : /login
+BE --> POS : [session ID]
+CUS -> POS : add items to cart
+CUS -> POS : CC payment
+POS -> BE : Create transaction (/checkout)
+BE -> BE : Create transaction
+BE --> POS : [transaction ID]
+|||
+POS -> CP : start CC payment
+...
+return approved
+|||
+ref over CUS, BE: CC checkout confirm flow
+|||
+@enduml
+

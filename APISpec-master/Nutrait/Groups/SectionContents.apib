@@ -1,0 +1,28 @@
+# Group Section Content
+
+# HomeSectionContent Resource [/home/sections-contents]
+
+## List all contents per section [GET /home/sections-contents{?lat}{?lng}]
+List home section contents
++ Parameters
+   + lat: 39.95216710 (number)
+   + lng: 75.15841430 (number)
++ Response 200 (application/json)
+    + Attributes
+        + response (HomeSectionContent)
+
+# Section Content Resource [/users/me/sections-contents]
+
+## List all user section contents [GET /users/me/sections-contents]
++ Response 200 (application/json)
+    + Attributes
+        + response (array[SectionContent])
+
+## Associate section content with user [POST /users/me/sections-contents]
+Associate section content with user
++ Attributes
+    + keyName: `section`
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (array[SectionContent])

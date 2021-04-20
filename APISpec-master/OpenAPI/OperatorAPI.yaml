@@ -1,0 +1,43 @@
+openapi: 3.0.0
+info:
+  title: Operators Service API
+  description: >-
+    Operators Service API
+  contact: {}
+  version: '1.0'
+servers:
+- url: https://operator.morsum.co/api/v1
+  variables: {}
+- url: http://localhost:5000/api/v1
+  variables: {}
+paths:
+  /operators:
+    $ref: './Paths/Operators/Operators.yaml'
+  /operators/{operatorID}:
+    $ref: './Paths/Operators/OperatorsById.yaml'
+  /operators/{operatorID}/stores-locations:
+    $ref: './Paths/Operators/StoresLocations.yaml'
+  /operators/{operatorID}/stores-locations/{storeLocationID}:
+    $ref: './Paths/Operators/StoresLocationsById.yaml'
+  /operators/{operatorID}/vendors:
+    $ref: './Paths/Operators/Vendors.yaml'
+  /operators/{operatorID}/vendors/{vendorID}:
+    $ref: './Paths/Operators/VendorsById.yaml'
+  /carts:
+    $ref: './Paths/Carts/Carts.yaml'
+  /carts/{cartID}:
+    $ref: './Paths/Carts/CartsById.yaml'
+  /carts/{cartID}/items:
+    $ref: './Paths/Carts/CartsItems.yaml'
+  /carts/{cartID}/items/{cartItemID}:
+    $ref: './Paths/Carts/CartsItemsById.yaml'
+  /carts/{cartID}/orders:
+    $ref: './Paths/Carts/Orders.yaml'
+  /carts/{cartID}/checkout:
+    $ref: './Paths/Carts/Checkout.yaml'
+  /shoppings-lists:
+    $ref: './Paths/ShoppingsLists/ShoppingsLists.yaml'
+  /shoppings-lists/{shoppingListID}:
+    $ref: './Paths/ShoppingsLists/ShoppingsListsById.yaml'
+  /shoppings-lists/{shoppingListID}/products:
+    $ref: './Paths/ShoppingsLists/Products.yaml'

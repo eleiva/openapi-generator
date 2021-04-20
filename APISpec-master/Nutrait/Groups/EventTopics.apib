@@ -1,0 +1,34 @@
+# Group Event Topics
+
+# Topic Resource [/events-topics]
+
+## Returns all topics [GET]
+Returns topics with last recording and quantity of recordings
++ Response 200 (application/json)
+    + Attributes
+        + response (array[Topic])
+
+## Retrieve specific topic [GET /events-topics/{eventTopicId}]
+Retrieve specific topic
++ Parameters
+    + eventTopicId: `1
+        Id of the desired event topic.
++ Response 200 (application/json)
+    + Attributes
+        + response (Topic)
+
+## Return a list of trivia questions [GET /events-topics/{eventTopicId}/trivia-questions]
+Return a list of trivia questions for a specific topic
++ Parameters
+    + eventTopicId: `1
+        Id of the desired event topic.
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + triviaQuestions (array[TriviaQuestion])
+
+## Returns topics with last recording [GET /events-topics/recordings]
+Returns topics with last recording and quantity of recordings
++ Response 200 (application/json)
+    + Attributes
+        + response (Topic)

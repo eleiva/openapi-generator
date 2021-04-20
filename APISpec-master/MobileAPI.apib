@@ -1,0 +1,1282 @@
+# Mobile API
+
+<!-- include(MobileAPIGeneral.apib) -->
+
+## Response format
+Responses include `session` and `cartSummary` objects in adition to the `response` content.
+
+### Success
+HTTP status 2xx
+
+```json
+{
+  "session": {
+    "sessionID" : String
+  }
+
+  "cartSummary": {
+    "count": Int,
+    "total": Float,
+    "balance": Float,   //balance = "central balance" + "current site balance"
+    "itemsDate": Date,  // Date of the menu of the Items added in the cart.
+    "storeID": String   //storeID where the items are from.
+  }
+
+
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+
+
+# Group Customers Session Control
+
+## POST /login
+Creates the customer session
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + email: `aaa@example.com` (string, required)
+        + password (string, required)
+
+
++ Response 200 (application/json)
+
++ Response 401 (application/json)
+
+## POST /login/validateEmail
+Checks if the email or phone are valid and a password can be asked.
+* Returns 404 Bad Request if the email or phone are not well formatted. Don’t return this if the email/phone doesn’t exist.
+* Returns Verification Code Needed if a code is being sent by sms to validate the phone
+* Returns 200 otherwise
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + email: `aaa@example.com` (string, required)
+
++ Response 200 (application/json)
+
++ Response 404 (application/json)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (VerificationCodeNeeded)
+
+## POST /login/phone
+Creates the customer session
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + phone: `1-877-453-1304` (string, required)
+        + password (string, required)
+
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+
++ Response 401 (application/json)
+
+## POST /login/phone/resend
+Resends the sms token used for login with phone number
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + phone: `1-877-453-1304` (string, required)
+
++ Response 200 (application/json)
+
+
+
+## POST /logout
+Terminates the customer session
++ Response 204 (application/json)
+
+
+# Group Customers Management
+
+## GET /customers/signupInfo
+Returns reference data for the signup form
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + cartSummary (CartSummary)
+        + response
+            + dietaryPreferences (array[DietaryPreference])
+            + allergenPreferences (array[Allergen])
+            + countries (array[Country])
+
+## POST /customers/signup
+Creates the customer and returns a valid session
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes (Customer)
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + cartSummary (CartSummary)
+        + response (Customer)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidUserName)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (SignUpInvalidEmail)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (EmailAlreadyRegistered)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidPassword)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidMobilePhone)
+
+## GET /customers/me
++ Response 200 (application/json)
+    + Attributes (Customer)
+
+## PUT /customers/me
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes (Customer)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidUserName)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (SignUpInvalidEmail)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (EmailAlreadyRegistered)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidMobilePhone)
+
+
+## GET /customers/me/sites/
+Returns the list of sites the customer belongs to
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (array[Site])
+
+## GET /customers/me/sites/{ID}/stores
++ Parameters
+    + ID - ID of the site
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (array[Store])
+
+## POST /customers/resetPassword
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + email: `aaa@example.com` (string, required)
+
++ Response 202 (application/json)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (SignUpInvalidEmail)
+
+## PATCH /customers/me/changePassword
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + currentPassword (string, required)
+        + newPassword (string, required)
+
++ Response 200 (application/json)
+
+
+# Group Payment Methods
+
+## GET /customers/me/sites/{siteID}/paymentMethods
+Lists the payment methods for the customer
++ Parameters
+    + siteID - ID of the site
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response
+            + balance (array[Balance])
+            + methods (array[PaymentMethod])
+
+## POST /customers/me/sites/{siteID}/paymentMethods
+Adds new payment method
++ Parameters
+    + siteID - ID of the site
+
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + provider: stripe, freedompay (enum)
+        + token (string)
+        + tokenExpirationDate: `YYYY-MM-DD` (string,optional) - required for freedompay
+        + cardType: 'Visa' (string,optional) - required for freedompay
+        + cardExpirationDate: `MM/YYYY` (string,optional) - required for freedompay
+        + cardEnding: '1234' (string,optional) - required for freedompay
+
++ Response 200 (application/json)
+    + Attributes
+        + ID: `paymentMethodID` (string, required)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStripeToken)
+
+## PATCH /customers/me/sites/{siteID}/paymentMethods/{ID}
+Marks payment method as default
++ Parameters
+    + siteID - ID of the site
+    + ID - ID of the payment method
+
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + isDefault (boolean)
+
++ Response 200 (application/json)
+    + Attributes
+        + ID: `paymentMethodID` (string, required)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidPaymentMethodID)
+
+## DELETE /customers/me/sites/{siteID}/paymentMethods/{ID}
+Deletes payment method
++ Parameters
+    + siteID - ID of the site
+    + ID - ID of the payment method
+
++ Response 200 (application/json)
+    + Attributes
+        + ID: `paymentMethodID` (string, required)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidPaymentMethodID)
+
+## GET /customers/me/sites/{siteID}/paymentGateways/tokens
++ Parameters
+    + siteID - ID of the site
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response
+            + stripe (optional) - present if payment processor is stripe
+              + SP: `centralStripeSecretApiKey` (string, required)
+              + customerToken: `customerStripeToken` (string, required)
+            + freedompay (optional) - present if payment processor is freedompay
+              + accessToken (string)
+
+
+## POST /customers/me/payrollDeduct
+Called at the site level
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + payrollDeductID (string, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + ID: `payrollDeductID` (string, required)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidPaymentMethodID)
+
+
+## GET /customers/me/payrollDeduct
+Called at the site level
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response
+            + payrollDeductID: `payrollDeductID` (string, optional)
+
+
+## DELETE /customers/me/payrollDeduct/{ID}
+Called at the site level
++ Parameters
+    + ID - payrollDeductID
+
++ Response 200 (application/json)
+    + Attributes
+        + ID: `paymentMethodID` (string, required)
+
+
+# Group Address Management
+
+## GET /addresses?q={query}
+Returns a list of addresses starting with the string _query_ sent on the q parameter. The addresses list will aggregate addresses from morsum stores and from google maps.
++ Parameters
+    + query
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (array[string])
+
+## GET /addresses?latitude={latitude}&longitude={longitude}
+Returns a list of addresses within a given radius centered in _latitude_ and _longitude_
++ Parameters
+    + latitude (number) - latitude
+    + longitude  (number) - longitude
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (array[string])
+
+## GET /customers/me/addresses
+Returns the list of addresses belonging to the customer
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (array[Address])
+
+## POST /customers/me/addresses
+Add address - If the user has no addresses the first one should be marked as default. Latitude and longitude pair can be used in alternative to address.
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + address (string)
+        + latitude (number)
+        + longitude (number)
+
++ Response 200 (application/json)
+    + Attributes
+        + ID (string)
+        + siteID (array[string]) - List of sites related to that address
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidAddress)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (NotServingAddress)
+
+## PATCH /customers/me/addresses/{ID}
+Edits the address. ID and address fields aren't mutable.
++ Parameters
+    + ID - ID of the address
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes (Address)
+
+## DELETE /customers/me/addresses/{ID}
++ Parameters
+    + ID - ID of the address
++ Response 200 (application/json)
+    + Attributes
+        + ID (string)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidAddressID)
+
+
+# Group Notifications
+
+## GET /customers/me/notifications
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (array[Notification])
+
+## DELETE /customers/me/notifications/?IDs={IDList}
++ Parameters
+    + IDList - List of notification IDs to be deleted
++ Response 200 (application/json)
+
+## GET /customers/me/notifications/preferences
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response
+            + email (NotificationPreference)
+            + push (NotificationPreference)
+            + text (NotificationPreference)
+
+## PUT /customers/me/notifications/preferences
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + email (NotificationPreference)
+        + push (NotificationPreference)
+        + text (NotificationPreference)
+
++ Response 200 (application/json)
+
+## POST /events/marketingNotifications
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes (NotificationEvent)
+
++ Response 200 (application/json)
+
+
+# Group Referral (Free Food)
+
+## GET /customers/me/referral?siteID={siteID}
++ Parameters
+    + siteID - Site ID
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (Referral)
+
+
+# Group Fodder
+
+## GET /customers/me/fodder/overview?siteID={siteID}
++ Parameters
+    + siteID - Site ID
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (FodderOverview)
+
+## GET /customers/me/fodder/needToEat
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response
+            + help (FodderHelp)
+            + topAdjustments (array[FodderTopAdjustments])
+            + nutrientDetails (array[FodderNutrientDetail])
+
+## GET /customers/me/fodder/behaviors?siteID={siteID}
++ Parameters
+    + siteID - Site ID
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response
+            + help (FodderHelp)
+            + orderPatterns (array[FodderOrderPattern])
+            + tops (array[FodderBehaviorsTop])
+
+## GET /customers/me/fodder/goals
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (array[FodderGoal])
+
+## POST /customers/me/fodder/goals
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + nutrientID (string)
+        + value (number)
+
++ Response 200 (application/json)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (GoalAlreadySet)
+
+## PUT /customers/me/fodder/goals/{ID}
++ Parameters
+    + ID - ID of the Fodder Goal
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + nutrientID (string)
+        + value (number)
+
++ Response 200 (application/json)
+
+
+## DELETE /customers/me/fodder/goals/{ID}
++ Parameters
+    + ID - ID of the Fodder Goal
+
++ Response 200 (application/json)
+
+
+# Group Customer Support
+
+## POST /morsell/ticket
+Creates a new ticket. Send empty _sessionID_ when Customer not logged in using Central Endpoint
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes (Ticket)
+
++ Response 200 (application/json)
+    + Attributes
+        + ID (string)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidSupportTicketID)
+
+## POST /morsell/ticket/attachment
+Uploads a photo used later for /morsell/ticket
++ Request (multipart/form-data;boundary=----WebKitFormBoundary8M3sSU13ul5lXSJm)
+    + Body
+
+            ------WebKitFormBoundary8M3sSU13ul5lXSJm
+            Content-Disposition: form-data; name="json"
+
+
+            {"name":"media"}
+            ------WebKitFormBoundary8M3sSU13ul5lXSJm
+
+            Content-Disposition: form-data; name="image"; filename="filename.jpg"
+            Content-Type: image/jpeg
+
+            data
+            ------WebKitFormBoundary8M3sSU13ul5lXSJm--
+
+
+# Group Menu
+
+## GET /stores/{ID}/menus?date={date}&categoryID={categoryID}&daypartID={daypartID}
+Without any given _date_ the current date of the request is used by default. If no _categoryID_ is specified, use the first category in the _menuCategories_ list
++ Parameters
+    + ID - ID of the Store
+    + date - date of the menu with format YYYY-MM-DD
+    + categoryID - ID of the menu category
+    + daypartID - ID of the day part
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + cartSummary (CartSummary)
+        + response
+            + storeID (string, required)
+            + categoryID (string, required)
+            + storeStatus (StoreStatus)
+            + menuDates (array[MenuDate])
+            + menuDateActive: `YYYY-MM-DD` (string)
+            + menuCategories (array[MenuCategory])
+            + items (array[MenuItem])
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
+## GET /stores/{storeID}/menuItems/{menuItemID}?date={date}&daypartID={daypartID}
+Without any given _date_ the current date of the request is used by default.
++ Parameters
+    + storeID - ID of the Store
+    + menuItemID - ID of the menu category
+    + date - date of the menu with format YYYY-MM-DD
+    + daypartID - ID of the day part
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + cartSummary (CartSummary)
+        + response (MenuItemDetail)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidMenuItemID)
+
+<!-- include(MobileAPICommonMenu.apib) -->
+
+## GET /stores/{storeID}/menuItems/{menuItemID}/reviews
++ Parameters
+    + storeID - ID of the Store
+    + menuItemID - ID of the menu category
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + cartSummary (CartSummary)
+        + response
+            + average (number)
+            + count (number)
+            + reviews (array[MenuItemReview])
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidMenuItemID)
+
+
+## PUT /stores/{storeID}/menuItems/{menuItemID}/want
++ Parameters
+    + storeID - ID of the Store
+    + menuItemID - ID of the menu category
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + date: `YYYY-MM-DD` (string)
++ Response 200 (application/json)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidMenuItemID)
+
+## GET /stores/{storeID}/categories
++ Parameters
+    + storeID - ID of the Store
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (array[MenuCategory])
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
+## GET /stores/{storeID}/menuItems/{menuItemID}/nutritionalInfo
++ Parameters
+    + storeID - ID of the Store
+    + menuItemID - ID of the menu category
+
++ Response 200 (application/json)
+Return NutritionalInfo with nutritionStatement
+    + Attributes
+        + session (Session)
+        + cartSummary (CartSummary)
+        + response (NutritionalInfo)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidMenuItemID)
+
+# Group OneClick
+
+## GET /stores/{storeID}/oneClick?date={date}&checkoutInfo={bool}
++ Parameters
+    + storeID - ID of the Store
+    + date - date of the menu with format YYYY-MM-DD
+    + bool - true if checkoutInfo structure is needed
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + cartSummary (CartSummary)
+        + response
+            + storeStatus (StoreStatus)
+            + storeID (string)
+            + date: `YYYY-MM-DD` (string)
+            + lastOrder (Order)
+            + oneClickRecommendation
+                + mainItem (MenuItem)
+                + subItems (array[MenuItem])
+                + ID (array[string])
+                + price (number)
+            + checkoutInfo (CheckoutInfo)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
+## POST /customers/me/transactions/{ID}/repeat
++ Parameters
+    + ID - ID of the transaction
++ Response 200 (application/json)
+    + Attributes (CheckoutInfo)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidTransactionID)
+
+<!-- include(MobileAPICommonOneClick.apib) -->
+
+# Group Cart Logic
+
+<!-- include(MobileAPICommonCart.apib) -->
+
+## POST /customers/me/cart
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes (Meal)
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + cartSummary (CartSummary)
+        + response
+            + ID (string)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidMenuItemID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidCustomizeOptions)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidComboOptions)
+
+## POST /customers/me/cart/upsell
+Adds an upsell item to cart. Combo or customize options will be ignored.
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+      + date: `YYYY-MM-DD` (string, required)
+      + storeID (string, required)
+      + menuItemID (string, required)
+      + portionID (string, required)
+      + count (number, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + cartSummary (CartSummary)
+        + response
+            + ID (string)
+            + cart (Cart)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidMenuItemID)
+
+## GET /customers/me/cart&upsell={bool}
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + cartSummary (CartSummary)
+        + response (Cart)
+
+## DELETE /customers/me/cart
++ Response 200 (application/json)
+
+## PATCH /customers/me/cart
+If _discountCode_ is _null_, clears discount from cart
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + discountCode (string)
+
++ Response 200 (application/json)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidDiscountCode)
+
+
+## PATCH /customers/me/cart/order/{ID}
++ Parameters
+    + ID - ID of the order
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + count (number)
+
++ Response 200 (application/json)
+    + Attributes
+        + ID (string)
+
+## DELETE /customers/me/cart/order/{ID}
++ Parameters
+    + ID - ID of the order
++ Response 200 (application/json)
+    + Attributes
+        + ID (string)
+
+## GET /customers/me/cart/checkoutInfo
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + cartSummary (CartSummary)
+        + response (CheckoutInfo)
+
+
+## POST /customers/me/cart/checkout
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + paymentMethodID (string, optional) - 'payrollDeduct' for payroll deduct
+        + applePayToken (string, optional)
+        + androidPayToken (string, optional)
+        + deliveryTimeID (string, required)
+        + fulfillmentOptionID (string)
+
++ Response 200 (application/json)
+    + Attributes
+        + ID (string)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InsufficientBalance)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidPaymentMethodID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidDeliveryTimeID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidFulfillmentOptionID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (QuantityNotAllowed)
+
+# Group Transactions & Orders
+
+## GET /customers/me/transactions?status={status}
++ Parameters
+    + status - _current_ or _past_
++ Response 200 (application/json)
+    + Attributes
+        + session (Session))
+        + response (array[Transaction])
+
+## GET /customers/me/transactions/{ID}
++ Parameters
+    + ID - ID of the transaction
++ Response 200 (application/json)
+    + Attributes
+        + session (Session))
+        + response (TransactionDetail)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidTransactionID)
+
+## POST /customers/me/transaction/{transactionID}/orders/{orderID}/reviews
++ Parameters
+    + transactionID - ID of the transaction
+    + orderID - ID of the order
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + comment (string)
+        + reviewCategories (array[ReviewCategory])
+
++ Response 200 (application/json)
+    + Attributes
+        + ID (string)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidTransactionID)
+
+
+# Data Structures
+
+<!-- include(MobileAPICommonData.apib) -->
+
+## Customer (object)
++ ID: `customerID` (string, required) - The unique identifier for the Customer
++ firstName (string)
++ lastName(string)
++ gender: M, F (enum)
++ dietaryPreferences (array[DietaryPreference])
++ allergenPreferences (array[Allergen])
++ mobile (PhoneNumber, required)
++ email (string)
++ password (string)
++ balance (array[Balance])
++ birthdate: `YYYY-MM-DD` (string)
++ termsAccepted (boolean, required)
+
+## Balance (object)
++ type: `Central` (string) - Referral "free food" or Site
++ displayName: `Referral credit` (string) - e.g. "Free Food" or "Site Name"
++ balance: `100.99` (number)
++ currencyUnit (string, required)
+
+## DietaryPreference (object)
++ ID: `dietaryPreferenceID` (string, required) - The unique identifier for the DietaryPreference
++ name (string, required) - The dietary preference name
++ selected: false (boolean, optional) - True for preferences selected by the Customer
+
+## Allergen (object)
++ ID: `allergenID` (string, required) - The unique identifier for the Allergen
++ name (string, required) - The allergen name
+
+## Store (object)
++ ID: `storeID` (string, required) - The unique identifier for the Store
++ name: `Morsum Store` (string, required) - The store name
++ description: `Morsum Store Description` (string)
++ imageURL: `https://placehold.it/200x200` (string)
++ isNew (boolean)
++ allowOneClick (boolean)
++ allowsFulfillment (boolean)
++ site
+  + ID (string, required)
+  + siteURL (string, required)
++ menuCategories (MenuCategory)
+
+## MenuItem (object)
++ ID (string, required)
++ name (string, required)
++ description (string)
++ imageURL (string)
++ isNew (boolean)
++ isAvailable (boolean)
++ isWanted (boolean)
++ hasOptions (boolean)
++ defaultPortion (Portion)
++ taxExempt (boolean)
++ calories (number)
++ caloriesUnit (string)
++ characteristics (array[MenuItemCharacteristics])
++ recommendation (string) - Should be a percentange with the symbol included. For example: "80%"
+
+## MenuItemDetail (MenuItem)
++ menuDateActive: `YYYY-MM-DD` (string, required)
++ ingredients (array[Ingredient])
++ customizeOptionsByCategory (array[OptionByCategory]) - Where option in OptionByCategory is a CustomizeOption
++ comboOptionsByCategory (array[OptionByCategory]) - Where option in OptionByCategory is a ComboOption
++ portions (array[Portion])
++ reviews
+    + average (number)
+    + count (number)
+    + lastReview (MenuItemReview)
+
+## Portion (object)
++ ID (string, required)
++ name (string, required)
++ price (number)
++ availableCount (number, optional)
+
+## Address (object)
++ ID: `addressID` (string, required) - The unique identifier for the Address
++ address: `311 W 39th St, New York, NY 10018` (string, required)
++ name: `Home` (string, /optional)
++ additionalInfo (string, optional)
++ isDefault (boolean, optional)
+
+## Notification (object)
++ ID: `notificationID` (string, required) - The unique identifier for the Notification
++ date: `YYYY-MM-DDThh:mm:ssZ` (string, required)
++ title (string)
++ subtitle (string)
++ message (string)
++ siteID (string)
++ notificationType (NotificationType)
++ content (NotificationContent)
+
+## NotificationType (object)
++ ID (string)
++ label (string)
++ type: MenuUpdated, OrderDeliveryArrival, OrderConfirmation, PickUpReady, ReviewReminder, MarketingMessage (enum, required)
+
+## NotificationContent (object)
++ webURL (string, required)
++ videoURL (string, optional)
++ communicationID (string)
++ communicationHistoryID (string, required)
+
+## NotificationPreference (object)
++ ID (string, required) - The unique identifier for the NotificationPreference
++ label (string)
++ enabled (boolean)
+
+## NotificationEvent (object)
++ type: open, close (enum, required)
++ communicationID (string, required)
++ siteID (string)
++ notificationID (string, required)
++ communicationHistoryID (string, required)
+
+## Referral (object)
++ referral (string, required)
++ description (string)
++ shareText (ShareText)
+
+## ShareText (object)
++ sms (string)
++ email
+    + subject (string)
+    + body (string)
++ generic (string)
+
+## FodderNutrientDetail (object)
++ name: `Calories` (string, required)
++ unit: `cal` (string, required)
++ lastOrder: 1200 (number, required)
++ averageOrder: 1020 (number, optional)
++ dailyRecommendation: 2000 (number, required)
+
+## FodderOrderPattern (object)
++ name: `When you typically order` (string, required)
++ imageURL: `https://placehold.it/50x50` (string)
++ myValue: `09:00 AM - 10:00 AM` (string, required)
++ groupValue: `09:00 AM - 10:00 AM` (string, optional)
+
+## FodderGoal (object)
++ ID: `169`(string, required)
++ nutrient (Nutrient)
++ goalValue: 10 (number)
++ currentValue: 2 (number)
++ hint: `Last order included -10 % less than your goal per order` (string)
+
+## NutraitItem (object)
++ name: `Caffeine` (string, required)
++ color: `#3EA9F5` (string, required)
++ value: `25` (number, required)
+
+## FodderOverview (object)
++ lastUpdated: `11/27/2017 12:41 pm` (string)
++ lastUpdatedDateTime: `YYYY-MM-DDThh:mm:ssZ` (string, required)
++ text: `Welcome back, Hugo` (string, required)
++ userName: `Hugo` (string)
++ grade: `A` (string)
++ groupGrade: `A` (string)
++ allUsersGrade: `A` (string)
++ whatINeed (array[FodderNutrientDetail])
++ myBehaviors (array[FodderOrderPattern])
++ topGoals (array[FodderGoal])
++ nutrients (array[Nutrient])
++ nutrait (array[NutraitItem])
++ nutraitURL: String
+
+## FodderHelp (object)
++ title: `WHAT I NEED TO EAT` (string, required)
++ text: `We compare the nutrition levels from your last and average orders...` (string, required)
++ footer: `based on a daily 2,000 calorie diet` (string)
+
+## FodderTopAdjustments (object)
++ title: `Reduce Fat` (string)
++ text: `Your last order contained 12.31% more than one meal USDA recommendation` (string)
+
+## FodderBehaviorsTop (object)
++ name (string)
++ list (array[string])
+
+## Ticket (object)
++ customerName (string)
++ customerEmail (string)
++ subject (string)
++ comments (string)
++ supportTicketTypeID: 1, 2, 3 (enum, required) - 1: Delivery, 2: Food, 3: Tech
++ attachment (string, optional)
+
+## Transaction (object)
+ + ID (string, required)
++ storeName (string)
++ total (number)
++ date: `YYYY-MM-DDThh:mm:ssZ` (string)
++ status (TransactionStatus)
+
+## TransactionStatus (object)
++ ID (string)
++ name (string)
++ type: Ongoing, Done, Canceled (enum, required)
+
+## TransactionDetail (object)
++ qrCodeImageURL (string)
++ publicTransactionID (string)
++ store (Store)
++ deliveryAddress (Address)
++ date: `YYYY-MM-DDThh:mm:ssZ` (string, required)
++ status (TransactionStatus)
++ orders (array[Order])
++ subtotal (number)
++ taxes (number)
++ costOfGoods (number)
++ discount (DiscountCode)
++ total (number)
++ nutrients (array[Nutrient])
++ creditApplied (number)
++ paymentMethodUsed (PaymentMethod)
+
+## Cart (object)
++ balance (number,required)
++ subtotal (number,required)
++ taxes (number,required)
++ discount (DiscountCode, optional)
++ total (number,required)
++ costOfGoods (number, required)
++ orders (array[Order],required)
++ allowsFulfillment (boolean,required)
++ upsellItems (array[UpsellMenuItem], optional)
+
+## CartSummary (object)
++ count (number)
++ total: `9.99` (number)
++ balance: `100.99` (number)
++ itemsDate: `YYYY-MM-DD` (string)
++ storeID (string)
+
+## Order (object)
++ ID (string, required)
++ menuItem (MenuItem)
++ portion (Portion)
++ count (number)
++ comboOptions
+    + options (array[ComboOption])
+    + price (number)
++ customizeOptions
+    + options (array[CustomizeOption])
+    + price (number)
++ total (number)
++ itemPrice (number)
++ canRepeat (boolean)
++ review (OrderReview)
+
+## OrderReview (object)
++ isAllowed (boolean)
++ isAlreadyReviewed (boolean)
++ average (number)
++ comment (string)
++ reviewCategories (array[ReviewCategory])
+
+## ReviewCategory (object)
++ ID (string, required)
++ name (string)
++ rating (number) - 1 to 5
+
+## CheckoutInfo (object)
++ deliveryTimes (array[DeliveryTime])
++ fulfillmentOptions (array[FulfillmentOption])
++ paymentMethods (array[PaymentMethod])
++ balance (number)
++ total (number)
++ hasPayrollDeduct (boolean, required)
+
+## DeliveryTime (object)
++ ID (string, required)
++ startDate: `YYYY-MM-DDThh:mm:ssZ` (string, required)
++ endDate: `YYYY-MM-DDThh:mm:ssZ` (string, required)
+
+## FulfillmentOption (object)
++ ID (string, required)
++ name (string, required)
+
+## DiscountCode (object)
++ code (string, required)
++ value (string, required)
+
+## UpsellMenuItem (object)
++ ID (string)
++ name (string)
++ defaultPortion (Portion)
+
+
+[comment]: # (Errors are described below)
+
+<!-- include(MobileAPICommonErrors.apib) -->
+
+## InvalidUserName (Error)
++ code: InvalidUserName
++ message: Invalid user name
+
+## SignUpInvalidEmail (Error)
++ code: SignUpInvalidEmail
++ message: Invalid email format
+
+## EmailAlreadyRegistered (Error)
++ code: EmailAlreadyRegistered
++ message: The email you're trying to use is already registered
+
+## InvalidPassword (Error)
++ code: InvalidPassword
++ message: The password has to have at least 8 character...
+
+## InvalidMobilePhone (Error)
++ code: InvalidMobilePhone
++ message: Invalid Mobile Phone
+
+## InvalidStripeToken (Error)
++ code: InvalidStripeToken
++ message: Invalid Stripe Token
+
+## InvalidAddress (Error)
++ code: InvalidAddress
++ message: The provided address is not valid
+
+## InvalidAddressID (Error)
++ code_: InvalidAddressID
++ message: Invalid Address ID
+
+## NotServingAddress (Error)
++ code: NotServingAddress
++ message: Sorry, the service is not yet available at that address
+
+## GoalAlreadySet (Error)
++ code: GoalAlreadySet
++ message: You already have a {nameOfNutrient} goal created. Please delete it before you create another
+
+## InvalidSupportTicketID (Error)
++ code: InvalidSupportTicketID
++ message: Invalid Support Ticket ID
+
+## InvalidDateFormat (Error)
++ code: InvalidDateFormat
++ message: Date with invalid format
+
+## VerificationCodeNeeded (Error)
++ code: VerificationCodeNeeded
++ message: The verification code is needed
+
+## WarnUserToUpdate  (Error)
++ code: WarnUserToUpdate 
++ message: User should update
+
+## ForceUserToUpdate  (Error)
++ code: ForceUserToUpdate 
++ message: User must update

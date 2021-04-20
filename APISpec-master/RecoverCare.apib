@@ -1,0 +1,269 @@
+#Recover Care API
+
+Base endpoint: https://api/recover/care/v1/
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+```json
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+### Error 4xx or 5xx
+
+HTTP status 4xx for client errors and 5xx for server errors.
+```json
+{
+  "error": {
+    "code": String,
+    "message": String
+  }
+}
+```
+
+# Group User
+
+## POST /api/sso/mobile/v1/login
+Creates the user session
++ Request
+    + Headers
+
+            Accept: application/json
+    + Attributes
+        + email
+        + password
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response
+            + user (User)
+
++ Response 401 (application/json)
+
+## POST /api/sso/mobile/v1/logout
++ Response 204 (application/json)
+
+## POST /api/sso/mobile/v1/users/password/reset
++ Request
+    + Headers
+
+            Accept: application/json
+    + Attributes
+        + email: `aaa@example.com` (string, required)
+
++ Response 202 (application/json)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (SignUpInvalidEmail)
+
+## GET /api/recover/care/v1/users/me/sites
+Returns the list of sites the customer belongs to
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (array[Site])
+
+# Group Patients
+
+## GET /patients
++ Parameters
+    + name (string) - Name of the patient
+    + roomNumber (string) - Room number
+    + pendingMealSelection (boolean) - List patients with pending orders
+    + pendingMealDelivery (boolean) - List patients with orders ready to deliver
+    + pendingTrayRetrieval (boolean) - List patients that need trays retreived
++ Response 200 (application/json)
+    + Attributes
+        + response (array[Patient])
+
+## GET /patients/{id}
++ Parameters
+    + id (string) - Patient ID
++ Response 200 (application/json)
+    + Attributes
+        + response (PatientDetailsWithMedicalDietsAndAllergies)
+
+## GET /patients/{id}/transactions/pending-delivery
++ Parameters
+    + id (string) - PatientID
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + patient (Patient)
+            + transactions (array[TransactionDetail])
+
+## GET /patients/{id}/transactions/pending-retrieval
++ Parameters
+    + id (string) - PatientID
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + patient (Patient)
+            + transactions (array[TransactionDetail])
+
+## GET /patients/{id}/menus?date={date}&daypartID={daypartID}
++ Parameters
+    + id (string) - PatientID
+    + date (string, optional) - Menu date
+    + daypartID (string, optional) - Daypart ID
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + items (array[MenuItem])
+            + stations (array[Station])
+            + menuDates (array[MenuDate])
+            + activeDate
+            + activeDaypart (Daypart)
+
+## POST /patients/{id}/checkout
++ Parameters
+    + id (string) - Patient ID
++ Request
+    + Headers
+
+            Accept: application/json
+    + Attributes
+        + date
+        + daypartID
+        + items (array[CartItem])
++ Response 200 (application/json)
+    + Attributes
+        + response (array[])
+
+# Group Transactions
+
+## GET /transactions/{id}
++ Parameters
+    + id (string) - Transaction ID
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + transaction (TransactionDetailWithItems)
+            + patient (PatientDetail)
+
+## POST /transactions/{id}/deliver
++ Parameters
+    + id (string) - Transaction ID
++ Request
+    + Headers
+
+            Accept: application/json
+    + Attributes
++ Response 200 (application/json)
+    + Attributes
+        + response (array[])
+
+## POST /transactions/{id}/retrieve
++ Parameters
+    + id (string) - Transaction ID
++ Request
+    + Headers
+
+            Accept: application/json
+    + Attributes
+        + transactions (array[TransactionItemConsumption])
++ Response 200 (application/json)
+    + Attributes
+        + response (array[])
+
+# Data Structures
+
+## IDNameGenericObject (object)
++ ID
++ name
+
+## Session (object)
++ sessionID
+
+## User (IDNameGenericObject)
+
+## Site (IDNameGenericObject)
++ description
++ siteURL
++ imageURL
++ recoverCareURL
++ localization (Localization)
+
+## Localization (object)
++ temperatureUnit
++ taxesUnit
++ displayTaxInclusive (boolean)
++ currencyUnit
++ currencyConfig (CurrencyConfig)
+
+## CurrencyConfig
++ currencyCode
++ leftSymbol
++ rightSymbol
++ decimalPlace (number)
++ decimalPoint
++ thousandPoint
+
+## Patient (IDNameGenericObject)
++ room
++ hasSelectedMeal (boolean)
++ hasPendingDelivery (boolean)
++ hasPendingTrayRetrieval (boolean)
+
+## PatientDetail (Patient)
++ dob
++ gender
+
+## PatientDetailsWithMedicalDietsAndAllergies (PatientDetail)
++ medicalDiets (array[MedicalDiet])
++ allergies (array[Allergies])
+
+## MedicalDiet (IDNameGenericObject)
++ isApproved
++ isRecommended
+
+## Allergies (IDNameGenericObject)
+
+## MenuItem (IDNameGenericObject)
++ remainingPortions (number)
+
+## MenuDate (object)
++ displayName
++ date
++ dayparts (array[Daypart])
+
+## Station (IDNameGenericObject)
+
+## Daypart (IDNameGenericObject)
+
+## CartItem (object)
++ menuItemID
+
+## TransactionItemConsumption (object)
++ transactionItemID
++ percentageConsumed (number)
+
+## TransactionDetail (object)
++ ID
++ trayNumber
++ date
++ daypart (Daypart)
+
+## TransactionDetailWithItems (TransactionDetail)
++ items (TransactionItem)
+
+## TransactionItem (object)
++ ID
++ quantity (number)
++ product (Product)
+
+## Product (IDNameGenericObject)
+
+## Error (object)
++ code
++ message
+
+## SignUpInvalidEmail (Error)
++ code: SignUpInvalidEmail
++ message: Invalid email format

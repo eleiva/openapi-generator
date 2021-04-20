@@ -1,0 +1,29 @@
+# Group Highlights
+
+## Returns all the matching highlights. [GET /highlights{?search}{?topicID}{?sectionContentIDs}{?isHighlightPublic}{?cookAlong}{?communityCategoryID}]
+Returns all the matching highlights.
++ Parameters
+    + search:  `john` (string, optional)
+    + topicID:  `1` (string, optional)
+    + sectionContentIDs: `1` (string, optional)
+        Comma separated string
+    + cookAlong: `true` (boolean, optional)
+    + isHighlightPublic: `1` (enum, optional)
+        isHighlightPublic options are: `1` or `0`
+    + communityCategoryID: `1` (string, optional)
++ Response 200 (application/json)
+    + Attributes
+        + response (EventRecordingHighight)
+
+## Publish a selected highlight [PATCH /highlights/{highlightId}/publish]
+Publish a selected highlight
++ Response 200 (application/json)
+    + Attributes
+        + response (EventRecordingHighight)
+
+
+## Publish a selected highlight [PATCH /highlights/{highlightId}/unpublish]
+Publish a selected highlight
++ Response 200 (application/json)
+    + Attributes
+        + response (EventRecordingHighight)

@@ -1,0 +1,158 @@
+FORMAT: 1A
+HOST: https://bodie.morsum.co/api/v1
+
+# Bodie API
+
+Documentation for the DS Analytics API.
+Base endpoint: https://bodie.morsum.co/api/v1
+
+## Overview
+
+Some general specifications about our Developer Platform API
+- Available HTTP Verbs are GET, POST, PUT, PATCH and DELETE
+- JSON will be the standard output format
+- API’s response’s content-type is application/json
+- Usage of Http Status Codes is a must (200 for ok, 201 for created, 404 not found and so on)
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+
+```json
+{
+  "parameters": {
+    ... // The parameters sent in the request
+  }
+
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+
+
+## Paging
+
+If the resource used allows to be paginated, parameters page & perPage will be allowed thus enabling the API consumer to paginate the entire collection of the resource
+
+```json
+{
+  "parameters": {
+    ... // parameters
+  },
+  "response": {
+  ... //actual response from API
+  },
+  "paging": {
+    "currentPage": Int,
+    "perPage": Int,
+    "totalPages": Int,
+    "totalResults": Int
+ }
+}
+```
+# Group Bodie
+### Get recipe predictions [GET /bodie]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID}
+
+    + Attributes
+        - include BodieRequest
+
+
++ Response 200 (application/json)
+    + Attributes
+        - include BodieResponse
+
+
+### Get batch recipe predictions [PUT /bodie-batch{?flatten}]
++ Parameter
+    + flatten: `False` (boolean, optional) - Whether to flatten result or not. Flatten would been the response is an array of objects, each with date, station_id, product_id, value. The shown response is NOT flattened.
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID}
+
+    + Attributes
+        - include BodieBatchRequest
+
+
++ Response 200 (application/json)
+    + Attributes
+        - include BodieBatchResponse
+
+
+# Data Structures
+
+
+## Pagination (object)
+- totalResults (required, number)
+- totalPages (required, number)
+- perPage (required, number)
+- page (required, number)
+
+
+## BodieRequestStationObject (object)
+- stationID: `1` (required, number)
+- recipes: `1`, `2`, `3` (required, array[number])
+
+## BodieRequest (object)
+- site_guid: `123abcdef123` (required, string)
+- date: `2018-01-01` (required, string)
+- daypartID: `1` (required, number)
+- storeID: `1` (required, number)
+- stations (required, array[BodieRequestStationObject])
+
+
+## BodieResponseStationRecipeObject (object)
+- ID: `1` (required, number)
+- value: `10` (required, number)
+
+
+## BodieResponseStationObject (object)
+- ID: `1` (required, number)
+- recipes (required, array[BodieResponseStationRecipeObject])
+
+
+## BodieResponse (object)
+- parameters (object)
+    - date: `2018-01-01` (required, string)
+    - daypartID: `1` (required, number)
+    - storeID: `1` (required, number)
+    - siteID: `1` (required, number)
+- response (object)
+    - stations (required, array[BodieResponseStationObject])
+
+
+## BodieBatchRequestDatesObject (object)
+- date: `2018-01-01` (required, string)
+- stations (required, array[BodieRequestStationObject])
+
+
+## BodieBatchRequest (object)
+- site_guid: `123abcdef123` (required, string)
+- daypartID: `1` (required, number)
+- storeID: `1` (required, number)
+- dates (required, array[BodieBatchRequestDatesObject])
+
+
+## BodieBatchResponseDatesObject (object)
+- date: `2018-01-01` (required, string)
+- stations (required, array[BodieResponseStationObject])
+
+
+## BodieBatchResponse (object)
+- parameters (object)
+    - date: `2018-01-01` (required, string)
+    - daypartID: `1` (required, number)
+    - storeID: `1` (required, number)
+    - siteID: `1` (required, number)
+- response (object)
+    - dates (required, array[BodieBatchResponseDatesObject])

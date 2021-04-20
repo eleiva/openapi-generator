@@ -1,0 +1,40 @@
+# Group Recipes Production Tasks Templates
+
+## RecipeProductionTaskTemplate Resource [/recipes/{id}/production-tasks-templates]
++ Parameters
+    + id (string)
+
+### Retrieve a RecipeProductionTaskTemplate [GET]
+Returns a list of RecipeProductionTaskTemplate
++ Response 200 (application/json)
+    + Attributes (array[RecipeProductionTaskTemplate])
+
+
+### Create a RecipeProductionTaskTemplate [POST]
+Creates a RecipeProductionTaskTemplate using the id.
++ Parameters
+    + id (string)
++ Attributes (RecipeProductionTaskTemplateRequest)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Update a RecipeProductionTaskTemplate [PUT /recipes/{id}/production-tasks-templates/{productionTaskTemplateId}]
+Updates a Recipe using the id.
++ Parameters
+    + id (string)
+    + productionTaskTemplateId (string)
++ Attributes (RecipeProductionTaskTemplateRequest)
++ Request (application/json)
++ Response 200 (application/json)
+
+## WorkflowProductionTaskTemplate Resource [/recipes/{id}/production-tasks-templates/workflow]
++ Parameters
+    + id (string)
+
+### Create a WorkflowProductionTaskTemplate [POST]
+Creates a ProductionTaskTemplate using the id.
++ Parameters
+    + id (string)
++ Attributes (WorkflowProductionTaskTemplateRequest)
++ Request (application/json)
++ Response 200 (application/json)

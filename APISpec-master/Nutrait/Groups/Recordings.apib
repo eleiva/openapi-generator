@@ -1,0 +1,43 @@
+# Group Recordings
+
+## Returns all the matching recordings. [GET /recordings{?search}{?topicID}{?sectionContentIDs}{?scope}{?cookAlong}{?communityCategoryID}{?communityMembers}]
+Returns all the matching recordings.
++ Parameters
+    + search:  `john` (string, optional)
+    + topicID:  `1` (string, optional)
+    + sectionContentIDs: `1` (string, optional)
+        Comma separated string
+    + cookAlong: `true` (boolean, optional)
+    + scope: `my_videos` (string, optional)
+        Scope options are: `my_videos` or `friends_videos` or `recommended_videos`
+    + communityCategoryID: `1` (string, optional)
+    + communityMembers: true (string, optional)
++ Response 200 (application/json)
+    + Attributes
+        + response (Recording)
+
+# Recording Resource [/recordings/{recordingId}]
+
++ Parameters
+    + recordingId (string)
+        The ID of the desired recording.
+
+## Request a recording [GET]
+Request a recording
++ Response 200 (application/json)
+    + Attributes
+        + response (Recording)
+
+## Request deletion of a recording [DELETE]
+Request deletion of a recording
++ Attributes (EventRequestRecordingDeletionRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (Recording)
+
+## Accept invitation by given id [GET /videosvideos-providers/token]
+Accept invitation by given id
++ Response 200 (application/json)
+    + Attributes
+        + response (VideoProvider)

@@ -1,0 +1,72 @@
+get:
+  tags: 
+    - Distributions Centers
+  summary: Get a product from a distribution center by its distributionCenterID & productID
+  operationId: GetProductFromDistributionCenter
+  parameters:
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/vendorID'
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/distributionCenterID'
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/productID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+patch:
+  tags: 
+    - Distributions Centers
+  summary: Update a product within a distribution center
+  operationId: UpdateProductFromDistributionCenter
+  parameters:
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/vendorID'
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/distributionCenterID'
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/productID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+delete:
+  tags: 
+    - Distributions Centers
+  summary: Remove product from a distribution center
+  operationId: RemoveProductFromDistributionCenter
+  parameters:
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/vendorID'
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/distributionCenterID'
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/productID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

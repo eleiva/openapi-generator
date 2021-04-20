@@ -1,0 +1,48 @@
+# Group Groceries
+
+# Grocery Store Resource [/groceries/stores]
+
+## Grocery Stores [GET]
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response 
+            + stores (array[GroceryStore])
+
+
+# Grocery Products Resource [/groceries/stores/{storeID}/products]
++ parameters
+    + storeID: `1` (string)
+
+## Retrieve products [POST]
++ Attributes
+    + ingredients (array[GroceryStoresIngredientRequest])
+    + lat: 0.1 (number)
+    + lng: 0.1 (number)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + products (array[GroceryStoreProduct])
+
+## Alternative products [GET /groceries/stores/{storeID}/products/{productID}/alternatives?term={term}&lat={lat}&lng={lng}]
++ parameters
+    + storeID: `1` (string)
+    + productID: `1` (string)
+    + term: `carrot` (string)
+    + lat: 0.1 (number)
+    + lng: 0.1 (number)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + products (array[GroceryStoreProduct])
+
+# Grocery Unit Resource [/groceries/units]
+
+## Grocery Units [GET]
+Retrieve all available units
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + units (array[GroceryUnit])

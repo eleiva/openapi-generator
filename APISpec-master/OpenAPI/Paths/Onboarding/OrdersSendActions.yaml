@@ -1,0 +1,22 @@
+post:
+  tags: 
+    - Orders
+  summary: Send a given order by email
+  operationId: SendOrderByEmail
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/orderID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

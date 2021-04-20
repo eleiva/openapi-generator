@@ -1,0 +1,66 @@
+get:
+  tags: 
+    - Invoices
+  summary: Get a single invoice by its invoiceID
+  operationId: GetInvoice
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/invoiceID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+patch:
+  tags: 
+    - Invoices
+  summary: Update an invoice by its invoiceID
+  operationId: UpdateInvoice
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/invoiceID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+delete:
+  tags: 
+    - Invoices
+  summary: Delete an invoice by its invoiceID
+  operationId: DeleteInvoice
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/invoiceID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

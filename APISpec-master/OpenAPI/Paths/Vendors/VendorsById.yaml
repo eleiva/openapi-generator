@@ -1,0 +1,66 @@
+get:
+  tags: 
+    - Vendors
+  summary: Get a single vendor by its vendorID
+  operationId: GetVendor
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/vendorID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+patch:
+  tags: 
+    - Vendors
+  summary: Update an existing vendor by its vendorID
+  operationId: UpdateVendorById
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/vendorID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+delete:
+  tags: 
+    - Vendors
+  summary: Delete an existing vendor by its vendorID
+  operationId: DeleteVendorById
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/vendorID'
+  responses:
+    '204':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

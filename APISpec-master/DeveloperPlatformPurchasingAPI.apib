@@ -1,0 +1,427 @@
+#Purchasing API
+Developer Platform
+Purchasing API Specification
+
+Base endpoint: https://api.morsum.co/purchasing/v1/
+
+## Overview
+
+Some general specifications about our Developer Platform API
+- Available HTTP Verbs are GET, POST, PUT, PATCH and DELETE
+- JSON will be the standard output format
+- API’s response’s content-type is application/hal+json
+- Usage of Http Status Codes is a must (200 for ok, 201 for created, 404 not found and so on)
+- URI’s follow the RESTful constraints: https://base_url/resources/id/resources
+- Date and time are represented by Date and DateTime. Both types are formatted according to ISO 8607. Date is formatted as a complete date - YYYY-MM-DD (e.g. 1997-07-16)- and DateTime as complete date plus hours, minutes and seconds, always with the Z indicator for UTC timezone - YYYY-MM-DDThh:mm:ssZ (e.g. 1997-07-16T19:20:00Z)
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+```json
+{
+  "session": {
+    "sessionID" : String
+  }
+
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+
+### Error 4xx or 5xx
+
+HTTP status 4xx for client errors and 5xx for server errors.
+```json
+{
+  "error": {
+    "code": String,
+    "message": String
+  }
+}
+```
+
+## Paging
+
+If the resource used allows to be paginated, parameters page & perPage will be allowed thus enabling the API consumer to paginate the entire collection of the resource
+```json
+{
+  "session": {
+    "sessionID" : String
+  },
+  "response": {
+  ... //actual response from API
+  },
+  "paging":  {
+      "totalPages": Int,
+      "perPage": Int,
+      "currentPage": Int
+  }
+}
+```
+
+## Headers
+
+By default, every call to any endpoint behind authentication must include the Authorization header as stated by W3C in HTTP 1.0. The type will be Bearer since we’re implementing OAuth2 (explained below) and after the type, access token should go as it is like this:
+Authorization : Bearer <access-token>
+
+## Images
+
+All image urls have the following format “img_xxxxx_s.jpg” where “s” can be replaced with any of the following requested formats:
+s: 400
+m: 800
+l: 1200
+
+## HATEOAS - Hypermedia API
+
+A Hypermedia API offers self descriptive links that point one endpoint to another. These links are context aware and they change according to where your request is within the API and what features and data is available to consume at that single state. Morsum’s Developer Platform implements <a href="http://stateless.co/hal_specification.html" target="\_blank">HAL</a>, one of the most easy, readable and lightweight specifications for writing Hypermedia links.
+```json
+{
+    "response" : {
+    	//actual API response
+    },
+    "_links" : {
+     "sites" : {
+       "href" : "users/123/sites",
+       "method" : "GET"
+     }
+   }
+}
+```
+
+## Aliases
+
+If you need to get data about the current logged in User, you have available aliases of every endpoint documented here that automates this by replacing the {userID} for a string "me" eg: users/{userID}/sites for users/{userID}/sites.
+Also remember to take advantage from HATEOAS since you will likely have the url's preformatted with any ID's needed.
+
+# Group Authentication
+
+## POST /login
+Creates the customer session
++ Request
+    + Headers
+
+            Accept: application/json
+    + Attributes
+        + email: `superchef@morsum.co` (string, required)
+        + password (string, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + user (User)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (UserLoginHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /login/pin
++ Request
+    + Headers
+            Accept: application/json
+    + Attributes
+        + siteID (string, required)
+        + pin (string, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + user (User)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (UserLoginPinHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## POST /logout
++ Response 204 (application/json)
+
+## POST /users/password/reset
++ Request
+    + Headers
+            Accept: application/json
+    + Attributes
+        + email: `superchef@example.com` (string, required)
+
++ Response 202 (application/json)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (SignUpInvalidEmail)
+
+## GET /users/{userID}/sites
+Returns the list of sites the user belongs to
++ Parameters
+    + userID: `1` (string, required) - ID of the user
++ Response 200 (application/json)
+    + Attributes
+        + response (array[Site], required)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (GetSuppliersHalLink)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Group Suppliers
+
+## GET /suppliers
+Returns the list of suppliers assigned to the site
++ Parameters
++ Response 200 (application/json)
+    + Attributes
+        + response (array[Supplier], required)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (GetSuppliersDetailHalLink)
+
+## GET /suppliers/{supplierID}
+Returns details for the selected supplier
++ Parameters
+    + supplierID: `1` (string, required) - ID of the supplier
++ Response 200 (application/json)
+    + Attributes
+        + response (Supplier, required)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (GetSuppliersHalLink)
+
+# Group Products
+
+## GET /products
+Returns the list of products assigned to the site
++ Parameters
++ Response 200 (application/json)
+    + Attributes
+        + response (array[Product], required)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (GetProductsDetailHalLink)
+
+## GET /products/{productID}
+Returns details for the selected product
++ Parameters
+    + productID: `1` (string, required) - ID of the product
++ Response 200 (application/json)
+    + Attributes
+        + response (Product, required)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (GetProductsHalLink)
+
+## POST /products
+Creates a new product
++ Parameters
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + ID: `5042` (string, required)
+        + name: `SAUCE SOY LIGHT` (string, required)
+        + supplierID: `1` (string, required)
+        + price: `0.99` (number, required)
+        + unit: `l` (string, optional)
+        + pack (PurchaseSizeOption, required)
+        + weight (PurchaseSizeOption, optional)
+        + volume (PurchaseSizeOption, optional)
+        + count (PurchaseSizeOption, optional)
+        + innerPack (PurchaseSizeOption, optional)
+
++ Response 200 (application/json)
+    + Attributes
+        + response (Product, required)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (GetProductsHalLink)
+
+# Group Purchase Orders
+
+## GET /purchases-orders
+Returns the list of purchase orders assigned to the site
++ Parameters
++ Response 200 (application/json)
+    + Attributes
+        + response (array[PurchaseOrder], required)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (GetPurchaseOrderDetailHalLink)
+
+## GET /purchases-orders/{purchaseOrderID}
+Returns details for the selected purchase order
++ Parameters
+    + purchaseOrderID: `1` (string, required) - ID of the purchase order
++ Response 200 (application/json)
+    + Attributes
+        + response (PurchaseOrder, required)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (GetPurchaseOrdersHalLink)
+
+## POST /purchases-orders
+Creates a new purchase order
++ Parameters
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes
+        + ID: `41095` (string, required)
+        + supplierID: `4568` (string, required)
+        + storeID: `867` (string, required)
+        + statusID: `1` (string, required)
+        + invoiceNumber: `280997` (string, required)
+        + invoiceDate: `2018-09-04` (string, required)
+        + deliveryDate: `2018-09-06` (string, required)
+        + invoiceAmount: `100.95` (number, required)
+        + taxTotal: `10.95` (number, required)
+        + shippingCharge: `15` (number, required)
+        + miscCharge: `1.5` (number, required)
+        + deposit: `50` (number, required)
+        + items (array[PurchaseOrderItemRequest], required)
+
++ Response 200 (application/json)
+    + Attributes
+        + response (Product, required)
+        + _links (BaseLoggedInUserLinksHalLink)
+            + self (GetProductsHalLink)
+
+# Data Structures
+
+## Session (object)
++ sessionID (string, required)
+
+## Site (object)
++ ID: `siteID` (string, required) - The unique identifier for the Site
++ name: `Morsum Site` (string, required) - The site name
++ siteURL (string, required)
++ description: `5th Ave, NY, NY` (string)
++ imageURL (string)
+
+## User (object)
++ ID: `userID` (string, required)
++ name: `John` (string, required)
+
+## Supplier (object)
++ ID: `1` (string, required)
++ name: `US Foods` (string, required)
+
+## Store (object)
++ ID: `1` (string, required)
++ name: `Max Store` (string, required)
+
+## Product (object)
++ ID: `5042` (string, required)
++ name: `SAUCE SOY LIGHT` (string, required)
++ supplier: (Supplier, required)
++ price: `0.99` (number, required)
++ unit: `l` (string, optional)
++ pack (PurchaseSizeOption, required)
++ weight (PurchaseSizeOption, optional)
++ volume (PurchaseSizeOption, optional)
++ count (PurchaseSizeOption, optional)
++ innerPack (PurchaseSizeOption, optional)
+
+## PurchaseSizeOption (object)
++ quantity: `1` (number, required)
++ unit: `g` (string, required)
+
+## PurchaseOrder (object)
++ ID: `41095` (string, required)
++ supplier: (Supplier, required)
++ store: (Store, required)
++ invoiceNumber: `280997` (string, required)
++ invoiceDate: `2018-09-04` (string, required)
++ deliveryDate: `2018-09-06` (string, required)
++ invoiceAmount: `100.95` (number, required)
++ status: `Open` (string, required)
++ taxTotal: `10.95` (number, required)
++ shippingCharge: `15` (number, required)
++ miscCharge: `1.5` (number, required)
++ deposit: `50` (number, required)
++ items (array[PurchaseOrderDetail], required)
+
+## PurchaseOrderDetail (object)
++ unit: `g` (string, required)
++ quantity: `1` (number, required)
++ unitPrice: `10.5` (number, required)
++ totalPrice: `10.5` (number, required)
++ product: (Product, required)
+
+## PurchaseOrderItemRequest (object)
++ productID: `41095` (string, required)
++ quantity: `1` (number, required)
++ unitPrice: `10.5` (number, required)
++ totalPrice: `10.5` (number, required)
++ unit: `g` (string, required)
+
+## Error (object)
++ code (string, required)
++ message (string, required)
+
+## UnauthorizedAccessError (Error)
++ code: UnauthorizedAccess
++ message: Unauthorized access or invalid access token
+
+## SignUpInvalidEmail (Error)
++ code: SignUpInvalidEmail
++ message: Invalid email format
+
+## InvalidUserName (Error)
++ code: InvalidUserName
++ message: Invalid user name
+
+## EmailAlreadyRegistered (Error)
++ code: EmailAlreadyRegistered
++ message: The email you're trying to use is already registered
+
+## InvalidPassword (Error)
++ code: InvalidPassword
++ message: The password has to have at least 8 character...
+
+## InvalidDateFormat (Error)
++ code: InvalidDateFormat
++ message: Date with invalid format
+
+## HalLink (object)
++ href (string , required)
++ method (string, required)
+
+## BaseLoggedInUserLinksHalLink (object)
++ logout (UserLogoutHalLink)
+
+## UserLoginHalLink (HalLink)
++ href: /login
++ method: POST
+
+## UserLoginPinHalLink (HalLink)
++ href: /login/pin
++ method: POST
+
+## UserLogoutHalLink (HalLink)
++ href: /logout
++ method: POST
+
+## UsersGetSitesHalLink (HalLink)
++ href: /users/{userID}/sites
++ method: GET
+
+## GetSuppliersHalLink (HalLink)
++ href: /suppliers
++ method: GET
+
+## GetSuppliersDetailHalLink (HalLink)
++ href: /suppliers/{supplierID}
++ method: GET
+
+## GetProductsHalLink (HalLink)
++ href: /products
++ method: GET
+
+## GetProductsDetailHalLink (HalLink)
++ href: /products/{productID}
++ method: GET
+
+## GetPurchaseOrdersHalLink (HalLink)
++ href: /purchases-orders
++ method: GET
+
+## GetPurchaseOrderDetailHalLink (HalLink)
++ href: /purchases-orders/{purchaseOrderID}
++ method: GET

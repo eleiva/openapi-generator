@@ -1,0 +1,108 @@
+## Overview
+
+Some general specifications about our Developer Platform API
+- Available HTTP Verbs are GET, POST, PUT, PATCH and DELETE
+- JSON will be the standard output format
+- API’s response’s content-type is application/hal+json
+- Usage of Http Status Codes is a must (200 for ok, 201 for created, 404 not found and so on)
+- URI’s follow the RESTful constraints: https://base_url/resources/id/resources
+- Date and time are represented by Date and DateTime. Both types are formatted according to ISO 8607. Date is formatted as a complete date - YYYY-MM-DD (e.g. 1997-07-16)- and DateTime as complete date plus hours, minutes and seconds, always with the Z indicator for UTC timezone - YYYY-MM-DDThh:mm:ssZ (e.g. 1997-07-16T19:20:00Z)
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+
+```json
+{
+  "session": {
+    "sessionID" : String
+  }
+
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+
+### Error 4xx or 5xx
+
+HTTP status 4xx for client errors and 5xx for server errors.
+```json
+{
+  "error": {
+    "code": String,
+    "message": String
+  }
+}
+```
+
+## Paging
+
+If the resource used allows to be paginated, parameters page & perPage will be allowed thus enabling the API consumer to paginate the entire collection of the resource
+```json
+{
+  "session": {
+    "sessionID" : String
+  },
+  "response": {
+  ... //actual response from API
+  },
+  "paging":  {
+      "totalPages": Int,
+      "perPage": Int,
+      "currentPage": Int
+  }
+}
+```
+
+## Headers
+
+By default, every call to any endpoint behind authentication must include the Authorization header as stated by W3C in HTTP 1.0. The type will be Bearer since we’re implementing OAuth2 (explained below) and after the type, access token should go as it is like this:
+Authorization : Bearer <access-token>
+
+## Images
+
+All image urls have the following format “img_xxxxx_s.jpg” where “s” can be replaced with any of the following requested formats:
+s: 400
+m: 800
+l: 1200
+
+# Group API Authentication - OAuth
+
+## POST /oauth/token
+Create a new access token with given credentials
++ Request
+    + Headers
+
+            Accept: application/hal+json
+    + Attributes
+        + key (string, required)
+        + secret (string, required)
+
++ Response 200 (application/hal+json)
+    + Attributes
+        + response
+            + accessToken (AccessToken)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+## GET /sites
+Fetches a list of available sites for given Access Token
++ Request
+    + Headers
+
+            Accept: application/hal+json
+            Authorization: Bearer {accessToken}
++ Response 200 (application/hal+json)
+    + Attributes
+        + response
+          + ID: `1` (string, required) - The unique identifier for the Site
+          + name: `Site` (string, required) - The site name
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)

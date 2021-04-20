@@ -1,0 +1,66 @@
+get:
+  tags: 
+    - Transactions
+  summary: Get a single transaction by its transactionID
+  operationId: GetTransaction
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/transactionID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+patch:
+  tags: 
+    - Transactions
+  summary: Update an transaction by its transactionID
+  operationId: UpdateTransaction
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/transactionID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+delete:
+  tags: 
+    - Transactions
+  summary: Delete an transaction by its transactionID
+  operationId: DeleteTransaction
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/transactionID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

@@ -1,0 +1,28 @@
+@startuml
+
+autonumber
+actor Customer as CUS
+participant POS
+participant "Card Processor" as CP
+participant Backend as BE
+
+CUS -> POS : guest login
+activate POS
+POS -> BE : /login
+BE --> POS : [session ID]
+CUS -> POS : add items to cart
+CUS -> POS : CC payment
+POS -> BE : create transaction (/checkout)
+BE -> BE : create transaction
+BE --> POS : [transaction ID]
+POS -> POS : crash
+note left: App restarts back to login screen
+destroy POS
+CUS -> POS: guest login
+activate POS
+POS -> BE : /login
+BE -> BE: close pending transactions
+BE --> POS : [session ID]
+|||
+deactivate POS
+@enduml

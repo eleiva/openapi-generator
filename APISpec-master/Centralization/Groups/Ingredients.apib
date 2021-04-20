@@ -1,0 +1,67 @@
+# Group Ingredients
+
+## Ingredient Resource [/ingredients/{id}]
++ Parameters
+    + id (string)
+
+### Retrieve an Ingredient [GET]
+Retrieves the ingredient with the given ID.
++ Response 200 (application/json)
+    + Attributes (Ingredient)
+
+### Update an Ingredient [PUT]
+Updates an Ingredient using the id.
++ Attributes (IngredientRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (Ingredient)
+
+### Update an Ingredient [PUT /ingredients/{external_id}/external]
+Updates an Ingredient using the external id.
++ Parameters
+    + external_id (string)
++ Attributes (IngredientRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (Ingredient)
+
+### Restores an Ingredient [PATCH /ingredients/{id}/restore]
+Restores an Ingredient.
++ Parameters
+    + id (string)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Deletes an Ingredient [DELETE /ingredients/{id}]
+Deletes an Ingredient.
++ Parameters
+    + id (string)
++ Request (application/json)
++ Response 200 (application/json)
+
+### List all Ingredients [GET /ingredients]
+Returns a list of ingredients.
++ Response 200 (application/json)
+    + Attributes (array[Ingredient])
+
+### Create an Ingredient [POST /ingredients]
+Creates a new Ingredient.
++ Attributes (IngredientRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (Ingredient)
+
+## Ingredient Prep Note Resource [/ingredients/{ingredient_id}/prep-notes/{prep_note_id}]
++ Parameters
+    + ingredient_id (string)
+    + prep_note_id (string)
+
+### Assigns a Prep Note to an Ingredient [PATCH]
+Assigns a Prep Note to an Ingredient.
++ Request (application/json)
++ Response 200 (application/json)
+
+### Unassign a Prep Note from an Ingredient [DELETE]
+Unassign a Prep Note from an Ingredient.
++ Request (application/json)
++ Response 200 (application/json)

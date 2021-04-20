@@ -1,0 +1,41 @@
+# Group Recipes Ingredients
+
+## RecipeIngredient Resource [/recipes/{id}/ingredients-categories/{ingredientCategoryId}/ingredients]
++ Parameters
+    + id (string)
+    + ingredientCategoryId (string)
+
+### Retrieve a list of RecipeIngredient [GET]
+Returns a list of RecipeIngredient
++ Response 200 (application/json)
+    + Attributes (array[RecipeIngredient])
+
+### Create a RecipeIngredient [POST]
+Creates a RecipeIngredient using the id.
++ Parameters
+    + id (string)
+    + ingredientCategoryId (string)
+
++ Attributes (RecipeIngredient)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Update a RecipeIngredient [PUT /recipes/{id}/ingredients-categories/{ingredientCategoryId}/ingredients/{ingredientId}]
+Updates a RecipeIngredientCategory using the id.
++ Parameters
+    + id (string)
+    + ingredientCategoryId (string)
+    + ingredientId (string)
++ Attributes (RecipeIngredientRequest)
++ Request (application/json)
++ Response 200 (application/json)
+
+
+### Deletes a RecipeIngredient [DELETE /recipes/{id}/ingredients-categories/{ingredientCategoryId}/ingredients/{ingredientId}]
+Deletes a RecipeIngredient.
++ Parameters
+    + id (string)
+    + ingredientCategoryId (string)
+    + ingredientId (string)
++ Request (application/json)
++ Response 200 (application/json)

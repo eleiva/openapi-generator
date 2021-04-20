@@ -1,0 +1,29 @@
+# Group PaymentMethod
+
+# Store PaymentMethod [/payments-methods]
+
+## Retrieve available paymentMethods for user [GET]
+Retrieve available paymentMethods for user
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + paymentsMethods (array[PaymentMethod])
+            + providers
+                + stripe
+                    + SP: `abcd` (string)
+                    + customerToken: `abcd` (string)
+
+## Delete PaymentMethod [DELETE /payments-methods/{token}]
+Delete PaymentMethod
++ Parameters
+    + token: `card_1H5Ku8B1G19wCOYjPsYLGPoY` (string)
++ Request (application/json)
++ Response 204 (application/json)
+
+## Create a new PaymentMethod [POST /payments-methods]
+Create a new PaymentMethod
++ Attributes (PaymentMethodRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes
+        + response (PaymentMethod)

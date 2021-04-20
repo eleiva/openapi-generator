@@ -1,0 +1,69 @@
+get:
+  tags: 
+    - Distributions Centers
+  summary: Get a single distribution center by its distributionCenterID
+  operationId: GetDistributionCenterById
+  parameters:
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/vendorID'
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/distributionCenterID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+patch:
+  tags: 
+    - Distributions Centers
+  summary: Update a distribution center by its distributionCenterID
+  operationId: UpdateDistributionCenterById
+  parameters:
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/vendorID'
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/distributionCenterID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+delete:
+  tags: 
+    - Distributions Centers
+  summary: Deletes a distribution center by its distributionCenterID
+  operationId: DeleteDistributionCenterById
+  parameters:
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/vendorID'
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/distributionCenterID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

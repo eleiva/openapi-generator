@@ -1,0 +1,671 @@
+# Mobile API
+
+<!-- include(MobileAPIGeneral.apib) -->
+
+
+# Group Customers Session Control
+
+## POST /login/validateEmail
+Checks if the email is valid and a password can be asked.
+
+* Returns 400 Bad Request if the email is not well formatted. Don’t return this if the email/phone doesn’t exist.
+* Returns Verification Code Needed if a code is being sent by email to complete login.
+* Returns 200 otherwise
+
++ Request
+    + Headers
+             
+            Accept: application/json
+            
+   + Attributes
+        + email: `aaa@example.com` (string)
+
++ Response 200 (application/json)
+
++ Response 400 (application/json)
+
++ Response 401 (application/json)
+  + Attributes
+        + error (VerificationCodeNeeded)
+
+
+## POST /login/validateCode
+
++ Request
+    + Headers
+             
+            Accept: application/json
+            
+    + Attributes
+        + email: `aaa@example.com` (string)
+        + birthdate: `YYYY-MM-DD` (string)
+        + verificationCode (string)
+
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response
+          + customer (Customer)
+
++ Response 401 (application/json)
+  + Attributes
+        + error (InvalidCredentials)
+
+
+## POST /login
+
++ Request
+    + Headers
+             
+            Accept: application/json
+            
+    + Attributes
+        + email: `aaa@example.com` (string)
+        + password (string)
+
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response
+          + customer (Customer)
+
++ Response 401 (application/json)
+  + Attributes
+        + error (InvalidCredentials)
+
+## POST /logout
+Terminates the customer session
++ Response 204 (application/json)
+
+
+# Group User Management
+
+## GET /customers/profileInfo
+Returns reference data for the customer profile
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + dietaryPreferences (array[DietaryPreference])
+
+## Current User  [/customers/me]
+
+### Get User [GET]
++ Request
+    + Headers
+            
+            Accept: application/json
+           
++ Response 200 (application/json)
+    + Attributes 
+      + response
+        + customer (Customer)
+
+### Complete User Profile  [PUT]
++ Request
+    + Headers
+            
+            Accept: application/json
+            
+    + Attributes
+        + password (string
+        + dietaryPreferences (array[DietaryPreferenceSetting])
+        + advocateEmail (string, optional)
+        + termsAccepted (boolean)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+          + customer (Customer)
+          
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidAdvocateEmail)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidPassword)
+
+### Update User Profile  [PATCH]
++ Request
+    + Headers
+            
+            Accept: application/json
+            
+    + Attributes
+        + advocateEmail (string, optional)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + customer (Customer)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidAdvocateEmail)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidPassword)
+
+
+
+## POST /customers/me/resetPassword  
++ Request
+    + Headers
+            
+            Accept: application/json 
+            
+    + Attributes
+        + email: `aaa@example.com` (string)
+
++ Response 202 (application/json)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidEmail)
+
+
+## PATCH /customers/me/changePassword
++ Request
+    + Headers
+          
+            Accept: application/json
+            
+    + Attributes
+        + currentPassword (string)
+        + newPassword (string)
+
++ Response 202 (application/json)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidPassword)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (InvalidCredentials)
+
+
+## GET /customers/me/stayInfo
++ Response 200 (application/json)
+    + Attributes
+      + response
+        + stayStartDate: `YYYY-MM-DD` (string)
+        + stayEndDate: `YYYY-MM-DD` (string)
+
+## GET /customers/me/nutrait
++ Response 200 (application/json)
+    + Attributes
+      + response
+        + url (string)
+
+# Group Site
+
+## GET /sites
++ Request
+    + Headers
+          
+            Accept: application/json
+            
++ Response 200 (application/json)
+    + Attributes
+      + response
+        + sites (array[Site])
+
+# Group Menu
+
+## GET /menus/prestay?date={date}&categoryID={categoryID}&daypartID={daypartID}
++ Parameters
+    + date - date of the menu with format YYYY-MM-DD
+    + categoryID - ID of the menu category
+    + daypartID - ID of the day part
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + date: `YYYY-MM-DD` (string)
+            + daypartID (string)
+            + categoryID (string)
+            + items (array[MenuItem])
+
+## GET /menus/poststay?date={date}&categoryID={categoryID}&daypartID={daypartID}
+
++ Parameters
+    + date - date of the menu with format YYYY-MM-DD
+    + categoryID - ID of the menu category
+    + daypartID - ID of the day part
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + daypartID (string)
+            + categoryID (string)
+            + items (array[MenuItem])
+
+
+## GET /products/{productID}?daypartID={daypartID}
++ Parameters
+    + productID - ID of the product
+    + daypartID - ID of the day part
+
++ Response 200 (application/json)
+    + Attributes
+        + response (MenuItemDetail)
+
+
+# Group Pre-stay Schedule
+
+## Pre-stay Schedule [/customers/me/schedule/prestay]
+
+### Get Pre-stay Schelule [GET]
+Returns the current pre-stay meal selection for the current user.
+
++ Response 200 (application/json)
+    + Attributes
+        + response 
+          + menuDates (array[MenuDate])
+          + menuDayparts (array[MenuDaypart])
+          + items (array[PrestayMealScheduleItem])
+
+### Create Schedule Entry [POST]
+Creates a pre-stay schedule entry for a single date and daypart.
+
++ Request
+    + Headers
+            
+            Accept: application/json
+            
+    + Attributes
+        + date:`YYYY-MM-DD` (string)
+        + daypartID (string)
+        + items (array[MealScheduleOrderItem])
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + ID (string)
+
+
+## POST /customers/me/schedule/prestay/{mealScheduleItemID}/reviews
+Creates a review for the order with id `mealScheduleItemID`.
+
++ Parameters
+    + mealScheduleItemID - ID of the meal schedule item
+    
++ Request
+    + Headers
+            
+            Accept: application/json
+            
+    + Attributes
+        + comment (string)
+        + rating (number)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + ID (string)
+
+## GET  /customers/me/schedule/prestay/reviews/pending
+
++ Response 200 (application/json)
+    + Attributes
+        + response 
+          + items (array[PrestayMealScheduleItem])
+
+
+# Group Post-stay schedule
+
+
+## GET /customers/me/schedule/poststay?startDate={startDate}&endDate={endDate}
+Returns the current post-stay meal selection for the current user on the specified dates.
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + menuDayparts (array[MenuDaypart]) - returns all menu dayparts / categories, with or without scheduled items
+            + reviewCount (number) - number of poststay schedule items have already been consumed and need consumption review
+            + items (array[PoststayMealScheduleItem])
+
+## GET /customers/me/schedule/poststay/dates?startDate={startDate}&endDate={endDate}
+Returns an ordered list of dates in the specified range (inclusive) that have at least one scheduled item.
+
++ Parameters
+    + startDate: `YYYY-MM-DD` (string) - the start date of the range
+    + endDate: `YYYY-MM-DD` (string) - the end date of the range
+
++ Request
+    + Headers
+            
+            Accept: application/json
+            
++ Response 200 (application/json)
+    + Attributes
+        + response (array[string]) - an array of dates with format `YYYY-MM-DD`
+
+
+## POST /customers/me/schedule/poststay
+Creates a post-stay schedule entry for a single date and daypart.
+
++ Request
+    + Headers
+            
+            Accept: application/json
+            
+    + Attributes
+        + date:`YYYY-MM-DD` (string)
+        + daypartID (string)
+        + categoryID (string)
+        + menuItemID (string)
+        + plannedPortions (number)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + ID (string)
+
+## PATCH /customers/me/schedule/poststay/{ID}/planned
+Updates a post-stay schedule entry
+
++ Parameters
+    + ID - the schedule entry ID
+
++ Request
+    + Headers
+            
+            Accept: application/json
+            
+    + Attributes
+        + portions (number, optional)
+
++ Response 200 (application/json)
+
+## PATCH /customers/me/schedule/poststay/{ID}/consumed
+Updates a post-stay consumed portions 
+
++ Parameters
+    + ID - the schedule entry ID
+
++ Request
+    + Headers
+            
+            Accept: application/json
+            
+    + Attributes
+        + portions (number, optional)
+
++ Response 200 (application/json) 
+
+## GET  /customers/me/schedule/poststay/reviews/pending
+
++ Response 200 (application/json)
+    + Attributes
+        + response 
+            + items (array[PoststayMealScheduleItem])
+
+## DELETE /customers/me/schedule/poststay/{ID}
+Deletes a post-stay schedule entry
+
++ Parameters
+    + ID - the schedule entry ID
+
++ Request
+    + Headers
+            
+            Accept: application/json
+            
++ Response 200 (application/json)
+ 
+
+
+# Group Inventory
+
+## GET /customers/me/ingredients/inventory
+Returns the ingredients list required for all future planed meals.
+
++ Request
+    + Headers
+            
+            Accept: application/json
+            
+
++ Response 200 (application/json)
+    + Attributes
+        + response 
+            + inventory (array[IngredientInventoryCategory])
+            + updateReasons (array[IngredientInvetoryUpdateReason])
+
+
+## PATCH /customers/me/ingredients/inventory/{ingredientID}
+Used to adds or removes inventory item from shopping list, and to set the userQuantityRequired.
+
++ Parameters
+    + ingredientID - the ID for the ingredient
+
++ Request
+    + Headers
+            
+            Accept: application/json
+            
+    + Attributes
+        + inShoppingList (boolean, optional)
+        + userQuantityRequired (number, optional)
+        + updateReasonID (string, optional)
+
++ Response 200 (application/json)
+
+
+# Group Cook
+
+## GET /customers/me/schedule/poststay/{mealScheduleID}/tasks
+Returns the list of preparation tasks for the given scheduled meal.
+
++ Parameters
+    + mealScheduleID - the ID for the schedule meal.
+
++ Request
+    + Headers
+            
+            Accept: application/json
+
++ Response 200 (application/json)
+    + Attributes
+        + response (array[PreparationTask])
+
+
+## PATCH /customers/me/schedule/poststay/{mealScheduleID}/tasks/{taskID}
+Changes the state for the specified preparation task.
+
++ Parameters
+    + mealScheduleID - the ID for the schedule meal item
+    + taskID - the ID for the task
+
++ Request
+    + Headers
+            
+            Accept: application/json
+    
+    + Attributes
+        + state: notStarted, completed (enum)
+
++ Response 200 (application/json) 
+
+# Data Structures
+
+## Session (object)
++ sessionID (string, required)
+
+## Customer (object)
++ ID: `1` (string) - The unique identifier for the Customer
++ emaill: `john@doe.com` (string)
++ firstName: `John` (string, optional)
++ lastName: `Doe` (string, optional)
++ gender: m, f (enum, optional)
++ birthdate: `YYYY-MM-DD` (string, optional)
++ advocateEmail: `john@doe.com` (string, optional)
++ isProfileComplete (boolean)
+
+## Site (object)
++ ID (string)
++ name (string)
++ siteURL (string)
+
+## DietaryPreference (object)
++ ID: `dietaryPreferenceID` (string, required) - The unique identifier for the DietaryPreference
++ name (string, required) - The dietary preference name
+
+## DietaryPreferenceSetting (object)
++ ID: `dietaryPreferenceID` (string, required) - The unique identifier for the DietaryPreference
++ selected: false (boolean, optional) - True for preferences selected by the Customer
+
+## MenuCategory (object)
++ ID: `1` (string, required)
++ name: `Entrees` (string, required)
+
+## MenuDate (object)
++ displayName: `Day one 01/09` (string, required)
++ date: `YYYY-MM-DD` (string, required)
+
+## MenuDaypart (object)
++ ID: `1` (string, required)
++ startTime: `2017-12-31T06:53:00+00:00` (string) - yyyy-MM-ddTHH:mm:ss.SSSXXX
++ endTime: `2017-12-31T14:53:00+00:00` (string) - yyyy-MM-ddTHH:mm:ss.SSSXXX
++ displayName: `Lunch` (string)
++ menuCategories (array[MenuCategory])
+
+## MenuItem (object)
++ ID (string, required)
++ recommendationID (string, optional)
++ productID (string, required)
++ name (string, required)
++ description (string)
++ imageURL (string)
++ calories (number)
++ caloriesUnit (string)
++ characteristics (array[MenuItemCharacteristics])
++ recommendation (string) - Should be a percentange with the symbol included. For example: "80%"
++ portionsSelected (number) - Used for post-stay menus
++ course (MenuCourse)
+
+## MenuCourse (object)
++ ID (string)
++ name (string)
+
+## MenuItemDetail (MenuItem)
++ menuDateActive: `YYYY-MM-DD` (string)
++ menuDaypartActive (string)
++ ingredients (array[Ingredient])
++ nutritionalInfo (NutritionalInfo)
++ nutritionStatement (string)
++ reviews
+    + average (number)
+    + count (number)
+    + reviews (array[MenuItemReview])
+
+## MenuItemCharacteristics (object)
++ ID (string, required)
++ name (string)
++ representation: circle, rect, icon (enum, required)
++ color (string)
++ imageURL (string)
+
+## Ingredient (object)
++ ID: `1` (string)
++ name: `Parsley` (string)
++ unit: `tbs`
+
+## IngredientInventory (object)
++ ingredient (Ingredient)
++ quantityRequired: `2` (number)
++ userQuantityRequired: `1` (number, optional)
++ inShoppingList (boolean)
+
+## IngredientInventoryCategory (object)
++ name (string)
++ ingredients (array[IngredientInventory])
+
+## IngredientInvetoryUpdateReason (object)
++ ID: `1` (string)
++ description: `Have at home` (string)
+
+## NutritionalInfo (object)
++ calories: 240 (number)
++ caloriesUnit: `Cal` (string)
++ nutrients (array[Nutrient])
+
+## Nutrient (object)
++ ID: `32` (string, required)
++ name: `Vitamin A` (string, required)
++ units: `%` (string, required)
++ value: 10 (number)
+
+## MenuItemReview (object)
++ average (number)
++ comment (string)
++ date: `YYYY-MM-DD` (string)
++ user
+  + firstName (string)
+  + lastName (string)
+
+## Portion (object)
++ ID (string, required)
++ name (string, required)
++ price (number)
++ availableCount (number, optional)
+
+## MealScheduleOrderItem (object)
++ categoryID (string)
++ menuItemID (string)
+
+## MealScheduleItem
++ ID (string)
++ date: `YYYY-MM-DD` (string)
++ daypart (MenuDaypart)
++ category (MenuCategory)
++ menuItem (MenuItem)
+
+## PrestayMealScheduleItem (MealScheduleItem)
++ isDoctorSelection (boolean)
++ canReview (boolean)
+
+## PoststayMealScheduleItem (MealScheduleItem)
++ numberOfPortions (number)
++ state: planned, prepared, consumed (enum)
+
+## ReviewCategory (object)
++ ID (string)
++ name (string)
++ rating (number) - 1 to 5
+
+## PreparationTask
++ ID (string)
++ categoryName (string)
++ type: `Prep` (string)
++ description (string)
++ state: notStarted, completed (enum)
+
+## Error (object)
++ code (string, required)
++ message (string, required
+
+## VerificationCodeNeeded (Error)
++ code: VerificationCodeNeeded
++ message: The verification code is needed
+
+## InvalidCredentials (Error)
++ code: InvalidCredentials
++ message: Looks like you entered the wrong account information. Please try again.
+
+## InvalidEmail (Error)
++ code: InvalidEmail
++ message: Invalid email format
+
+## InvalidAdvocateEmail (Error)
++ code: InvalidAdvocateEmail
++ message: Invalid email format
+
+## InvalidPassword (Error)
++ code: InvalidPassword
++ message: The password has to have at least 8 character...

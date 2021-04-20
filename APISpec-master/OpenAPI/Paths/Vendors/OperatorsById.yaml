@@ -1,0 +1,69 @@
+get:
+  tags: 
+    - Vendors
+  summary: Get a single operator by its operatorID + vendorID
+  operationId: GetOperatorByVendorId
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/vendorID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/operatorID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+patch:
+  tags: 
+    - Vendors
+  summary: Update the relationship between operator & vendor using their ID's
+  operationId: UpdateOperatorByVendorId
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/vendorID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/operatorID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+delete:
+  tags: 
+    - Vendors
+  summary: Remove the relationship between operator & vendor by their ID's
+  operationId: RemoveOperatorFromVendorById
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/vendorID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/operatorID'
+  responses:
+    '204':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

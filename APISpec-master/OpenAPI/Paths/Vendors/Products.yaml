@@ -1,0 +1,44 @@
+get:
+  tags: 
+    - Catalog
+  summary: Get all available products from a given vendor's catalog
+  operationId: GetProductsFromCatalog
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/vendorID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+post:
+  tags: 
+    - Catalog
+  summary: Add new products to a vendor's catalog
+  operationId: AddProductsToCatalog
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/vendorID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

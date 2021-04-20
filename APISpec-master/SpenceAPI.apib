@@ -1,0 +1,455 @@
+FORMAT: 1A
+HOST: https://analytics.morsum.co/api/v3
+
+# Spence API
+
+Documentation for the DS Analytics API.
+Base endpoint: https://analytics.morsum.co/api/v3
+
+## Overview
+
+Some general specifications about our Developer Platform API
+- Available HTTP Verbs are GET, POST, PUT, PATCH and DELETE
+- JSON will be the standard output format
+- API’s response’s content-type is application/json
+- Usage of Http Status Codes is a must (200 for ok, 201 for created, 404 not found and so on)
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+
+```json
+{
+  "parameters": {
+    ... // The parameters sent in the request
+  }
+
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+
+
+## Paging
+
+If the resource used allows to be paginated, parameters page & perPage will be allowed thus enabling the API consumer to paginate the entire collection of the resource
+
+```json
+{
+  "parameters": {
+    ... // parameters
+  },
+  "response": {
+  ... //actual response from API
+  },
+  "paging": {
+    "currentPage": Int,
+    "perPage": Int,
+    "totalPages": Int,
+    "totalResults": Int
+ }
+}
+```
+
+# Group Spence
+
+
+### Get nutritional ingredient by ingredient external_id [GET /ingredients/{ingredientExternalID}/external]
++ Parameter
+    + ingredientExternalID: `P00001` (string) - The external ID of the ingredient
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID|CentralSiteGUID}
+
++ Response 200 (application/json)
+    + Attributes
+        - include NutritionalIngredientByIngredientExternalIDResponse
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+### Update ingredient nutritional ingredient by external_id [PATCH /ingredients/{ingredientExternalID}/nutritional-ingredients/{nutritionalIngredientID}]
++ Parameter
+    + ingredientExternalID: `P00001` (string) - The external ID of the ingredient
+    + nutritionalIngredientID: `MAN0001` (string) - The external nutritional ingredient ID
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID|CentralSiteGUID}
+
++ Response 204
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+### Search ingredient by expression and rank via scoring [GET /ingredients-search{?expression}]
++ Parameter
+    + expression: `ahi` (string, optional) - String to search ingredients by
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID|CentralSiteGUID}
+
++ Response 200 (application/json)
+    + Attributes
+        - include IngredientsSearchResponse
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+### Get nutritional ingredients [GET /ingredients{?expression}]
++ Parameter
+    + expression: `ahi` (string, optional) - String to search nutritional ingredients by
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID|CentralSiteGUID}
+
+
++ Response 200 (application/json)
+    + Attributes
+        - include NutritionalIngredientsResponse
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+### Get nutritional ingredient [GET /ingredients/{nutritionalIngredientID}]
++ Parameter
+    + nutritionalIngredientID: `MAN0001` (string) - The external nutritional ingredient ID
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID|CentralSiteGUID}
+
++ Response 200 (application/json)
+    + Attributes
+        - include NutritionalIngredientResponse
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+### Get nutritional ingredient sources [GET /nutritionalsource]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID|CentralSiteGUID}
+
++ Response 200 (application/json)
+    + Attributes
+        - include NutritionalsSourcesResponse
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+### Update nutritional ingredient conversion unit [POST /ingredients/{nutritionalIngredientID}/conversion-units]
++ Parameter
+    + nutritionalIngredientID: `MAN0001` (string) - The external nutritional ingredient ID
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID|CentralSiteGUID}
+
+    + Attributes
+        - include UpdateIngredientConversionUnitRequest
+
++ Response 200 (application/json)
+    + Attributes
+        - include UpdateIngredientConversionUnitResponse
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+### Convert ingredient quantities into possible conversion options [POST /ingredients/{ingredientID}/conversion-units/options]
++ Parameter
+    + ingredientID: `1` (number) - The internal ID of the ingredient at centralization level
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID|CentralSiteGUID}
+
+    + Attributes
+        - include ListIngredientConversionsRequest
+
++ Response 200 (application/json)
+    + Attributes
+        - include ListIngredientConversionsResponse
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+### Convert ingredient quantities from metric to US units [POST /ingredients/convert]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID|CentralSiteGUID}
+
+    + Attributes
+        - include MetricUSConversionRequest
+
++ Response 200 (application/json)
+    + Attributes
+        - include MetricUSConversionResponse
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+### Get nutritionals by ingredients [POST /recipes/nutrition]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID|CentralSiteGUID|ApplicationSiteGUID}
+
+    + Attributes
+        - include RecipeNutritionalsByIngredientsRequest
+
++ Response 200 (application/json)
+    + Attributes
+        - include RecipeNutritionalsByIngredientsResponse
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+### Get nutritionals by centralization recipe_id [GET /recipes/{recipeID}/nutrition]
++ Parameter
+    + recipeID: `1883` (number) - The internal ID of the recipe at centralization level
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID|CentralSiteGUID}
+
++ Response 200 (application/json)
+    + Attributes
+        - include RecipeNutritionalsByRecipeResponse
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+# Data Structures
+
+## Pagination (object)
+- totalResults (required, number)
+- totalPages (required, number)
+- perPage (required, number)
+- page (required, number)
+
+
+## IngredientsResponseObjectPrepNotes (object)
+- prep_note_id (required, number)
+- name: `chopped, diced` (required, string)
+
+
+## IngredientsResponseObject (object)
+- ingredient_id (required, number)
+- name: `oil, avocado` (required, string)
+- prep_notes (required, array[IngredientsResponseObjectPrepNotes])
+
+
+## IngredientsSearchResponse (object)
+- results (required, array[IngredientsResponseObject])
+- paging (required, Pagination)
+
+
+## RecipeNutritionalsByIngredientsResponse (object)
+- response (object)
+    - recipe (object)
+        - total (object)
+            - {nutrientID} (object)
+                - nutrient_id: `{nutrientID}` (string)
+                - nutrient_name: `{nutrientName}` (string)
+                - value (number)
+                - unit: `{nutrientUnit}` (string)
+        - {id} (object)
+            - {nutrientID} (object)
+                - nutrient_id: `{nutrientID}` (string)
+                - nutrient_name: `{nutrientName}` (string)
+                - value (number)
+                - unit: `{nutrientUnit}` (string)
+
+
+## RecipeNutritionNutrientObject
+- nutrientName: `Sugar` (string)
+- unit: `g` (string)
+- value: `1.23` (number)
+
+
+## RecipeNutritionalsByRecipeResponse (object)
+- response (object)
+    - calories (RecipeNutritionNutrientObject)
+    - macroNutrients (required, array[RecipeNutritionNutrientObject])
+    - nutrients (required, array[RecipeNutritionNutrientObject])
+
+
+## IngredientsRequest (object)
+- id (required, number)
+- ingredientExternalID: `P01234` (required, string)
+- quantity (required, number)
+- unit: `oz w` (required, string)
+
+
+## RecipeNutritionalsByIngredientsRequest (object)
+- request (object)
+    - ingredients (required, array[IngredientsRequest])
+
+
+
+## NutritionalIngredientNutientResponse (object)
+- nutrient_id: `269` (number)
+- nutrient_name: `Sugar` (string)
+- unit: `g` (string)
+- value: `0.0` (number)
+
+
+## NutritionalIngredientByIngredientExternalIDResponse (object)
+- parameters (object)
+    - filtered_by: `ingredient_external_id` (string)
+    - ingredient_external_id: `P00002` (string)
+- response (object)
+    - item (object)
+        - name: `CURRY PASTE` (string)
+        - nutritional_ingredient_id: `409704` (string)
+        - source: `usda_fdc` (string)
+        - manufacturer: `clyde's` (string)
+        - upc: `011433114011` (string)
+    - nutrients (required, array[NutritionalIngredientNutientResponse])
+
+
+
+## NutritionalIngredientsResponseObject (object)
+- name: `AHIMI JAPANESE STYLE TOMATO PIECES` (string)
+- upc: `12312312313` (number)
+- ndb_id: `MAN00002` (string)
+- manufacturer: `Ahimi` (string)
+- source: `custom` (string)
+
+## NutritionalIngredientsResponse (object)
+- parameters (object)
+    - filtered_by: `expression` (string)
+    - expression: `ahi` (string)
+- response (object)
+    - items (required, array[NutritionalIngredientsResponseObject])
+    - paging (required, Pagination)
+
+
+## NutritionalIngredientResponse (object)
+- parameters (object)
+    - filtered_by: `nutritional_ingredient_id` (string)
+    - ingredient_external_id: `MAN0001` (string)
+- response (object)
+    - item (object)
+        - name: `CURRY PASTE` (string)
+        - source: `usda_fdc` (string)
+        - manufacturer: `clyde's` (string)
+        - upc: `011433114011` (string)
+    - nutrients (required, array[NutritionalIngredientNutientResponse])
+
+
+## NutritionalsSourcesResponse (object)
+- parameters (object)
+- response: `custom`, `usda_fdc` (required, array[string])
+
+
+## UpdateIngredientConversionUnitRequest (object)
+- request (object)
+    - name: `tbsp` (required, string)
+    - morsum_unit: `tbs` (required, string)
+    - amount: `1` (required, number)
+    - weight: `1.42` (required, number)
+
+
+## UpdateIngredientConversionUnitResponse (object)
+- parameters (object)
+- response: `MAN0001` (string)
+
+
+## ListIngredientConversionsRequest (object)
+- original_unit_id: `1` (required, number)
+- target_unit_system: `1` (required, number)
+- original_quantity: `2.1` (required, number)
+- portions: `4` (required, number)
+- number_of_servings: `1` (required, number)
+- initial_value: `4 each` (required, string)
+
+
+## ListIngredientConversionsResponse (object)
+- results: `4 each`, `79.97 oz w`, `5.0 lb` (required, array[string])
+
+
+## MetricUSConversionObject (object)
+- centralizationUnitID: `1` (required, number)
+- centralizationIngredientID: `10` (required, number)
+- quantity: `4.38` (required, number)
+
+
+## MetricUSConversionRequest (object)
+- ingredientsQuantities: (required, array[MetricUSConversionObject])
+
+
+## MetricUSConversionResponse (object)
+- response (object)
+    - ingredientsQuantities (required, array[MetricUSConversionObject])

@@ -1,0 +1,113 @@
+openapi: 3.0.0
+info:
+  title: UPG Service API
+  description: >-
+    UPG Service API
+  contact: {}
+  version: '1.0'
+servers:
+- url: https://upg.morsum.co/api/v1
+  variables: {}
+- url: http://localhost:5000/api/v1
+  variables: {}
+paths:
+  /operators:
+    $ref: './Paths/Operators/Operators.yaml'
+  /operators/{operatorID}:
+    $ref: './Paths/Operators/OperatorsById.yaml'
+  /operators/{operatorID}/stores-locations:
+    $ref: './Paths/Operators/StoresLocations.yaml'
+  /operators/{operatorID}/stores-locations/{storeLocationID}:
+    $ref: './Paths/Operators/StoresLocationsById.yaml'
+  /operators/{operatorID}/vendors:
+    $ref: './Paths/Operators/Vendors.yaml'
+  /operators/{operatorID}/vendors/{vendorID}:
+    $ref: './Paths/Operators/VendorsById.yaml'
+  /carts:
+    $ref: './Paths/Carts/Carts.yaml'
+  /carts/{cartID}:
+    $ref: './Paths/Carts/CartsById.yaml'
+  /carts/{cartID}/items:
+    $ref: './Paths/Carts/CartsItems.yaml'
+  /carts/{cartID}/items/{cartItemID}:
+    $ref: './Paths/Carts/CartsItemsById.yaml'
+  /carts/{cartID}/orders:
+    $ref: './Paths/Carts/Orders.yaml'
+  /carts/{cartID}/checkout:
+    $ref: './Paths/Carts/Checkout.yaml'
+  /shoppings-lists:
+    $ref: './Paths/ShoppingsLists/ShoppingsLists.yaml'
+  /shoppings-lists/{shoppingListID}:
+    $ref: './Paths/ShoppingsLists/ShoppingsListsById.yaml'
+  /shoppings-lists/{shoppingListID}/products:
+    $ref: './Paths/ShoppingsLists/Products.yaml'
+  /vendors:
+    $ref: './Paths/Vendors/Vendors.yaml'
+  /vendors/{vendorID}:
+    $ref: './Paths/Vendors/VendorsById.yaml'
+  /vendors/{vendorID}/distributions-centers:
+    $ref: './Paths/Vendors/DistributionsCenters/DistributionsCenters.yaml'
+  /vendors/{vendorID}/distributions-centers/{distributionCenterID}:
+    $ref: './Paths/Vendors/DistributionsCenters/DistributionsCentersById.yaml'
+  /vendors/{vendorID}/distributions-centers/{distributionCenterID}/products:
+    $ref: './Paths/Vendors/DistributionsCenters/Products.yaml'
+  /vendors/{vendorID}/distributions-centers/{distributionCenterID}/products/{productID}:
+    $ref: './Paths/Vendors/DistributionsCenters/ProductsById.yaml'
+  /vendors/{vendorID}/operators:
+    $ref: './Paths/Vendors/Operators.yaml'
+  /vendors/{vendorID}/operators/{operatorID}:
+    $ref: './Paths/Vendors/OperatorsById.yaml'
+  /vendors/{vendorID}/orders-guides:
+    $ref: './Paths/Vendors/OrdersGuides/OrdersGuides.yaml'
+  /vendors/{vendorID}/orders-guides/{orderGuideID}/attach:
+    $ref: './Paths/Vendors/OrdersGuides/OrdersGuidesActions.yaml'
+  /vendors/{vendorID}/orders-guides/{orderGuideID}/products:
+    $ref: './Paths/Vendors/OrdersGuides/Products.yaml'
+  /vendors/{vendorID}/orders-guides/{orderGuideID}/products/{productID}:
+    $ref: './Paths/Vendors/OrdersGuides/ProductsById.yaml'
+  /vendors/{vendorID}/products:
+    $ref: './Paths/Vendors/Products.yaml'
+  /vendors/{vendorID}/products/{productID}:
+    $ref: './Paths/Vendors/ProductsById.yaml'
+  /orders:
+    $ref: './Paths/Orders/Orders.yaml'
+  /orders/{orderID}:
+    $ref: './Paths/Orders/OrdersById.yaml'
+  /orders/{orderID}/items:
+    $ref: './Paths/Orders/OrdersItems.yaml'
+  /orders/{orderID}/items/{orderItemID}:
+    $ref: './Paths/Orders/OrdersItemsById.yaml'
+  /orders/{orderID}/items/{orderItemID}/{action}:
+    $ref: './Paths/Orders/OrdersItemsActions.yaml'
+  /invoices:
+    $ref: './Paths/Invoices/Invoices.yaml'
+  /invoices/{invoiceID}:
+    $ref: './Paths/Invoices/InvoicesById.yaml'
+  /invoices/{invoiceID}/{action}:
+    $ref: './Paths/Invoices/InvoicesActions.yaml'
+  /transactions:
+    $ref: './Paths/Transactions/Transactions.yaml'
+  /transactions/{transactionID}:
+    $ref: './Paths/Transactions/TransactionsById.yaml'
+  /transactions/{transactionID}/items:
+    $ref: './Paths/Transactions/TransactionsItems.yaml'
+  /transactions/{transactionID}/items/{transactionItemID}:
+    $ref: './Paths/Transactions/TransactionsItemsById.yaml'
+  /transactions/{transactionID}/payments:
+    $ref: './Paths/Transactions/Payments.yaml'
+  /transactions/{transactionID}/payments/{paymentID}:
+    $ref: './Paths/Transactions/PaymentsById.yaml'
+  /transactions/{transactionID}/payments/{paymentID}/refund:
+    $ref: './Paths/Transactions/PaymentsActions.yaml'
+  /onboarding/orders-guides/manual:
+    $ref: './Paths/Onboarding/OrdersGuidesManual.yaml'
+  /onboarding/invoices/manual:
+    $ref: './Paths/Onboarding/InvoicesManual.yaml'
+  /onboarding/operators/manual:
+    $ref: './Paths/Onboarding/OperatorsManual.yaml'
+  /onboarding/catalog/manual:
+    $ref: './Paths/Onboarding/CatalogManual.yaml'
+  /onboarding/{onboardingID}:
+    $ref: './Paths/Onboarding/OnboardingById.yaml'
+  /orders/{orderID}/send/email:
+    $ref: './Paths/Onboarding/OrdersSendActions.yaml'

@@ -1,0 +1,497 @@
+# Mobile Inventory API
+
+<!-- include(MobileAPIGeneral.apib) -->
+
+Base endpoint: https://xxxx.morsum.co/api/v1/
+
+## Overview
+
+# Group Authentication
+
+## POST /login
+Creates the customer session
++ Request
+    + Headers
+
+            Accept: application/json
+    + Attributes
+        + email: `aaa@example.com` (string, required)
+        + password (string, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + user (User)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (LoginInvalidEmailOrPassword)
+
+## POST /logout
++ Response 204 (application/json)
+
+## POST /users/password/reset
++ Request
+    + Headers
+
+            Accept: application/json
+    + Attributes
+        + email: `aaa@example.com` (string, required)
+
++ Response 202 (application/json)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (SignUpInvalidEmail)
+
+## GET /users/{userID}/sites
+Returns the list of sites the user belongs to
++ Parameters
+    + userID: `1` (string, required) - ID of the user
++ Response 200 (application/json)
+    + Attributes
+        + response (array[Site], required)
+
++ Response 401 (application/json)
+    + Attributes
+        + error (UnauthorizedAccessError)
+
+# Group Receiving
+
+## GET /receiving/orders
+Displays a list of purchase orders on delivered status
++ Parameters
+    + supplierID
+    + storeID
+    + invoiceDate
+    + deliveryDate
+    + productID (string)
+    + page (Int)
+    + perPage (Int)
+    + sort `store` (string) - name of the column. Possible values: order_number, status, supplier, store, invoice_date, delivery_date
+    + asc (boolean) - define if the sort criteria is ascending or not
+
++ Response 200
+    + Attributes
+        + paging (Paging)
+        + response (array[PurchaseOrder], required)
+
+## GET /receiving/orders/{purchaseOrderID}
+Returns information from a given purchase order
++ Parameters
+    + purchaseOrderID (string, required)
+
++ Response 200
+    + Attributes
+        + response (Success)
+            + purchaseOrder (PurchaseOrder, required)
+            + storageLocations (array[StorageLocation], required)
+            + errorOptions (array[PurchaseOrderDetailErrorOption])
+
+## PUT /receiving/orders/{purchaseOrderID}/details/{detailID}/locations
+Places product on a given location
++ Parameters
+    + purchaseOrderID (string, required)
+    + detailID (string, required)
++ Request
+    + Attributes
+        + setDefault (boolean)
+        + storageLocationID (string, required)
++ Response 200
+    + Attributes
+        + response
+             + purchaseOrderDetail (PurchaseOrderDetail, required)
+
+## PUT /receiving/orders/{purchaseOrderID}/details/locations
+Places a list of purchaseDetail on a given location
++ Parameters
+    + purchaseOrderID (string, required)
++ Request
+    + Attributes
+        + orderDetailIDs(array[string],required)
+        + setDefault (boolean)
+        + storageLocationID (string, required)
++ Response 200
+    + Attributes
+        + response
+            + purchaseOrderDetails (array[PurchaseOrderDetail], required)
+
+## PUT /receiving/orders/{purchaseOrderID}/details/{detailID}/temperatures
+Sets temperature for a given purchase order item
++ Parameters
+    + purchaseOrderID (string, required)
+    + detailID (string, required)
++ Request
+    + Attributes
+        + temperature (number)
++ Response 200
+    + Attributes
+        + response
+            + purchaseOrderDetail (PurchaseOrderDetail, required)
+
+## PUT /receiving/orders/{purchaseOrderID}/details/temperatures
+Sets temperature for a given list of purchase order items
++ Parameters
+    + purchaseOrderID (string, required)
++ Request
+    + Attributes
+        + orderDetailIDs(array[string],required)
+        + temperature (number)
++ Response 200
+    + Attributes
+        + response
+             + purchaseOrderDetails (array[PurchaseOrderDetail], required)
+
+
+## PUT /receiving/orders/{purchaseOrderID}/details/{detailID}/done
+Receive product
++ Parameters
+    + purchaseOrderID (string, required)
+    + detailID (string, required)
++ Response 200
+    + Attributes
+        + response
+            + purchaseOrderDetail (PurchaseOrderDetail, required)
+
+## PUT /receiving/orders/{purchaseOrderID}/details/done
+Sets done for a given list of purchase order items
++ Parameters
+    + purchaseOrderID (string, required)
++ Request
+    + Attributes
+         + orderDetailIDs(array[string],required)
++ Response 200
+    + Attributes
+        + response
+             + purchaseOrderDetails (array[PurchaseOrderDetail], required)
+
+## PUT /receiving/orders/{purchaseOrderID}/details/{detailID}/undo
+Undo receive / reject
++ Parameters
+    + purchaseOrderID (string, required)
+    + detailID (string, required)
++ Response 200
+    + Attributes
+        + response
+            + purchaseOrderDetail (PurchaseOrderDetail, required)
+
+## PUT /receiving/orders/{purchaseOrderID}/details/undo
+Undo receive / reject a list of purchase orders detail
++ Parameters
+    + purchaseOrderID (string, required)
++ Request
+    + Attributes
+         + orderDetailIDs(array[string],required)
++ Response 200
+    + Attributes
+        + response
+              + purchaseOrderDetails (array[PurchaseOrderDetail], required)
+
+## PUT /receiving/orders/{purchaseOrderID}/details/{detailID}/reject
+Reject product
++ Parameters
+    + purchaseOrderID (string, required)
+    + detailID (string, required)
++ Request
+    + Attributes
+        + quantityReceived (number)
+        + quantityReceivedUnitID (number)
+        + quantityRejected (number)
+        + quantityRejectedUnitID (number)
+        + errorID (number)
+        + error (string)
++ Response 200
+    + Attributes
+        + response
+            + purchaseOrderDetail (PurchaseOrderDetail, required)
+
+## PUT /receiving/orders/{purchaseOrderID}/done
+Sets done for all purchase order items inside a purchase order. In the response, it returns the updated PurchaseOrderDetail list.
++ Parameters
+    + purchaseOrderID (string, required)
++ Response 200
+    + Attributes
+        + response (Success)
+            + purchaseOrderDetails (array[PurchaseOrderDetail], required)
+
+## PUT /receiving/orders/{purchaseOrderID}/close
+Close out purchase order
++ Parameters
+    + purchaseOrderID (string, required)
++ Response 200
+    + Attributes
+        + response (Success)
+            + purchaseOrder (PurchaseOrder)
+
+# Group Common
+
+## GET /products
+Get a list of products
++ Parameters
+    + term (string)
++ Response 200
+    + Attributes
+        + response
+            + products (array[Product])
+
+## GET /suppliers
+Get a list of suppliers
++ Parameters
+    + term (string)
++ Response 200
+    + Attributes
+        + response
+            + suppliers (array[Supplier])
+
+## GET /stores
+Get a list of stores
++ Parameters
+    + term (string)
++ Response 200
+    + Attributes
+        + response
+            + stores (array[Store])
+
+## GET /storageAreas
+Get a list of storage areas
++ Response 200
+    + Attributes
+        + response
+            + storageAreas (array[StorageArea])
+
+# Group Reconcile
+
+## GET /reconcile/{storageAreaID}/products
+Get a list of products from a storage area
++ Parameters
+    + storageAreaID (string, required)
+    + supplierProductID (string, optional)
+    + date (string, optional)
++ Response 200
+    + Attributes
+        + response
+            + storageLocations (array[StorageLocation])
+            + products (array[ReconcileProduct])
+            + adjustmentErrors (array[AdjustmentError])
+            + permissions (object, required)
+                + canEditHistory (boolean, required)
+
+## POST /reconcile/{storageAreaID}/products
+Add new product to a location
++ Parameters
+    + storageAreaID (string)
++ Request
+    + Attributes
+        + supplierProductID (string)
+        + storageLocationID (string)
++ Response 200
+    + Attributes
+        + response (Success)
+
+## PUT /reconcile/products
+Update reconcile list
++ Request
+    + Attributes
+        + adjustments (array[ProductListRequest])
++ Response 200
+    + Attributes
+        + response (Success)
++ Response 400 (application/json)
+    + Attributes
+        + error (ProductCountInconsistencyError)
+
+# Data Structures
+
+## AdjustmentError (object)
++ ID (string)
++ name (string)
++ displayOrder (number)
++ other (boolean)
+
+## Localization (object)
++ currencyUnit (string, required)
++ temperatureUnit (string, required)
+
+## Paging (object)
++ totalPages: 10 (number, required)
++ perPage: 15 (number, required)
++ currentPage: 1 (number, required)
+
+## User (object)
++ ID: `userID` (string, required)
++ name: `Hugo` (string, required)
+
+## Success (object)
++ success (boolean, required)
+    + Default: `true`
+
+## Site (object)
++ ID: `siteID` (string, required) - The unique identifier for the Site
++ name: `Morsum Site` (string, required) - The site name
++ siteURL (string, required)
++ localization (Localization, required)
+
+## PurchaseOrder(object)
++ ID: `1` (string, required)
++ orderNumber: `732862` (string, required)
++ invoiceNumber: `433234` (string)
++ status (PurchaseOrderStatus)
++ supplier (Supplier)
++ store (Store)
++ invoiceDate: `2018-10-31` (string, required)
++ deliveryDate: `2018-10-31` (string, required)
++ isNew (boolean, required)
++ details (array[PurchaseOrderDetail])
+
+## PurchaseOrderStatus
++ ID (string, required)
++ name (string, required)
+
+## Supplier
++ ID (string, required)
++ name (string, required)
+
+## Store
++ ID (string, required)
++ name (string, required)
+
+## PurchaseOrderDetail(object)
++ ID: `1` (string, required)
++ product (Product)
++ purchaseCategory (PurchaseCategory)
++ purchaseQuantity: 1 (number, required)
++ temperature: 23(number)
++ unit: (Unit)
++ weight: (PurchaseOrderDetailWeight)
++ storageLocation:  (StorageLocation)
++ error (SupplierProductError)
++ resultState: (PurchaseOrderResultState,required)
++ unitOptions:(array[Unit],required)
+
+## PurchaseOrderResultState(object)
++ state: `REJECTED` (enum[string],required)
+    + Members
+        + `REJECTED`
+        + `ACCEPTED`
+        + `NOT_CHECKED`
++ description: `Expired`(string)
+
+
+## Product
++ ID (string, required)
++ name (string, required)
++ supplierNumber: `433234` (string)
+
+
+## ProductSearch (Product)
++ purchaseUnits (array[Unit])
+
+## Unit
++ ID (string, required)
++ name (string, required)
+
+## PurchaseCategory
++ ID (string, required)
++ name (string, required)
+
+##PurchaseOrderDetailWeight
++ quantity: (number)
++ unit: (Unit)
+
+##PurchaseOrderDetailErrorOption
++ ID (string)
++ name (string)
++ other (boolean)
+
+##PurchaseOrderDetailTemperature
++ value (number)
++ unit (string)
+
+##PurchaseOrderDetailCredit
++ value (number)
++ returnedQuantity (number)
++ unit (Unit)
++ errorOption (PurchaseOrderDetailErrorOption)
+
+## SupplierProductError
++ ID (string)
++ description (string)
+
+## StorageLocation(object)
++ ID: `1` (string, required)
++ name: `Bin #1` (string, required)
++ children (array, optional)
+
+## StorageArea(object)
++ ID: `1` (string, required)
++ name: `Storage Area #1` (string, required)
+
+## ProductListRequest(object)
++ date (string, required)
++ error (SupplierProductError, optional)
++ quantity (number, required)
++ storageLocationID (string, required)
++ supplierProductID (string, required)
++ unitID (string, required)
++ newStorageLocationID (string, optional) - required only when storageLocationUpdate action is set
++ action: delete, undo, receivedCorrect, adjust, storageLocationUpdate (enum, required)
+
+## ReconcileProduct
++ supplierProduct (SupplierProductDetail, required)
++ storageLocations (array[StorageLocation], required)
++ ingredient (IngredientDetail, required)
++ inventoryAttribute (string, required)
++ inventoryAvailable (boolean, required)
++ count: (ReconcileCount, required)
++ unit (Unit, required)
++ purchaseUnit (Unit, required)
++ packSizeUnit (Unit, required)
++ isAdjustment (boolean, required)
++ inventory (ReconcileInventory, optional)
++ lastPurchase (ReconcileLastPurchase, optional)
+
+## ReconcileInventory
++ date (string)
++ quantity (number)
++ unit (Unit)
+
+## ReconcileLastPurchase
++ date (string)
++ quantity (number)
++ unit (Unit)
+
+## ReconcileCount
++ quantity (number, required)
++ unit (Unit, required)
+
+## SupplierProductDetail
++ ID: `1` (string)
++ name: `Sweet Slice Ham` (string)
++ storageLocation (StorageArea)
+
+## IngredientDetail
++ ID: `1` (string, required)
++ name: `DELI HAM AP SLICED .5 OZ` (string, required)
+
+## ReconcileIngredientDetail (IngredientDetail)
++ hasMultipleSuppliers (boolean)
+
+## Error (object)
++ code (string, required)
++ message (string, required)
+
+## LoginInvalidEmailOrPassword(Error)
++ code: LoginInvalidEmailOrPassword
++ message: Looks like you entered the wrong account information. Please try again
+
+## UnauthorizedAccessError (Error)
++ code: UnauthorizedAccess
++ message: Unauthorized access or invalid access token
+
+## SignUpInvalidEmail (Error)
++ code: SignUpInvalidEmail
++ message: Invalid email format
+
+## ProductCountInconsistencyError (Error)
++ code: ProductCountInconsistency
++ message: Product count inconsistency error

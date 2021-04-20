@@ -1,0 +1,23 @@
+post:
+  tags: 
+    - Order Guides
+  summary: Attach order guide to a given customer
+  operationId: AttachOrderGuideToCustomer
+  parameters:
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/vendorID'
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/orderGuideID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

@@ -1,0 +1,442 @@
+#Dashboards API
+Developer Platform
+Dashboards API Specification
+
+Base endpoint: https://analytics.morsum.co/api/v3/
+
+## Overview
+
+Some general specifications about our Developer Platform API
+- Available HTTP Verbs are GET, POST, PUT, PATCH and DELETE
+- JSON will be the standard output format
+- API’s response’s content-type is application/json
+- Usage of Http Status Codes is a must (200 for ok, 201 for created, 404 not found and so on)
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+
+```json
+{
+  "parameters": {
+    ... // The parameters sent in the request
+  }
+
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+
+
+## Paging
+
+If the resource used allows to be paginated, parameters page & perPage will be allowed thus enabling the API consumer to paginate the entire collection of the resource
+
+```json
+{
+  "parameters": {
+    ... // parameters
+  },
+  "response": {
+  ... //actual response from API
+  },
+  "paging": {
+    "currentPage": Int,
+    "perPage": Int,
+    "totalPages": Int,
+    "totalResults": Int
+ }
+}
+```
+
+## Headers
+
+Authorization : siteGUID {siteGUID}
+
+# Group General Requests
+
+## GET /sites
+
+Retrieve lists of sites for authenticated client or central.
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID>
+
++ Response 200 (application/json)
+    + Attributes
+        + parameters
+            + filtered_by: ` ` (string)
+        + response (array[Site])
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+## GET /stores
+
+Retrieve lists of stores for authenticated site.
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID>
+
++ Response 200 (application/json)
+    + Attributes
+        + parameters
+            + filtered_by: ` ` (string)
+        + response (SitesList)
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+## GET /stores/{id}
+
+Retrieve details for specific store.
+
++ Parameters
+    + id: `182` - ID of Store.
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID>
+
++ Response 200 (application/json)
+    + Attributes
+        + parameters (object)
+            + `filtered_by`: `store_id` (string)
+            + store_id: 115 (number)
+        + response (SitesList)
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+# Group Dashboards
+
+## GET /dashboard [GET /dashboard/?start_date={startDate}&end_date={endDate}&description={description}&metric_table={metricTable}]
+
+It gets metrics cards for the dashboards in the back office.
+
++ Parameters
+    + startDate: `2017-01-15` - Start date of the metrics aggregation.
+    + endDate: `2018-01-15` - End date of the metrics aggregation.
+    + description: `True` - Include description for each metric card.
+    + metricTable: `health_metric` - Metric table. Available options: health_metric, consumption_metric, engagement_metric,
+                                 sustainability_metric, communication_metric,
+                                 facs_metric, reviews_metric, discounts_metric.
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID>
+
++ Response 200 (application/json)
+    + Attributes
+        + parameters (ParametersDashboard)
+        + response (array[MetricCards])
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
++ Response 422 (application/json)
+    + Attributes
+        + errors
+            + metric_table: `Not a valid choice.` (array[string])
+
+
+## GET /dashboard/labor [GET /dashboard/labor/?start_date={startDate}&end_date={endDate}&section_tab={sectionTab}]
+
+It gets metrics dashboard labor in the back office.
+
++ Parameters
+    + startDate: `2017-01-15` - Start date of the metrics aggregation.
+    + endDate: `2018-01-15` - End date of the metrics aggregation.
+    + sectionTab: `menu_time` - Available options: menu_time, user_performance, recipe_time, user_exception, menu_cost, recipe_cost, user_time_utilization.
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID>
+
++ Response 200 (application/json)
+    + Attributes
+        + parameters (ParametersDashboardLabor)
+        + response (array[MenuTimeCard])
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
++ Response 422 (application/json)
+    + Attributes
+        + errors
+            + section_tab: `Not a valid choice.` (array[string])
+
+## GET /dashboard/reviews [GET /dashboard/reviews/?start_date={startDate}&end_date={endDate}&section_tab={sectionTab}]
+
+It gets metrics dashboard labor in the back office.
+
++ Parameters
+    + startDate: `2017-01-15` - Start date of the metrics aggregation.
+    + endDate: `2018-01-15` - End date of the metrics aggregation.
+    + sectionTab: `menu_time` - Available options: reviews_menus_categories ,reviews_recipes ,reviews_single_metrics.
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID>
+
++ Response 200 (application/json)
+    + Attributes
+        + parameters (ParametersDashboardLabor)
+        + response (array[ReviewMenuCategory])
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
++ Response 422 (application/json)
+    + Attributes
+        + errors
+            + section_tab: `Not a valid choice.` (array[string])
+
+## GET /dashboardPerDay [GET /dashboardperday/?start_date={startDate}&end_date={endDate}&metric_code={metricCode}&group={group}&graph_series={graphSeries}]
+
+Used for charts in the dashboards of the back office.
+
++ Parameters
+    + startDate: `2017-01-15` - Start date of the metrics aggregation.
+    + endDate: `2018-01-15` - End date of the metrics aggregation.
+    + metric_code: `AVGCALPERMEAL` - Metric you want to show data.
+    + group: `False` - If the metric is grouped.
+    + graphSeries: `False` - 
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID>
+
++ Response 200 (application/json)
+    + Attributes
+        + parameters (ParametersDashboardPerDay)
+        + response
+            + AVGCALPERMEAL (MetricPerDay)
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
++ Response 422 (application/json)
+    + Attributes
+        + errors
+            + metric_code: `Invalid value.` (array[string])
+
+# Data Structures
+
+## ParametersDashboard (object)
++ start_date: `2018-01-01` (string, required)
++ end_date: `2018-03-31` (string, required)
++ filtered_by: `site` (string, required)
++ metric_table: `health_metric` (string, required)
+
+## MetricCard (object)
++ code : `AVGCALPERMEAL` (string, required)
++ daily_average : 123.10 (number, required)
++ description : `Description` (string)
++ display_order (number, required)
++ tooltip (string)
++ type (string, required)
++ unit (string, required)
++ value (number, required)
+
+## MetricCards (array[MetricCard])
+
+## UnauthorizedAccessError (object)
++ error: `unauthorized` (string)
++ message: `please authenticate` (string)
++ status: `401` (number)
+
+## ParametersDashboardLabor (object)
++ start_date: `2018-01-01` (string, required)
++ end_date: `2018-03-31` (string, required)
++ filtered_by: `site` (string, required)
++ section_tab: `menu_time` (string, required)
+
+## MenuTimeCard (object)
++ consign_time_per_menu : 1.5 (number, required)
++ cook_time_per_menu : 123.10 (number, required)
++ count_menu : 1 (number, required)
++ menu_id: 188 (number, required)
++ menu_station: `The loaded Menu Oct 29 - Nov 3 - Grill` (string, required)
++ prep_time_per_menu: 1.6 (number, required)
++ time_per_menu: 70 (number, required)
++ station_id: 2 (number, required)
++ site_id: 2 (number, required)
+
+## ParametersDashboardPerDay (object)
++ start_date: `2018-01-01` (string, required)
++ end_date: `2018-03-31` (string, required)
++ filtered_by: `site` (string, required)
++ metric_code: `AVGCALPERMEAL` (string, required)
+
+## MetricPerDay (object)
++ `2017-12-17` (ValueWeight, required)
++ code: `AVGCALPERMEAL` (string, required)
++ unit: `cal` (string, required)
+
+## ValueWeight (object)
++ value: 10 (number)
++ weight: 2 (number)
+
+## Site (object)
++ central_id: 2 (number, required)
++ id: 2 (number, required)
++ name: `TowerCafe` (string, required)
++ stores (Store)
+
+## Store (object)
++ `2` : `AT&T Main Cafe` (string, required)
+
+## SitesList (object)
++ `115` (SiteDetail)
++ count: 10 (number)
+
+## SiteDetail (object)
++ id: 182 (number)
++ original_id : 182 (number)
++ name: `TowerCafe` (string)
+
+## IdTitle (object)
++ id: 182 (number)
++ name: `Example Title` (string)
+
+## Paging (object)
++ currentPage: 1 (number)
++ perPage: 25 (number)
++ totalPages: 2 (number)
++ totalResults: 50 (number)
+
+## SegmentationCustomer (object)
++ customer_central_id: 1 (number)
++ site_id: 2 (number)
++ transaction_num: 10 (number)
++ `...`: `...` (string)
+
+## FacsStores (object)
++ `183` (FacsStoresDetail)
+
+## FacsStoresDetail (object)
++ behaviour_profile: 0 (number)
++ engagement_profile: 29.21 (number)
++ food_profile: 10.76 (number)
++ historical (FacsHistorical)
+
+## FacsHistorical (object)
++ `1` (FacsHistoricalDetail)
+
+## FacsHistoricalDetail (object)
++ behaviour_profile: 0 (number)
++ date: `2018-04-01` (string)
++ engagement_profile: 29.21 (number)
++ food_profile: 10.76 (number)
++ score: 45838.1 (number)
++ transaction_profile: 60.03 (number)
+
+## MyBiteItem (object)
++ createdAt: 1522291227 (number)
++ customerId: 231 (number)
++ daypartId: 1 (number)
++ menuCategoryId: 5 (number)
++ menuDate: `2018-03-29` (string)
++ menuId: 123 (number)
++ productId: 2131 (number)
++ ranking: 2 (number)
++ score: 123.12 (number)
++ storeId: 184 (number)
++ updatedAt: 1522291227 (number)
+
+## MyBehaviorsItem (object)
++ groupValue (string)
++ key (string)
++ myValue (string)
++ name (string)
+
+## Nutrait (object)
++ carbohydrates: 96.53 (number)
++ dietary_fiber: 13.28 (number)
++ fat: 335.02 (number)
++ proteins: 292.29 (number)
++ saturated_fat: 732.3 (number)
++ sodium: 971.41 (number)
++ total_sugar: 57.1 (number)
+
+## Nutrient (object)
++ ID: 2 (number)
++ name: `Vitamin A` (string)
++ units: `%` (string)
+
+## Goal (object)
++ ID: 60 (number)
++ currentValue: 10 (number)
++ goalValue: 1 (number)
++ nutrient (Nutrient)
+
+## whatINeedElement (object)
++ averageOrder: 3760 (number)
++ dailyRecommendation: 2000 (number)
++ lastOrder: 3760 (number)
++ name: `Calories` (string)
++ unit: `cal` (string)
+
+## NutrientDetail (object)
++ averageOrder: 3760 (number)
++ dailyRecommendation: 2000 (number)
++ lastOrder: 3760 (number)
++ name: `Calories` (string)
++ unit: `cal` (string)
+
+## topAdjustment (object)
++ text: `Your last order contained 88.0% more than one meal USDA recommendation` (string)
++ title: `Reduce Calories` (string)
+
+## fodderTop (object)
++ list: `Indonesian` (array[string])
++ name: `Top ethnicities` (string)
+
+## ReviewMenuCategory (object)
++ average_convenience_rating: 3.50 (number)
++ average_healthfulness_rating: 3.50 (number)
++ average_offer_innovation_rating: 3.75 (number)
++ average_overall_rating: 3.55 (number)
++ average_quality_rating: 3.50 (number)
++ average_value_rating: 3.50 (number)
++ name: `ENTREE` (string)
++ review_rate_percentage_of_items: `3.10%` (string)
++ review_rate_percentage_of_transactions: `3.64%` (string)
++ reviews: 4 (number)
++ site_id: 2 (number)

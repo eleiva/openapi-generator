@@ -1,0 +1,44 @@
+get:
+  tags:
+    - Operators
+  summary: Get all available vendors for an operator by its operatorID
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/operatorID'
+  operationId: GetVendorsByOperatorId
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+post:
+  tags:
+    - Operators
+  summary: Attach an operator to an existing vendor
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/operatorID'
+  operationId: AttachVendorToOperator
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

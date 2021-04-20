@@ -1,0 +1,22 @@
+# Group Deeplink
+
+# Deeplink Resource [/deeplink]
+
+## Gets data related to deeplink by given code. [GET /deeplinks/{code}]
+Gets data related to deeplink by given code.
++ Parameters
+    + code (string)
++ Response 200 (application/json)
+    + Attributes
+        + response (Deeplink)
+
+# Deeplink Resource [/short-link]
+
+## Creates a short dynamic link from a long url [POST /short-link{?longUrl}]
+Creates a short dynamic link from a long url
++ Parameters
+    + longUrl: `https://nutrait.ai/` (string)
++ Response 200 (application/json)
+    + Attributes
+        + response (ShortLink)
+

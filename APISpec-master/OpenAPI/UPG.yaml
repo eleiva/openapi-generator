@@ -1,0 +1,31 @@
+openapi: 3.0.0
+info:
+  title: UPG Service API
+  description: >-
+    UPG Service API
+  contact: {}
+  version: '1.0'
+servers:
+- url: https://upg.morsum.co/api/v1
+  variables: {}
+- url: http://localhost:5000/api/v1
+  variables: {}
+paths:
+  /operators:
+    get:
+      tags:
+        - Operators
+      summary: Get a list of available operators
+      description: 'Get a list of available operators'
+      operationId: GetOperator
+      responses:
+        '200':
+          description: ''
+          headers: { }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string

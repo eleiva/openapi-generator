@@ -1,0 +1,82 @@
+## General definition
+
++ HTTP Verbs GET, POST, PUT, PATCH and DELETE
++ Key <-> Value parameters
++ JSON format
++ Correct usage of HTTP errors like 200, 301, 404, 500, 510…
++ API URIs are user friendly with the structure https://{base_url}/{version}/{scope}/{type}
++ The _me_ path component replaces a user id where specified to refer to the user referenced by the header _sessionID_
++ All resource are accessed via HTTPS including referenced images
++ Date and time are represented by Date and DateTime. Both types are formatted according to [ISO 8607](https://www.w3.org/TR/NOTE-datetime). Date is formatted as a complete date - YYYY-MM-DD (e.g. 1997-07-16)- and DateTime as complete date plus hours, minutes and seconds, always with the Z indicator for UTC timezone - YYYY-MM-DDThh:mm:ssZ (e.g. 1997-07-16T19:20:00Z)
+
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+```json
+{
+    "response": {
+      ... // All the responses defined below go here
+    }
+}
+```
+
+For conciseness each operation can specify the response in terms of the response object but, unless specified otherwise, the complete _response_ is structured as above.
+
+Generically for POST, PUT, DELETE and PATCH requests, unless specified otherwise, the response parameter contains the ID of the relevant resource.
+
+```json
+{
+    "response" : {
+        "ID" : String // ID of the resource created / updated / deleted
+    }
+}
+```
+For POST requests where a new resource is created the success HTTP status is 201. For cases where there is no meaningful content to be returned, as for the logout operation, the success HTTP status is 204 and no content is returned.
+
+### ERROR 4xx or 5xx
+HTTP status 4xx for client errors and 5xx for server errors.
+
+```json
+{
+  "error": {
+    "code": String,
+    "message": String
+  }
+}
+```
+
+### Paging
+Requests that return a list of resources can be paged by adding the _page_ and _perPage_ query string parameters. In that case the API will return a subset of the result, with a maximum of _perPage_ items, and a paging object will be added to the response.
+
+```json
+{/
+    "response": ...
+
+    "paging":  {
+        "totalPages": Int,
+        "perPage": Int,
+        "currentPage": Int
+    }
+}
+```
+
+### Image URLs
+All images URLs end with "img_XXXXXX_s.jpg" where "s" should be replaced prior to requesting the image based on the following sizes in px:
++ s: 400
++ m: 800
++ l: 1200
+
+### Headers
+All methods need to have the header parameters listed next:
++ sessionID (required) - mandatory in all authenticated methods
++ deviceID (required) - device GUID locally generated in the mobile Apps Unique by device and independent of  the user session i.e. two users that log on the same device will have the same device GUID
++ appVersion (required)
++ pushID (required, except login, signup and resetPassword) - push ID that identifies the mobile device to which push notifications can be sent
++ locationPOI
++ brand (required) - should reflect the app brand name. For instance: fodu or morsell
+
+
+

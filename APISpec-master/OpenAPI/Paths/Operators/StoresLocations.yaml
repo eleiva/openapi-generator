@@ -1,0 +1,44 @@
+get:
+  tags:
+    - Operators
+  summary: Get a list of store locations attached to a operatorID
+  operationId: GetStoresLocationsByOperatorId
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/operatorID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+post:
+  tags:
+    - Operators
+  summary: Create a new store location for an operator
+  operationId: CreateStoreLocationForOperator
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/operatorID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

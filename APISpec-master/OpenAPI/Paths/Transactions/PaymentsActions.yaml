@@ -1,0 +1,23 @@
+post:
+  tags: 
+    - Payments
+  summary: Refund a given payment by their id's
+  operationId: RefundPayment
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/transactionID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/paymentID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

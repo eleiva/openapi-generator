@@ -1,0 +1,135 @@
+## Session (object)
++ sessionID: `$2y$10$r3Th0sAlCjxJc8fefU2P6u.o9gxmT8/CjU/A9/LwBmTCvH0TvSway` (string, required)
+
+## Site (object)
++ ID: `1` (string, required) - The unique identifier for the Site
++ name: `Morsum Site` (string, required) - The site name
++ siteURL (string, required)
++ description: `5th Ave, NY, NY` (string)
++ imageURL (string)
++ vocURL (string)
++ localization (Localization, required)
++ allowPayrollDeduct (boolean, required)
++ paymentGateway: stripe, freedompay (enum, required)
+
+## MenuCategory (object)
++ ID: `menuCategoryID` (string, required)
++ name: `Entrees` (string, required)
+
+## PaymentMethod (object)
++ ID: `paymentMethodID` (string, required) - The unique identifier for the PaymentMethod
++ type: `VISA` (string, required)
++ label: `4242` (string, required)
++ isDefault (boolean, required)
++ isExpired (boolean, required) - Freedompay cards have an expiration date
+
+## Nutrient (object)
++ ID: `32` (string, required)
++ name: `Vitamin A` (string, required)
++ units: `%` (string, required)
++ value: 10 (number)
+
+## StoreStatus (object)
++ status: open, closed, pastCutoff (enum, required)
++ msgTitle (string, optional)
++ msgText (string, optional)
+
+## MenuDaypart (object)
++ ID: `1` (string, required)
++ startTime: `2017-12-31T06:53:00+00:00` (string, required) - yyyy-MM-ddTHH:mm:ss.SSSXXX
++ endTime: `2017-12-31T14:53:00+00:00` (string, required) - yyyy-MM-ddTHH:mm:ss.SSSXXX
++ displayName: `Lunch` (string, required)
+
+## MenuDate (object)
++ displayName: `Today 12/26` (string, required)
++ date: `YYYY-MM-DD` (string, required)
++ menuDaypart (array[MenuDaypart])
+
+## ItemsByCategory (object)
++ category (string)
++ items (array[MenuItem])
+
+## MenuItemCharacteristics (object)
++ ID (string, required)
++ name (string)
++ representation: circle, rect, icon (enum, required)
++ color (string)
++ imageURL (string)
+
+## MenuItemReview (object)
++ comment (string)
++ average (number)
++ date: `YYYY-MM-DD` (string)
++ user (User)
+
+## User (object)
++ firstName (string)
++ lastName (string)
++ imageURL (string)
+
+## NutritionalInfo (object)
++ calories (number)
++ caloriesGrade (string)
++ caloriesUnit (string)
++ nutrients (array[Nutrient])
++ nutritionStatement (string, optional)
+
+## Ingredient (object)
++ ID (string, required)
++ name (string, required)
+
+## Option (object)
++ defaultQuantity (number)
++ portionsAvailable (number)
++ nutritionalInfo (NutritionalInfo)
++ price (number)
++ taxExempt (boolean)
++ count (number, optional)
+
+## CustomizeOption (Option)
++ ingredient (Ingredient)
++ isCombo (boolean)
+
+## ComboOption (Option)
++ ID (string, required)
++ name (string, required)
++ imageURL (string)
++ portionSizeLabel (string)
+
+## OptionByCategory (object)
++ category (string)
++ limit (number, optional)
++ freeOptions (number,optional)
++ prompt (string)
++ options (Option)
+
+## Meal (object)
++ date: `YYYY-MM-DD` (string)
++ daypartID (string)
++ storeID (string, required)
++ menuItemID (string, required)
++ portionID (string, required)
++ count (number)
++ customize (array[MealOption])
++ combo (array[MealOption])
+
+## MealOption (object)
++ ID (string, required)
++ count (number, required)
++ isCombo (boolean)
+
+## Localization (object)
++ currencyUnit (string)
++ temperatureUnit (string)
++ taxesUnit (string)
++ displayTaxInclusive (boolean)
+
+## Country (object)
++ name (string, required)
++ flagURL (string, required)
++ countryCode (string, required) - e.g. US, GB
+
+## PhoneNumber (object)
++ number (string, required)
++ country (Country, required)
+

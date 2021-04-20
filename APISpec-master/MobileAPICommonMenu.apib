@@ -1,0 +1,31 @@
+## POST /nutrition/calculate
++ Request
+    + Headers
+        Accept: application/json
+    + Attributes (Meal)
+
++ Response 200 (application/json)
+    + Attributes
+        + session (Session)
+        + response (array[Nutrient])
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidStoreID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidMenuItemID)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidCustomizeOptions)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidComboOptions)
+
++ Response 400 (application/json)
+    + Attributes
+        + error (InvalidPortionID)
+

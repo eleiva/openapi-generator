@@ -1,0 +1,26 @@
+@startuml
+
+autonumber
+actor Customer as CUS
+participant POS
+participant "Card Processor" as CP
+participant Backend as BE
+
+
+POS -> BE: Confirm transaction payment \n(/checkout/confirm)
+alt confirm succeeds
+    BE --> POS: ok
+    POS --> CUS: show success screen
+    POS -> BE: /logout
+else confirm fails, payment refunded
+    |||
+    ref over CUS, BE: CC confirm failure with refund flow
+     |||
+else confirm fails, couldn't refund
+    |||
+    ref over CUS, BE: CC confirm failure without refund flow    
+    |||
+end
+@enduml
+
+

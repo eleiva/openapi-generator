@@ -1,0 +1,44 @@
+get:
+  tags: 
+    - Distributions Centers
+  summary: Get all available products from a given distribution center by its distributionCenterID
+  operationId: GetProductsFromDistributionsCenters
+  parameters:
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/distributionCenterID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+post:
+  tags: 
+    - Distributions Centers
+  summary: Add new products to a distribution center by its distributionCenterID
+  operationId: AddProductsToDistributionCenter
+  parameters:
+    - $ref: '../../../Parameters/Path.yaml#/components/parameters/distributionCenterID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

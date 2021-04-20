@@ -1,0 +1,65 @@
+get:
+  tags:
+    - Operators
+  summary: Get a operator by its operatorID
+  description: 'Get a operator by its operatorID'
+  operationId: GetOperator
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/operatorID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+patch:
+  tags:
+    - Operators
+  summary: Update a operator by its operatorID
+  description: 'Update a operator by its operatorID'
+  operationId: UpdateOperator
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/operatorID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+delete:
+  tags:
+    - Operators
+  summary: Deletes an operator by its operatorID
+  description: 'Deletes an operator by its operatorID'
+  operationId: DeleteOperator
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/operatorID'
+  responses:
+    '204':
+      description: 'No Content'
+      headers: {}
+    '401':
+      description: 'Unauthorized Access'
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

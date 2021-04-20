@@ -1,0 +1,99 @@
+FORMAT: 1A
+HOST: https://analytics.morsum.co/api/v3
+
+# Propel API
+
+Documentation for the DS Analytics API.
+Base endpoint: https://analytics.morsum.co/api/v3
+
+## Overview
+
+Some general specifications about our Developer Platform API
+- Available HTTP Verbs are GET, POST, PUT, PATCH and DELETE
+- JSON will be the standard output format
+- API’s response’s content-type is application/json
+- Usage of Http Status Codes is a must (200 for ok, 201 for created, 404 not found and so on)
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+
+```json
+{
+  "parameters": {
+    ... // The parameters sent in the request
+  }
+
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+
+
+## Paging
+
+If the resource used allows to be paginated, parameters page & perPage will be allowed thus enabling the API consumer to paginate the entire collection of the resource
+
+```json
+{
+  "parameters": {
+    ... // parameters
+  },
+  "response": {
+  ... //actual response from API
+  },
+  "paging": {
+    "currentPage": Int,
+    "perPage": Int,
+    "totalPages": Int,
+    "totalResults": Int
+ }
+}
+```
+
+# Group Propel
+## GET Propel scores [GET /upsell/sites/scores]
++ Request (application/json)
+
+    + Headers
+
+            Authorization: siteGUID {siteGUID}
+
++ Response 200 (application/json)
+    + Attributes
+        - include PropelResponse
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+# Data Structures
+
+
+## Pagination (object)
+- totalResults (required, number)
+- totalPages (required, number)
+- perPage (required, number)
+- page (required, number)
+
+
+## PropelItem
+- comboId: `823222` (required, number)
+- storeId: `1` (required, number)
+- score: `0.8` (required, number)
+- productId: `245` (required, number)
+
+
+## PropelResponse (object)
+- parameters
+    - site: `SiteA` (required, string)
+    - filtered_by: `site` (required, string)
+- response
+    - items (required, array[PropelItem])
+    - paging (required, Pagination)

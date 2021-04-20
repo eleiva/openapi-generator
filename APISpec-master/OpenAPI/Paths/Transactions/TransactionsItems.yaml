@@ -1,0 +1,44 @@
+get:
+  tags: 
+    - Transactions
+  summary: Get all items from an transaction by its transactionID
+  operationId: GetTransactionsItems
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/transactionID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+post:
+  tags: 
+    - Transactions
+  summary: Add new items to a given transaction by its transactionID
+  operationId: AddItemToTransaction
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/transactionID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

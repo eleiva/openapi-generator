@@ -1,0 +1,687 @@
+# Data Structures
+
+## Event (object)
++ ID: `1` (string)
++ name: `Cooking Caesar Salad with friends` (string)
++ publicID: `9e80742a-f751-476b-9895-b7417a87b32d` (string)
++ isPublic (boolean)
++ eventDate: `2020-09-18T13:40:56+00:00` (string)
++ participantsCount (number)
++ isConferenceMode (boolean)
++ isEventRecorded (boolean)
++ isSelfMake (boolean)
++ isCancelled (boolean)
++ isVideoSaved (boolean)
++ score (number)
++ recipe (Recipe)
++ customer (Customer)
++ videoProvider (VideoProvider)
++ dineEventDate (string)
++ dinePublicID: `9e80742a-f751-476b-9895-b7417a87b32d`  (string)
++ participants (array[Customer])
++ viewEventInviteLink (Deeplink)
++ isTriviaEnabled (boolean)
++ notes (string)
++ topic (Topic)
++ isCookAlong (boolean)
++ sectionContent (SectionContent)
++ streamURL: `https://nutrait.ai/` (string)
++ price (EventPriceOption)
++ paymentDescription: `Payment notes from host` (string)
++ hasPaid (boolean)
+
+## Customer (object)
++ ID: `1` (string)
++ name: `Jhon Doe` (string)
++ avatar: `https://nutrait.ai/` (string)
++ unitSystem: `US` (string)
+
+## Topic (object)
++ ID: `1` (string)
++ name: `General Topic` (string)
++ slug: `general-topic` (string)
++ iconURL: `https://nutrait.ai/` (string)
++ isDefault (boolean)
++ displayOrder (number)
++ lastRecording (EventRecording)
++ amountOfRecordings  (number)
+
+## Recipe (object)
++ ID: `1` (string)
++ name: `Caesar Salad` (string)
++ imageURL: `https://nutrait.ai/` (string)
++ prepTimeMinutes (number)
++ prepInstructions: `Preparation Instructions` (string)
++ complexity: `1` (string)
++ score (number)
++ viewRecipeLink (Deeplink)
+
+## EventRecording (object)
++ ID (string)
++ url: `https://nutrait.ai/` (string)
++ createdAt: `2020-10-05T15:55:03+00:00` (string)
++ recipe (Recipe) 
++ event (Event) 
++ playRecordingLink (Deeplink) 
++ owner (Customer)
++ isPublic (boolean)
+
+## EventCustomer (object)
++ ID: `1` (string)
++ customerID: `1` (string)
++ name: `Charles Grey` (string)
++ avatar: `https://nutrait.ai/` (string)
++ isRejected (boolean)
++ eventID: `1` (string)
+
+## CustomerFriendInvitation (object)
++ ID: `1` (string)
++ customerID: `1` (string)
++ invitedCustomerID: `1` (string)
++ email: `test@mailinator.com` (string)
+
+## CustomerFriendCode (object)
++ code: `abcd` (string)
++ url: `https://nutrait.ai/` (string)
+
+## Deeplink (object)
++ url: `https://nutrait.ai/` (string)
++ shareText: `Text to be shared` (string)
++ shareEmailSubject: `Email subject` (string)
++ event (Event)
++ customerFriendInvitation (CustomerFriendInvitation)
++ eventRecording (EventRecording)
++ eventCustomer (EventCustomer)
++ recipe (Recipe)
++ customerFriendCode (CustomerFriendCode)
+
+## EventPriceOption (object)
++ ID: `1` (string)
++ price: `1.2` (number)
++ currency: `US` (string)
++ ios (EventPriceOptionIos)
++ android (EventPriceOptionAndroid)
+
+## EventPriceOptionIos (object)
++ ID: `1` (string)
+
+## EventPriceOptionAndroid (object)
++ ID: `1` (string)
+
+## VideoProvider (object)
++ accessToken: `abcd` (string)
+
+## SectionContent (object)
++ ID: `1` (string)
++ name: `Section Content name` (string)
++ keyName (KeyValue)
++ imageURL: `https://nutrait.ai/` (string)
++ isDefault (number)
+
+
+## Filter (object)
++ ethnicities (array[KeyValue])
++ dietaries (array[KeyValue])
+
+## KeyValue (object)
++ ID: `1` (string)
++ name: `value` (string)
+
+## CustomerEventTask (object)
++ ID: `1` (string)
++ categoryTitle: `Base` (string)
++ title: `Task` (string)
++ quantityFormatted: `1` (string)
++ displayOrder (number)
++ startedAt: `2020-10-05T15:55:03+00:00` (string)
++ finishedAt: `2020-10-05T15:55:03+00:00` (string)
++ isPassiveTask (boolean)
++ passiveTaskDuration: `11:12` (string)
+
+## IngredientDetail (object)
++ formattedQuantity: `1 gr` (string)
++ prepNote (PrepNote)
++ ingredient (Ingredient)
+
+## PrepNote (object)
++ name: `Chop` (string)
+
+## Ingredient (object)
++ name: `Carrot` (string)
+
+## PaymentToken (object)
++ token: `abcd` (string)
++ transactionID  (string)
+
+## EventFeedback (object)
++ isPositive (boolean)
++ comments: `Comments` (string)
++ eventFeedbackOptions (array[string])
+
+## EventReservation (object)
++ ID: `1` (string)
++ createdAt: `2020-02-01` (string)
++ status (EventReservationStatus)
+
+## EventReservationStatus (object)
++ ID: `1` (string)
++ name: `Confirmed` (string)
+
+## Session (object)
++ ID: `1` (string)
++ firstName: `Jhon` (string)
++ lastName: `Doe` (string)
++ email: `dummy@mailinator.com` (string)
++ phone (Phone)
++ avatar: `https://nutrait.ai/` (string)
++ accessToken (SsoAccessToken)
++ brand (SsoBrand)
+
+## SsoAccessToken (object)
++ token `eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImMwYmVmYjYwNDEzNjdiNjcyMjJkNGI2YWJkMzRjZmRkNjAyZTYxNzlhYjA5ZTI4ZjQ5NWRlYWZkMWFjMTM0NjIwMjUyMDE0MWIwYmM0NTgxIn0.eyJhdWQiOiIxIiwianRpIjoiYzBiZWZiNjA0MTM2N2I2NzIyMmQ0YjZhYmQzNGNmZGQ2MDJlNjE3OWFiMDllMjhmNDk1ZGVhZmQxYWMxMzQ2MjAyNTIwMTQxYjBiYzQ1ODEiLCJpYXQiOjE2MDEzMDg1MDMsIm5iZiI6MTYwMTMwODUwMywiZXhwIjoxNjAxOTEzMzAzLCJzdWIiOiI5Iiwic2NvcGVzIjpbXX0.aEPZU_CyY5XqKy7QxLY5yhvsWMJOcMwor1eEZ3xRpiVBkhM_LH4yozp3mPny2Y4NUNEeaaM57ybAWbtbk_puXFKZwjbPbJOlNAhdZwJXZHOBui-cdbPRopEs4dYr41vl48cBlimu5xdLLjuB9kzYq6Lg9Q5VSCKm7p6fn7kqd7WY7KcQuzah4mIqCXl-ilv6TuIb5x4NUyn7eOb5qPC5BIT1MOLJ6ttL_AG5wKIge8RpoHV0h65oUVd_VWubiicitpK9s0KsMjLIkVVUL8dhZcfvstQsqL3h9aBwGo9oPasdYKrWOjoBGU0ZMUYiBTmMamqB1_pWKLUP36B-Yov_4GppexDfSYfAv48MZBgkuXGtCaCqmo9Jws_7W7mz5xbHNUgjWy_bbrLvDN4FXN9TXGrORDYn8NqtSbnSsWa0Xy5u8nWfoTX7qJW3n3d9WloBcC7XsfQRCrp9y7ap8o4sXLT87laIEL0dGDKrBweci7ZI3r5zJgXp3RDVnDUmjc4B7nQZ9ujME0ndqxfdt-jgunazzu4JsbEfgs-Wd2E-PzqsO9gYbx2mACO8frxZUVES0XFYMwUW09tArURSkXMZLEVTpwTiq4ZJ6iWTZjoWIRRHGfagtcHNewDBsAw5OtFlp2VZrDC7oMKbw5CrbqbDOi_LMad_Mv0snfBnxD51BNs` (string)
++ expiresAt: `2020-10-05T15:55:03+00:00` (string)
+
+## SsoBrand (object)
++ key: `1` (string)
++ details (SsoBrandDetail)
+
+## SsoBrandDetail (object)
++ isProfileComplete (boolean)
++ unitSystem (KeyValue)
+
+## RegisterInfo (object)
++ countries (array[RegisterInfoCountry])
+
+## RegisterInfoCountry (object)
++ ID: `1` (string)
++ name: `Argentina` (string)
+
+## RecipeDetails (object)
++ ID: `1` (string)
++ name: `Caesar salad` (string)
++ description: `Caesar salad description` (string)
++ imageURL: `https://nutrait.ai/` (string)
++ prepTimeMinutes (number)
++ prepInstructions: `Preparation instructions for recipe` (string)
++ complexity: `1` (string)
+    Valid options are 1(easy),2 and 3(hard)
++ score (number)
++ nutraitURL: `https://nutrait.ai/` (string)
++ ingredients (array[IngredientDetail])
++ summary (array[SummaryTaskCategory])
+
+## SummaryTaskCategory (object)
++ name: `Base` (string)
++ tasks (array[SummaryTask])
+
+## SummaryTask (object)
++ name: `Task` (string)
+
+## ProfileQuestion (object)
++ ID: `1` (string)
++ name: `Please indicate if you adhere to the following diets` (string)
++ category: `DIETARIES` (string)
++ options (ProfileQuestionOption)
+
+## ProfileQuestionOption (object)
++ ID: `1` (string)
++ name: `Fruit Salad` (string)
++ selected (boolean)
++ imageURL: `https://nutrait.ai/` (string)
+
+## Media (object)
++ ID: `1` (string)
++ type: `image` (string)
+    Can be `image` or `video`
++ thumbnail: `https://nutrait.ai/` (string)
++ url: `https://nutrait.ai/` (string)
++ canDelete (boolean)
+
+## Nutrient (object)
++ nutrientName: `Calories` (string)
++ unit: `gr` (string)
++ value (number)
+
+## FormDataUnit (object)
++ ID: `1` (string)
++ name: `US` (string)
++ unitsSystems (array[UnitSystem])
+
+## UnitSystem (object)
++ ID: `1` (string)
++ name: `US` (string)
+
+## Ethnicity (object)
++ ID (string)
++ name: `AmericaN` (string)
+
+## Component (object)
++ name: `Component 1` (string)
++ ingredients (array[IngredientComponent])
++ instructions (array[ComponentInstruction]) // or string
+
+## IngredientComponent (object)
++ id (number)
++ name: `Component 1` (string)
++ amount (number)
++ unitId (number)
++ prepNoteName: `Chop` (string)
++ prepNoteId (number)
+
+
+## ComponentInstruction (object)
++ description: `Component Instruction` (string)
++ durationInMinutes: `20` (number)
+
+
+## Recording (object)
++ ID: `1` (string)
++ url: `https//nutrait.ai/` (string)
++ createdAt: `1997-07-16T19:20:00Z` (string)
++ recipe (Recipe)
++ event (Event)
++ playRecordingLink (Deeplink)
++ owner (Customer)
++ isPublic (boolean)
+
+## ContentReportOption (object)
++ ID: `1` (string)
++ name: `It’s inappropriate` (string)
+
+## CustomerNutrait (object)
++ nutraitUrl: `https//nutrait.ai/` (string)
+
+## SearchableIngredient (object)
++ ID: `1` (string)
++ name: `carrot` (string)
++ unit (Unit)
+
+## TriviaQuestion (object)
++ ID: `1` (string)
++ question: `What word can go before “decision”, “personality” and “second”?` (string)
++ answer: `Split.` (string)
++ eventTopic (EventTopic)
+
+## EventTopic (object)
++ ID (string)
++ name: `abcd` (string)
++ slug: `ab-cd` (string)
++ isDefault (boolean)
++ iconUrl: `https://nutrait.ai` (string)
++ displayOrder (number)
+
+## ShortLink (object)
++ ID: `1` (string)
++ longUrl: `https://nutrait.ai` (string)
++ shortUrl: `https://nutrait.ai` (string)
+
+## EventFeedbackOption (object)
++ ID: `1` (string)
++ name: `abcd` (string)
+
+
+## HomeSectionContent (object)
++ kitchenEncounters (SectionVideoContent)
++ vitalConversations (SectionVideoContent)
++ watchAllVideos (SectionVideoContent)
++ supportThis (SectionVideoContent)
++ oldsAndYoungs (SectionVideoContent)
++ ogs (Ogs)
++ chefperts (SectionVideoContent)
++ stores (array[Store])
++ featuredCommunityCategories (array[CommunityCategory])
++ recordingsHighlights (array[EventRecordingHighight])
++ mealsDeliveriesStores (array[Store])
++ marketplacesStores (array[Store])
+
+## SectionVideoContent (object)
++ sectionContent (SectionContent)
++ contents (array[EventRecording])
+
+## Ogs (object)
++ recipe (OgsRecipe)
++ videoUrl: `https://nutrait.ai/` (string)
++ price (number)
++ currency: `USD` (string)
+
+## OgsRecipe (object)
++ ID: `1` (string)
++ name: `abcd` (string)
+
+## UserNotification (object)
++ ID: `1` (string)
++ name: `abcd` (string)
++ channels (array[NotificationChannel])
+
+## NotificationChannel (object)
++ email (boolean)
++ push (boolean)
+
+
+## EventRequest (object)
++ name: `My new brand new event` (string)
++ isPublic: `false` (boolean)
++ isConferenceMode: `false` (boolean)
++ isEventRecorded: `false` (boolean)
++ isSelfMake: `true` (boolean)
++ eventDate: `2020-09-14T15:03:51-03:00` (string)
++ recipeID: `1` (string)
++ topicID: `1` (string, optional)
++ notes: `My notes for event` (string)
++ isTriviaEnabled: `true` (boolean)
++ cookAlongEventRecordingID: `1` (string)
++ sectionContentID: `1` (string, optional)
++ priceID: `1` (string)
++ paymentDescription: `A payment description` (string)
++ communityID: `1` (string, optional) // Only users that belong to a community can access to this make
++ communityCategoryID: `1` (string, optional) // Only users that belong to the category community can view the event recording
+
+## EventReservationRequest (object)
++ paymentToken (PaymentToken)
+
+
+## EventPortionRequest (object)
++ portionsNumber: `2` (number)
+
+## EventStoreVideoRequest (object)
++ image (Image)
+
+## EventPublishVideoRequest (object)
++ image (Image)
++ eventRecordingID: `1` (string)
+
+## EventShareRequest (object)
++ sharedPortions: `2` (number) // require if shareFood is true
++ shareFood: `true` (boolean)
++ emails: `a1@mailinator.com,a2@mailinator.com` (array[string])
+
+## EventAcceptRequest (object)
++ sharedPortions: `2` (number) // require if shareFood is true
++ shareFood: `true` (boolean)
++ emails: `a1@mailinator.com,a2@mailinator.com` (array[string])
+
+## EventJoinRequest (object)
++ portionsNumber: `2` (number) // The quantity of portions to be made.
++ paymentToken (PaymentToken, optional)
+
+## EventDineRequest (object)
++ startInMinutes (number) // The quantity of minutes to start.
+
+## Image (object)
+// Base 64 image
+
+## EventRequestRecordingDeletionRequest (object)
++ reason (string)
+
+## Phone (object)
++ number: `+5491133201991` (string)
++ countryCode: `AR` (string)
+
+## Store (object)
++ ID: `1` (string)
++ name: `SuperWay ` (string)
++ lat: 73.97763290 (number)
++ lng: 73.97763290 (number)
++ imgURL: `https://images.freeimages.com` (string)
++ distance (Distance)
+
+## Distance (object)
++ miles: `1` (number)
+
+## Menu (object)
++ ID: `1` (string)
++ daypartID: `1` (string)
++ date: `2020-20-20` (string)
++ store (Store)
+
+## MenuItem (object)
++ ID: `1` (string)
++ product (MenuItemProduct)
++ station (Station)
+
+## MenuItemDetail (object)
++ ID: `1` (string)
++ product (MenuItemProduct)
++ recipe (RecipeDetails)
+
+## MenuItemProduct (object)
++ ID: `1` (string)
++ name: `Caesar Salad` (string)
++ imageURL: `https://nutrait.ai/` (string)
++ isCPG: `true` (boolean)
++ defaultPortionSize (PortionSize)
++ comboCategories (array[ModifierCategory])
++ customizeCategories (array[ModifierCategory])
+
+## PortionSize (object)
++ ID: `1` (string)
++ name: `1 gr` (string)
++ price: 23 (number)
+
+## Cart (object)
++ ID: `1` (string)
++ items (array[CartItem])
++ daypartID: `2` (string)
++ date: `2020-02-02` (string)
++ customerID: `1` (string)
++ storeID: `1` (string)
+
+## CartItem (object)
++ ID: `1` (string)
++ portionID: `1` (string)
++ quantity: 1 (number)
+
+## Transaction (object)
++ ID: `1` (string)
++ items (array[CartItem])
+
+## MenuCategories (object)
++ ID: `1` (string)
++ name: `Sides` (string)
+
+## CheckoutItem (object)
++ ID: `1` (string)
+    Id of the item to be added
++ count: 2 (number)
+    Quantity to be added
++ combos (array[CheckoutModifier])
++ customizations (array[CheckoutModifier])
+
+## CheckoutRequest (object)
++ date: `2021-03-11` (string)
++ paymentMethodID: 2 (number)
++ comments: `without onions` (string)
++ deliveryOptionID: `1` (string)
++ menuItems (array[CheckoutItem])
++ delivery (CheckoutDeliveryInfo)
++ discount (CheckoutDiscount)
++ contactPhone: `+1 (234) 567-8910` (string)
++ shipping (CheckoutShippingInfo)
+
+## CheckoutDiscount
++ ID: `1` (string)
+
+## CheckoutDeliveryInfo (object)
++ deliveryOptionID: `1` (string)
++ pickUpTime: `10:05` (string)
++ address: `4 Main St.Farmingdale, NY 11735` (string)
++ quoteID: `dqt_BjzKX-JZdVTX4Q` (string)
++ dropoffNotes :`floor 2` (string)
+
+## CheckoutShippingInfo (object)
++ ID: `shp_d015e20461674089bce28d4d413fa6e5` (string)
++ rateID: `rate_c5a9ebb62466498bb65fbe3c75c46af2` (string)
+
+## PaymentMethod (object)
++ ID: `1` (string)
++ type: `VISA` (string)
++ label: `4242` (string)
++ isDefault (boolean)
++ isExpired (boolean)
+
+## PaymentMethodRequest (object)
++ provider: `stripe` (string)
++ token: `tok_1H5Ku8B1G19wCOYj8zlLEryM` (string),
++ tokenExpirationDate: `2024-06-30` (string, optional)
++ cardType: `Mastercard` (string, optional)
++ cardExpirationDate: `11/22` (string, optional)
++ cardEnding: `5100` (string, optional)
+
+## StoreClosedError (object)
++ code: StoreClosed
++ message: Please select another store
+
+## Community (object)
++ ID: `1` (string)
++ name: `Nutrait Public` (string)
++ isPublic: `true` (boolean)
++ communityCategories (array[CommunityCategory])
++ sectionContents (array[SectionContent])
+
+## CommunityCategory (object)
++ ID: `1` (string)
++ name: `Nutrait Public` (string)
++ imageURL: `https://nutrait.ai/images/community1.png` (string)
+
+## CheckoutInfo (object)
++ checkoutStoreInfo (CheckoutStoreInfo)
++ customer (CustomerProfile)
+
+## DeliveryOption (object)
++ ID: `1` (string)
++ name: `PickUp` (string)
+
+## CheckoutStoreInfo (object)
++ ID: `1` (string)
++ name: `Tower Cafe` (string)
++ tax: 8 (number)
++ deliveryOptions (array[DeliveryOption])
++ isShipping: `true` (boolean)
++ pickupTimes: `01:15`,`21:30` (array[string])
++ isOrderItemQuantityLimited: `false` (boolean)
+
+## CheckoutTransaction (object)
++ ID: `1` (string)
++ createdAt: `2020-10-26T18:22:40-04:00` (string)
++ subtotal: 7 (number)
++ tax: 0.65 (number)
++ total: 7.56 (number)
++ credit: 0 (number)
++ paymentTotal: 7.56 (number)
++ comments: `without ketchup pls` (string)
++ delivery (CheckoutDeliveryInfo)
++ checkoutStoreInfo (CheckoutStoreInfo)
++ items (array[CheckoutTransactionItem])
+
+## CheckoutTransactionItem (object)
++ ID: `1` (string)
++ price: 3 (number)
++ quantity: 2 (number)
++ product (MenuItemProduct)
+
+## Discount (object)
++ ID: `23` (string)
++ name: `50percent` (string)
++ type (DiscountType)
++ value: 50 (number)
+
+## DiscountType (object)
++ key: `PECENTAGE` (string)
++ name: `Percentage %` (string)
+
+## GroceryStoresIngredientRequest (object)
++ ID: `1` (string)
++ unitID: `1` (string)
++ quantity: 123 (number)
+
+## GroceryStore (object)
++ ID: `1` (string)
++ name: `Grocery corner` (string)
++ imageURL: `https:\\image.png` (string)
+
+## Unit (object)
++ ID: `1` (string)
++ name: `US` (string)
+
+## GroceryStoreProduct
++ ID: `1` (string)
++ name: `Carrot` (string)
++ price: 1 (optional, number)
++ quantity: `2` (number)
++ imageURL: `https:\\image.png` (string)
++ unit (Unit)
++ ingredientID: `1` (string)
++ upc: `0004601515840` (string)
++ itemURL: `https:\\provider\00001` (string)
++ amount: 1 (number)
+
+## GroceryUnit (object)
++ ID: `1` (string)
++ name: `US` (string)
++ unitsSystems (array[UnitSystem])
+
+## Station (object)
++ ID: `1` (string)
++ name: `Grilled` (string)
++ displayOrder: 1 (string)
+
+## ModifierCategory (object)
++ name: `Base` (string)
++ limit: 2 (number)
++ freeOptions: 1 (number)
++ fixedOptions: 1 (number)
++ options (array[ModifierOption])
+
+## ModifierOption (object)
++ ID: `1` (string)
++ name: `Cheddar` (string)
++ isIngredient: false (boolean)
++ taxExempt: true (boolean)
++ imageURL: `https://image/` (string)
++ defaultQuantity: 1 (number)
++ portionSizeLabel: `2 gr` (string)
++ portionsAvailable: 1 (number)
++ price: 1.2 (number)
+
+## CheckoutModifier (object)
++ ID: `1` (string)
++ quantity: 1 (number)
++ isIngredient: false (boolean)
+
+# DeliveryQuote (object)
++ ID: `dqt_BjzKX-JZdVTX4Q` (string)
++ fee: 600 (number) // Expressed in Cents
++ duration: 33 (number) // Expressed in minutes
+
+## EventRecordingHighight (object)
++ ID (string)
++ url: `https://media.w3.org/2010/05/sintel/trailer_hd.mp4` (string)
++ isPublic (boolean)
++ highlightType (EventRecordingHighightType)
+
+## EventRecordingHighightType (object)
++ ID (string)
++ name: `Random` (string)
+
+## CustomerBalance (object)
++ type: `central` (string) // `central` type will be the one to use for the credit solution.
++ amount: 22 (number) // Expressed in dollars
+
+## CustomerProfile (object)
++ ID: `1` (string)
++ name: `Jhon Doe` (string)
++ avatar: `https://nutrait.ai/` (string)
++ customerFriendCode: `abcd` (string)
++ community (Community)
++ balance (array[CustomerBalance])
+
+## ShippingRate (object)
++ ID: `rate_c5a9ebb62466498bb65fbe3c75c46af2` (string)
++ service: `First` (string)
++ carrier: `USPS` (string)
++ rate: `4.46` (number)
++ deliveryDays: 3 (number) // Estimated business delivery days
+
+# InvalidMenu (object)
++ code: `InvalidMenu` (string)
++ message: `No menu available` (string)

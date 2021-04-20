@@ -1,0 +1,22 @@
+get:
+  tags: 
+    - Onboarding
+  summary: Get a single onboarding process by its onboardingID
+  operationId: GetOnboarding
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/onboardingID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

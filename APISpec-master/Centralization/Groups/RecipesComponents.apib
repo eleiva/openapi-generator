@@ -1,0 +1,28 @@
+# Group Recipes Components
+
+## RecipeComponent Resource [/recipes/{id}/components]
++ Parameters
+    + id (string)
+
+### Retrieve a RecipeComponent [GET]
+Returns a list of RecipeComponents
++ Response 200 (application/json)
+    + Attributes (array[RecipeComponent])
+
+### Create a RecipeComponent [POST]
+Creates a Recipe using the id.
++ Parameters
+    + id (string)
++ Attributes (RecipeComponentRequest)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Update a RecipeComponent [PUT /recipes/{id}/components/{componentId}]
+Updates a Recipe using the id.
++ Parameters
+    + id (string)
+    + componentId (string)
++ Attributes (RecipeComponentRequest)
++ Request (application/json)
++ Response 200 (application/json)
+

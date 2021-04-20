@@ -1,0 +1,192 @@
+FORMAT: 1A
+HOST: https://analytics.morsum.co/api/v3
+
+# Segmentation API
+
+Documentation for the DS Analytics API.
+Base endpoint: https://analytics.morsum.co/api/v3
+
+## Overview
+
+Some general specifications about our Developer Platform API
+- Available HTTP Verbs are GET, POST, PUT, PATCH and DELETE
+- JSON will be the standard output format
+- API’s response’s content-type is application/json
+- Usage of Http Status Codes is a must (200 for ok, 201 for created, 404 not found and so on)
+
+## Generic Response format
+
+### Success
+HTTP status 2xx
+
+
+```json
+{
+  "parameters": {
+    ... // The parameters sent in the request
+  }
+
+  "response": {
+  ... // All the responses defined below go here
+  }
+}
+```
+
+
+## Paging
+
+If the resource used allows to be paginated, parameters page & perPage will be allowed thus enabling the API consumer to paginate the entire collection of the resource
+
+```json
+{
+  "parameters": {
+    ... // parameters
+  },
+  "response": {
+  ... //actual response from API
+  },
+  "paging": {
+    "currentPage": Int,
+    "perPage": Int,
+    "totalPages": Int,
+    "totalResults": Int
+ }
+}
+```
+
+# Group Segmentation
+
+## GET /segmentation/rewards
+
+Retrieve lists of available rewards to use in the Segmentation filters.
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID>
+
++ Response 200 (application/json)
+    + Attributes
+        + response (array[IdTitle])
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+## GET /segmentation/discounts
+
+Retrieve lists of available discounts to use in the Segmentation filters.
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID>
+
++ Response 200 (application/json)
+    + Attributes
+        + response (array[IdTitle])
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+## POST /segmentation
+Retrieve list of customers that matches the provided filter. Result is paginated so the pagination parameters are also available. For client please use the URL /api/client/v3/segmentation. In this case the client GUID would be accepted.
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID|clientSiteGUID>
+    + Body
+        {
+            "siteGUID" : "siteGUID", // siteGUID where the Segment was created (Site or Client)
+            "request": [
+                {"field":"transactions_num","compare":"greater_than","value":"5"},
+                {"field":"site_id","compare":"equal_to","value":"10"},
+                ...
+            ],
+            "idsOnly" : true
+        }
+
++ Response 200 (application/json)
+    + Attributes
+        + response (array[SegmentationResponse])
+        + paging (Pagination)
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+## POST /segmentation/customers
+Retrieve list of customers that matches the provided filter. This is similar to the previous endpoint but with a different return format. Result is paginated so the pagination parameters are also available. For client please use the URL /api/client/v3/segmentation/customers. In this case the client GUID would be accepted.
+ 
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: SiteGUID <siteGUID|clientSiteGUID>
+    + Body
+        {
+            "siteGUID" : "siteGUID", // siteGUID where the Segment was created (Site or Client)
+            "request": [
+                {"field":"transactions_num","compare":"greater_than","value":"5"},
+                {"field":"site_id","compare":"equal_to","value":"10"},
+                ...
+            ],
+            "idsOnly" : true
+        }
+
++ Response 200 (application/json)
+    + Attributes
+        + response (array[SegmentationCustomerResponse])
+        + paging (Pagination)
+
++ Response 401 (application/json)
+    + Attributes
+        + error: `unauthorized` (string)
+        + message: `please authenticate` (string)
+        + status: `401` (number)
+
+
+# Data Structures
+
+
+## Pagination (object)
+- totalResults (required, number)
+- totalPages (required, number)
+- perPage (required, number)
+- page (required, number)
+
+
+
+## SegmentationResponse (object)
++ customer_central_id: 1 (number)
++ site_id: 2 (number)
++ transaction_num: 10 (number)
++ `...`: `...` (string)
+
+
+## IdTitle (object)
++ id: 182 (number)
++ name: `Example Title` (string)
+
+
+## SegmentationCustomerResponse (object)
++ customer_central_id: 1 (number)
++ values (object)
+    + {index} (object)
+        + site_id: 1 (number)
+        + transaction_num: 10 (number)
+        + `...`: `...` (string)
+    + {index+1} (object)
+        + site_id: 2 (number)
+        + transaction_num: 10 (number)
+        + `...`: `...` (string)

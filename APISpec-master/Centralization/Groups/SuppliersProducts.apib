@@ -1,0 +1,52 @@
+# Group Supplier Products
+
+## Supplier Product Resource [/suppliers-products/{id}]
++ Parameters
+    + id (string)
+
+### Retrieve a Product [GET]
+Retrieves the product with the given ID.
++ Response 200 (application/json)
+    + Attributes (SupplierProduct)
+
+### Update a Product [PUT]
+Updates a Product using the id.
++ Attributes (SupplierProductRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (SupplierProduct)
+
+### Update a Product [PUT /suppliers-products/{external_id}/external]
+Updates a Product using the external id.
++ Parameters
+    + external_id (string)
++ Attributes (SupplierProductRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (SupplierProduct)
+
+### Restores a Product [PATCH /suppliers-products/{id}/restore]
+Restores a Product.
++ Parameters
+    + id (string)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Deletes a Product [DELETE /suppliers-products/{id}]
+Deletes a Product.
++ Parameters
+    + id (string)
++ Request (application/json)
++ Response 200 (application/json)
+
+### List all Products [GET /suppliers-products]
+Returns a list of products.
++ Response 200 (application/json)
+    + Attributes (array[SupplierProduct])
+
+### Create a Product [POST /suppliers-products]
+Creates a new Product.
++ Attributes (SupplierProductRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (SupplierProduct)

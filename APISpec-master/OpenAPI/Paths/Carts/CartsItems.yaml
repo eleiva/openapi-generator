@@ -1,0 +1,22 @@
+post:
+  tags:
+    - Carts
+  summary: Add new item to cart
+  operationId: AddItemToCart
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/cartID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

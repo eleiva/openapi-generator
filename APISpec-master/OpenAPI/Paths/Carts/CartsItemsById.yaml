@@ -1,0 +1,46 @@
+patch:
+  tags:
+    - Carts
+  summary: Update an existing item in the cart by its cartItemID
+  operationId: UpdateCartItem
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/cartID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/cartItemID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+delete:
+  tags:
+    - Carts
+  summary: Remove an item from a cart by its cartItemID
+  operationId: DeleteCartItem
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/cartID'
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/cartItemID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

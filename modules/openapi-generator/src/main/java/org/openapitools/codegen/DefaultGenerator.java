@@ -378,7 +378,13 @@ public class DefaultGenerator implements Generator {
 
     private void generateModel(List<File> files, Map<String, Object> models, String modelName) throws IOException {
         for (String templateName : config.modelTemplateFiles().keySet()) {
+
             String filename = config.modelFilename(templateName, modelName);
+
+            if (  modelName.contains("Request")) {
+                templateName = "request.mustache";
+            }
+
             File written = processTemplateToFile(models, templateName, filename, generateModels, CodegenConstants.MODELS);
             if (written != null) {
                 files.add(written);

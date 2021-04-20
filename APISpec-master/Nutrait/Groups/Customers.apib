@@ -1,0 +1,97 @@
+# Group Customers
+
+## UnitSystem Resource [/customers/me/units/toggle]
+
+## Toggles unit system [POST]
+Toggles unit system of logged customer between US vs Metric units systems.
++ Response 200 (application/json)
+    + Attributes
+        + response (Customer)
+
+# ProfileQuestion Resource [/nutrait/questions]
+
+## Retrieves a list of questions [GET /nutrait/questions]
+Retrieves a list of questions and possible answers for each question so the user can configure it’s nutrait profile.
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + questions (array[ProfileQuestion])
+
+## Send a list of questions [POST /nutrait/questions]
++ Attributes
+    + options: 1,2 (array[string])
++ Request (application/json)
++ Response 204 (application/json)
+
+## Friend Resource [/friends]
+
+## Gets all friends [GET /friends/search/{search}]
+Gets all friends from current customer.
++ Parameters
+    + search: `test customer` (string)
++ Response 200 (application/json)
+    + Attributes
+        + response
+            + friends (array[Customer])
+
+## Creates a friend invitation [POST /friends/invitations]
+Creates invitations for friends by emails. Will send notifications as well.
++ Attributes
+    + emails (array[string])
++ Request (application/json)
++ Response 204 (application/json)
+
+
+## Connect users as friends using a code [POST /friends/invitations/{invitationID}/accept]
+Accept invitation by given id
++ Parameters
+    + invitationID: `1` (string)
++ Response 204 (application/json)
+
+## Connect users as friends using a code [POST /friends/invitations/code/{code}/accept]
+Connect users as friends using a code
++ Parameters
+    + code: `abcd `(string)
++ Response 204 (application/json)
+
+## ShortLink Resource [/short-links/longUrl/{longUrl}]
++ Parameters
+    + longUrl (string)
+
+## Creates ShortLink [POST]
+Creates a short dynamic link from a long url
++ Response 200 (application/json)
+    + Attributes
+        + response (ShortLink)
+
+## Channel Resource [/users/me/{id}/{channel}]
++ Parameters
+    + id (string)
+    + channel: string
+
+## Enable a channel [POST]
+Enable a channel for specific notification
++ Response 204 (application/json)
+
+## Disable a channel [DELETE]
+Disable a channel for specific notification
++ Response 204 (application/json)
+
+
+## Customer Resource [/users]
+
+## Returns the customer profile [GET /users/me]
+Returns the user profile
++ Response 200 (application/json)
+    + Attributes (CustomerProfile)
+
+## Returns the customer nutrait url [GET /users/me/nutrait]
+Returns the customer nutrait url
++ Response 200 (application/json)
+    + Attributes (CustomerNutrait)
+
+## Return a list of available notifications [POST /users/me/notifications]
+Return a list of available notifications
++ Response 200 (application/json)
+    + Attributes
+        + response (UserNotification)

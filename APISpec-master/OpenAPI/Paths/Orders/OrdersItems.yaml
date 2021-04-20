@@ -1,0 +1,44 @@
+get:
+  tags: 
+    - Orders
+  summary: Get all items from an order by its orderID
+  operationId: GetOrdersItems
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/orderID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+post:
+  tags: 
+    - Orders
+  summary: Add new items to a given order by its orderID
+  operationId: AddItemToOrder
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/orderID'
+  responses:
+    '201':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

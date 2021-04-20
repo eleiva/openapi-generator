@@ -1,0 +1,62 @@
+get:
+  tags:
+    - Carts
+  summary: Get a single cart by its cartID
+  operationId: GetCart
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/cartID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+patch:
+  tags:
+    - Carts
+  summary: Update cart by it's cartID
+  operationId: UpdateCart
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/cartID'
+  responses:
+    '200':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Responses.yaml#/components/schemas/BaseResponse'
+    '401':
+      description: ''
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'
+delete:
+  tags:
+    - Carts
+  summary: Delete a cart by its cartID
+  operationId: DeleteCart
+  parameters:
+    - $ref: '../../Parameters/Path.yaml#/components/parameters/cartID'
+  responses:
+    '204':
+      description: 'No Content'
+      headers: {}
+    '401':
+      description: 'Unauthorized Access'
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '../../Schemas/Errors.yaml#/components/schemas/UnauthorizedException'

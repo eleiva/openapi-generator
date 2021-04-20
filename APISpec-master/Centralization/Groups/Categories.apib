@@ -1,0 +1,50 @@
+# Group Categories
+
+## Category Resource [/categories/{category_name}/{id}]
++ Parameters
+    + category_name (string)
+    + id (string)
+
+### Retrieve a Category [GET]
+Retrieves the category with the given ID.
++ Response 200 (application/json)
+    + Attributes (Category)
+
+### Update a Category [PUT]
+Updates a Category using the id.
++ Attributes (CategoryRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (Category)
+
+### Restores a Category [PATCH /categories/{category_name}/{id}/restore]
+Restores a Category.
++ Parameters
+    + category_name (string)
+    + id (string)
++ Request (application/json)
++ Response 200 (application/json)
+
+### Deletes a Category [DELETE /categories/{category_name}/{id}]
+Deletes a Category.
++ Parameters
+    + category_name (string)
+    + id (string)
++ Request (application/json)
++ Response 200 (application/json)
+
+### List all Categories [GET /categories/{category_name}]
+Returns a list of categories.
++ Parameters
+    + category_name (string)
++ Response 200 (application/json)
+    + Attributes (array[Category])
+
+### Create a Category [POST /categories/{category_name}]
+Creates a new Category.
++ Parameters
+    + category_name (string)
++ Attributes (CategoryRequest)
++ Request (application/json)
++ Response 200 (application/json)
+    + Attributes (Category)

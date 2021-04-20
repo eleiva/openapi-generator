@@ -1,0 +1,250 @@
+openapi: 3.0.0
+info:
+  title: Products API
+  description: >-
+    Basic products API service ;)
+  contact: {
+    "name": "API Support",
+    "url": "http://morsum.co/support",
+    "email": "support@morsum.co"
+  }
+  version: '1.0.1'
+servers:
+- url: https://operator.morsum.co/api/v1
+  variables: {}
+- url: http://localhost:5000/api/v1
+  variables: {}
+paths:
+  /shopping-lists:
+    get:
+      operationId: GetShoppingLists
+      tags:
+        - ShoppingList
+      description:
+      responses:
+        '200':
+          description: OK
+  /vendors:
+    post:
+      operationId: CreateVendor
+      tags:
+        - Vendor
+      description:
+      responses:
+        '200':
+          description: OK
+    get:
+      operationId: GetVendors
+      tags:
+        - Vendor
+      description:
+      responses:
+        '200':
+          description: OK
+  /vendors/{vendorID}:
+    get:
+      tags:
+        - Vendor
+      description:
+      operationId: GetVendor
+      responses:
+        '200':
+          description: OK
+      parameters:
+        - name: vendorID
+          in: path
+          description: 'Unique id representing a vendor'
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: 1
+    patch:
+      tags:
+        - Vendor
+      description:
+      operationId: UpdateVendor
+      parameters:
+        - name: vendorID
+          in: path
+          description: 'Unique id representing a vendor'
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: 1
+      responses:
+        '200':
+          description: OK
+  /products:
+    post:
+      tags:
+      - Products
+      summary: Create a new product
+      description: ''
+      operationId: CreateProduct
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateProductRequest'
+        '422':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+        '401':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedException'
+  /products/{productID}:
+    get:
+      tags:
+      - Products
+      summary: Retrieve a single product
+      description: ''
+      operationId: GetProduct
+      parameters:
+      - name: productID
+        in: path
+        description: 'Unique id representing a product'
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 1
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetProductResponse'
+        '404':
+          description: 'Not found'
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoModelFound'
+        '401':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedException'
+components:
+  schemas:
+    Vendor:
+      title: Vendor object
+      required:
+        - name
+      type: object
+      properties:
+        ID:
+          type: number
+          example:
+            "1"
+        name:
+          type: string
+          example:
+            "Coke"
+    Product:
+      title: Product object
+      required:
+      - name
+      - size
+      type: object
+      properties:
+        ID:
+          type: number
+          example:
+            "1"
+        name:
+          type: string
+          example:
+            "Coke"
+        size:
+          type: string
+          example:
+            "oz"
+    CreateProductRequest:
+      title: Create product request
+      required:
+      - product
+      type: object
+      properties:
+        product:
+          $ref: '#/components/schemas/Product'
+    CreateProductResponse:
+      title: Create greetings response
+      required:
+      - response
+      type: object
+      properties:
+        response:
+          $ref: '#/components/schemas/Product'
+    GetProductResponse:
+      title: Get product response
+      required:
+      - response
+      type: object
+      properties:
+        response:
+          $ref: '#/components/schemas/Product'
+    UnauthorizedException:
+      title: Unauthorized access to resource
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+    ValidationException:
+      title: Validation error
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+    Error:
+      title: Base error
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: string
+          example: "Error"
+        message:
+          type: string
+          example: "Base Error"
+    NoModelFound:
+      title: No data found
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+
+
